@@ -4,34 +4,38 @@
 \alias{calc_nwstats_msm}
 \title{Calculate Target Statistics for Network Model Estimation}
 \usage{
-calc_nwstats_msm(time.unit = 7, method = 2, num.B, num.W, deg.mp.B,
-  deg.mp.W, mdeg.inst.B, mdeg.inst.W, qnts.B, qnts.W, prop.hom.mpi.B,
-  prop.hom.mpi.W, balance = "mean", sqrt.adiff.BB, sqrt.adiff.WW,
-  sqrt.adiff.BW, diss.main, diss.pers, durs.main, durs.pers, ages, asmr.B,
-  asmr.W, role.B.prob, role.W.prob)
+calc_nwstats_msm(time.unit = 7, num.Y, num.O, deg.mp.Y, deg.mp.O, mdeg.inst.Y,
+  mdeg.inst.O, qnts.B, qnts.W, prop.hom.mpi.B, prop.hom.mpi.W,
+  balance = "mean", sqrt.adiff.BB, sqrt.adiff.WW, sqrt.adiff.BW, diss.main,
+  diss.pers, durs.main.age, durs.pers.age, ages, asmr.B, asmr.W, role.Y.prob,
+  role.O.prob)
 }
 \arguments{
 \item{time.unit}{Time unit relative to 1 for daily.}
 
-\item{method}{Method for calculating target statistics by race, with options of
-\code{2} for preserving race-specific statistics and \code{1} for
-averaging over the statistics and dropping the race-specific terms.}
+\item{num.Y}{Population size of Young MSM (15-24).}
 
-\item{num.B}{Population size of black MSM.}
+\item{num.O}{Population size of Older MSM (25-40).
+#@param deg.mp.B Degree distribution matrix for main and casual partners for
+#       black MSM, as a 2 by 3 matrix.
+#@param deg.mp.W Degree distribution matrix for main and causal partners for
+#       white MSM, as a 2 by 3 matrix.}
 
-\item{num.W}{Population size of white MSM.}
+\item{deg.mp.Y}{Degree distribution matrix for main and casual partners for
+young MSM, as a 2 by 3 matrix.}
 
-\item{deg.mp.B}{Degree distribution matrix for main and casual partners for
-black MSM, as a 2 by 3 matrix.}
+\item{deg.mp.O}{Degree distribution matrix for main and causal partners for
+       older MSM, as a 2 by 3 matrix.
+#@param mdeg.inst.B Mean degree, or rate, of one-off partnerships per day
+#       for black MSM.
+#@param mdeg.inst.W Mean degree, or rate, of one-off partnerships per day
+#       for white MSM.}
 
-\item{deg.mp.W}{Degree distribution matrix for main and causal partners for
-white MSM, as a 2 by 3 matrix.}
+\item{mdeg.inst.Y}{Mean degree, or rate, of one-off partnerships per day
+for young MSM.}
 
-\item{mdeg.inst.B}{Mean degree, or rate, of one-off partnerships per day
-for black MSM.}
-
-\item{mdeg.inst.W}{Mean degree, or rate, of one-off partnerships per day
-for white MSM.}
+\item{mdeg.inst.O}{Mean degree, or rate, of one-off partnerships per day
+for older MSM.}
 
 \item{qnts.B}{Means of one-off rates split into quintiles for white MSM. Use
 \code{NA} to ignore these quantiles in the target statistics.}
@@ -66,10 +70,10 @@ partnerships.}
 
 \item{diss.pers}{Dissolution model formula for casual partnerships.}
 
-\item{durs.main}{Vector of length 3 with the duration of BB, BW, and WW main
+\item{durs.main.age}{Vector of length 3 with the duration of YY, YO, and OO main
 partnerships in days.}
 
-\item{durs.pers}{Vector of length 3 with the duration of BB, BW, and WW
+\item{durs.pers.age}{Vector of length 3 with the duration of YY, YO, and OO
 casual partnerships in days.}
 
 \item{ages}{Integer vector of ages in years that defines range of possible
@@ -79,13 +83,29 @@ initial ages in the population.}
 mortality rate for persons within that age slot, for black MSM.}
 
 \item{asmr.W}{Vector of length 40 defining the age-specific
-mortality rate for persons within that age slot, for white MSM.}
+       mortality rate for persons within that age slot, for white MSM.
+#@param role.B.prob Vector of length 3 for the probability of sexual role as
+#       insertive, receptive, and versatile, for black MSM.
+#@param role.W.prob Vector of length 3 for the probability of sexual role as
+#       insertive, receptive, and versatile, for white MSM.}
 
-\item{role.B.prob}{Vector of length 3 for the probability of sexual role as
-insertive, receptive, and versatile, for black MSM.}
+\item{role.Y.prob}{Vector of length 3 for the probability of sexual role as
+insertive, receptive, and versatile, for young MSM.}
 
-\item{role.W.prob}{Vector of length 3 for the probability of sexual role as
-insertive, receptive, and versatile, for white MSM.}
+\item{role.O.prob}{Vector of length 3 for the probability of sexual role as
+insertive, receptive, and versatile, for older MSM.}
+
+\item{method}{Method for calculating target statistics by race, with options of
+       \code{2} for preserving race-specific statistics and \code{1} for
+       averaging over the statistics and dropping the race-specific terms.
+#@param num.B Population size of black MSM.
+#@param num.W Population size of white MSM.}
+
+\item{durs.main}{Vector of length 3 with the duration of BB, BW, and WW main
+partnerships in days.}
+
+\item{durs.pers}{Vector of length 3 with the duration of BB, BW, and WW
+casual partnerships in days.}
 }
 \description{
 Calculates the target statistics for the formation and dissolution
