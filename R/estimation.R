@@ -177,8 +177,8 @@ calc_nwstats_msm <- function(time.unit = 7,
   #  deg.pers <- apportion_lr(num, 0:2, colSums(deg.mp.W)) #same deg matrix for B & W
   #}
   
-  #overall deg.pers for fitting model;
-  deg.pers.overall <- apportion_lr(num, 0:2, colSums(deg.mp.overall)) 
+  #gives all 10000 people an attribute of casual 0,1,or 2;
+  deg.pers.overall <- apportion_lr(num, 0:2, colSums(deg.mp.overall)) #mean=0.3915
   
   #gives all 10000 people an attribute of age+casual 0,1,or 2;
   deg.pers.Y <- apportion_lr(num.Y, c("Y0", "Y1", "Y2"), colSums(deg.mp.Y))  #colsum = totals of 0C, 1C, 2C for Young;
@@ -767,17 +767,26 @@ assign_degree <- function(nw, deg.type, nwstats) {
   # }
   
 
+  # if (deg.type == "main") {
+  #   attr.name <- "deg.main"
+  #   dist.Y <- rowSums(nwstats$deg.mp.overall) #deg.mp.Y     #0.716 0.284, % of pp with 0M, 1M
+  #   dist.O <- rowSums(nwstats$deg.mp.overall) #deg.mp.O
+  # }
+  # if (deg.type == "pers") {
+  #   attr.name <- "deg.pers"
+  #   dist.Y <- colSums(nwstats$deg.mp.overall) #deg.mp.Y     #0.6970 0.2145 0.0885, % of pp with 0C, 1C, 2C
+  #   dist.O <- colSums(nwstats$deg.mp.overall) #deg.mp.O
+  # }
   if (deg.type == "main") {
     attr.name <- "deg.main"
-    dist.Y <- rowSums(nwstats$deg.mp.overall) #deg.mp.Y     #0.716 0.284, % of pp with 0M, 1M
-    dist.O <- rowSums(nwstats$deg.mp.overall) #deg.mp.O
+    attr.name2 <- "deg.main.age"
+    dist <- rowSums(nwstats$deg.mp.overall) #deg.mp.Y     #0.716 0.284, % of pp with 0M, 1M
   }
   if (deg.type == "pers") {
     attr.name <- "deg.pers"
-    dist.Y <- colSums(nwstats$deg.mp.overall) #deg.mp.Y     #0.6970 0.2145 0.0885, % of pp with 0C, 1C, 2C
-    dist.O <- colSums(nwstats$deg.mp.overall) #deg.mp.O
+    attr.name2 <- "deg.pers.age"
+    dist <- colSums(nwstats$deg.mp.overall) #deg.mp.Y     #0.6970 0.2145 0.0885, % of pp with 0C, 1C, 2C
   }
-  
   
   
   # if (!isTRUE(all.equal(sum(colSums(nwstats$deg.mp.B)), 1, tolerance = 5e-6))) {
@@ -788,14 +797,18 @@ assign_degree <- function(nw, deg.type, nwstats) {
   #   stop("W degree distributions do not sum to 1")
   # }
   
-  if (!isTRUE(all.equal(sum(colSums(nwstats$deg.mp.Y)), 1, tolerance = 5e-6))) {
-    stop("Y degree distributions do not sum to 1")
-  }
+  # if (!isTRUE(all.equal(sum(colSums(nwstats$deg.mp.Y)), 1, tolerance = 5e-6))) {
+  #   stop("Y degree distributions do not sum to 1")
+  # }
+  # 
+  # if (!isTRUE(all.equal(sum(colSums(nwstats$deg.mp.O)), 1, tolerance = 5e-6))) {
+  #   stop("O degree distributions do not sum to 1")
+  # }
+  if (!isTRUE(all.equal(sum(colSums(nwstats$deg.mp.overall)), 1, tolerance = 5e-6))) {
+       stop("Degree distributions do not sum to 1")
+     }
   
-  if (!isTRUE(all.equal(sum(colSums(nwstats$deg.mp.O)), 1, tolerance = 5e-6))) {
-    stop("O degree distributions do not sum to 1")
-  }
-  
+  #browser()
   
   # race <- get.vertex.attribute(nw, "race")
   # vB <- which(race == "B")
@@ -811,17 +824,21 @@ assign_degree <- function(nw, deg.type, nwstats) {
   
   race <- get.vertex.attribute(nw, "race")
   agecat2 <- get.vertex.attribute(nw, "agecat2")
-  vY <- which(agecat2 == "Y") #creates vector with all numbers of nodes with agecat value;
+  vY <- which(agecat2 == "Y") #creates vector with all id numbers of nodes with that agecat value;
   vO <- which(agecat2 == "O")
-  nY <- length(vY)
+  nY <- length(vY)  #total # of nodes w/ Y
   nO <- length(vO)
+  nT<-nY+nO
   
-  num.degrees.Y <- length(dist.Y)
-  num.degrees.O <- length(dist.O)
+  #num.degrees.Y <- length(dist.Y)
+  #num.degrees.O <- length(dist.O)
+  num.degrees <- length(dist)
   
-  deg.Y <- apportion_lr(nY, 0:(num.degrees.Y - 1), dist.Y, shuffled = TRUE) #vector of degrees of nodes;
-  deg.O <- apportion_lr(nO, 0:(num.degrees.O - 1), dist.O, shuffled = TRUE)
-  
+ #  deg.Y <- apportion_lr(nY, 0:(num.degrees.Y - 1), dist.Y, shuffled = TRUE) #vector of degrees of nodes;
+ #  deg.O <- apportion_lr(nO, 0:(num.degrees.O - 1), dist.O, shuffled = TRUE)
+  deg <- apportion_lr(nT, 0:(num.degrees - 1), dist, shuffled = TRUE)
+  #deg.age <- c(apportion_lr(nY, 0:(num.degrees.Y - 1), dist.Y, shuffled = TRUE),
+   #            apportion_lr(nO, 0:(num.degrees.O - 1), dist.O, shuffled = TRUE))
   
   # if (nwstats$method == 2) {
   #   deg.B <- paste0("B", deg.B)
@@ -833,14 +850,40 @@ assign_degree <- function(nw, deg.type, nwstats) {
   # 
   # return(nw)
   
+  # if agecat=Y then do;
+  # deg.age=paste0("Y", deg);
+  # else if agecat=Y then do;
+  # deg.age=paste0("O", deg);
   
-  deg.Y <- paste0("Y", deg.Y) #labels deg.Y as Y+deg (Y0,Y1,Y2)
-  deg.O <- paste0("O", deg.O)
+   #deg[agecat2=="Y"] <- paste0("Y", deg)
+   #deg[agecat2=="O"] <- paste0("O", deg)
+    #deg.age <- paste0("Y", deg.Y) #labels deg.Y as Y+deg (Y0,Y1,Y2) for casual
+   #deg.O <- paste0("O", deg.O)
   
+  #deg.Y <- paste0("Y", deg.Y)
+  #deg.O <- paste0("O", deg.O)
   
-  nw <- set.vertex.attribute(nw, attrname = attr.name, value = deg.Y, v = vY) #attr.name = pers;
-  nw <- set.vertex.attribute(nw, attrname = attr.name, value = deg.O, v = vO)
+  #  if (agecat2 == "Y") {
+  #    deg.agept <- paste0("Y", deg)
+  # }
+  #  if (agecat2 == "O") {
+  #    deg.agept<-paste0("O", deg)
+  #  }
   
+  deg <- paste0(deg)
   
+  deg.Y <- deg[agecat2=="Y"]
+  deg.O <- deg[agecat2=="O"]
+  
+  deg.Y <- paste0("Y",deg[agecat2=="Y"])
+  deg.O <- paste0("O",deg[agecat2=="O"])
+  
+  nw <- set.vertex.attribute(nw, attrname = attr.name, value = deg, v = seq_len(network.size(nw))) #attr.name = deg.pers;
+  nw <- set.vertex.attribute(nw, attrname = attr.name2, value = deg.Y, v = vY)
+  nw <- set.vertex.attribute(nw, attrname = attr.name2, value = deg.O, v = vO)
+  #nw <- set.vertex.attribute(nw, attrname = attr.name, value = deg.Y, v = vY)
+  #nw <- set.vertex.attribute(nw, attrname = attr.name, value = deg.O, v = vO)
+  
+
   return(nw)
 }

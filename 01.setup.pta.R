@@ -285,7 +285,6 @@ st <- calc_nwstats_msm(
   num.O = num.O, 
   #deg.mp.B = deg.mp.B, 
   #deg.mp.W = deg.mp.W,
-  #deg.mp.overall = deg.mp.overall,
   deg.mp.Y = deg.mp.Y,
   deg.mp.O = deg.mp.O,
   #mdeg.inst.B = mdeg.inst.B, 

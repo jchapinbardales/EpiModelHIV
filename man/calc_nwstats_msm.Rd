@@ -7,7 +7,7 @@
 calc_nwstats_msm(time.unit = 7, num.Y, num.O, deg.mp.Y, deg.mp.O, mdeg.inst.Y,
   mdeg.inst.O, qnts.B, qnts.W, prop.hom.mpi.B, prop.hom.mpi.W,
   balance = "mean", sqrt.adiff.BB, sqrt.adiff.WW, sqrt.adiff.BW, diss.main,
-  diss.pers, durs.main.age, durs.pers.age, ages, asmr.B, asmr.W, role.Y.prob,
+  diss.pers, durs.main, durs.pers, ages, asmr.B, asmr.W, role.Y.prob,
   role.O.prob)
 }
 \arguments{
@@ -70,10 +70,10 @@ partnerships.}
 
 \item{diss.pers}{Dissolution model formula for casual partnerships.}
 
-\item{durs.main.age}{Vector of length 3 with the duration of YY, YO, and OO main
+\item{durs.main}{Vector of length 3 with the duration of BB, BW, and WW main
 partnerships in days.}
 
-\item{durs.pers.age}{Vector of length 3 with the duration of YY, YO, and OO
+\item{durs.pers}{Vector of length 3 with the duration of BB, BW, and WW
 casual partnerships in days.}
 
 \item{ages}{Integer vector of ages in years that defines range of possible
@@ -101,10 +101,10 @@ insertive, receptive, and versatile, for older MSM.}
 #@param num.B Population size of black MSM.
 #@param num.W Population size of white MSM.}
 
-\item{durs.main}{Vector of length 3 with the duration of BB, BW, and WW main
+\item{durs.main.age}{Vector of length 3 with the duration of YY, YO, and OO main
 partnerships in days.}
 
-\item{durs.pers}{Vector of length 3 with the duration of BB, BW, and WW
+\item{durs.pers.age}{Vector of length 3 with the duration of YY, YO, and OO
 casual partnerships in days.}
 }
 \description{
