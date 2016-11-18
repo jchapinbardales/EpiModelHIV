@@ -3,10 +3,12 @@
 suppressMessages(library(EpiModelHIV)) 
 rm(list = ls()) 
 
-load("H:/a_PhD Second Year/EpiModel/EpiModelHIV-master/est/nwstats_pta.rda") 
+load("C:/Users/jchapi2/Documents/GitHub/EpiModelHIV/est/nwstats.rda") 
 
 # 1. Main Model ----------------------------------------------------------- 
 
+st$stats.m
+st$coef.diss.m
 
 # Initialize network 
 nw.main <- base_nw_msm(st) 
@@ -19,7 +21,7 @@ nw.main <- assign_degree(nw.main, deg.type = "pers", nwstats = st)
 # Formulas 
 formation.m <- ~edges + 
                 nodefactor("deg.pers") + 
-                nodefactor("agecat2") +
+                #nodefactor("deg.pers","agecat2") + 
                 absdiff("sqrt.age") + 
                 offset(nodematch("role.class", diff = TRUE, keep = 1:2)) 
 
@@ -37,7 +39,18 @@ fit.m <- netest(nw.main,
                 target.stats = st$stats.m, 
                 coef.diss = st$coef.diss.m, 
                 constraints = ~bd(maxout = 1), 
-                set.control.ergm = control.ergm(MPLE.max.dyad.types = 1e10, MCMLE.maxit = 250)) #normally 250
+                set.control.ergm = control.ergm(MPLE.max.dyad.types = 1e10, MCMLE.maxit = 250))
+
+
+# Main Diagnostics ------------------------------------------------------------- 
+# 
+dx <- netdx(est[[1]], nsims = 10000, ncores = 1, dynamic = FALSE,
+            nwstats.formula = ~edges +
+              nodefactor("deg.pers") + 
+              nodefactor("deg.pers","agecat2") + 
+              absdiff("sqrt.age") + 
+              offset(nodematch("role.class", diff = TRUE, keep = 1:2)))
+dx 
 
 
 # 2. Casual Model --------------------------------------------------------- 
@@ -53,7 +66,7 @@ nw.pers <- assign_degree(nw.pers, deg.type = "main", nwstats = st)
 
 # Formulas 
 formation.p <- ~edges + 
-                nodefactor("deg.main","agecat2") + 
+                #nodefactor("deg.main","agecat2") + 
                 concurrent + 
                 absdiff("sqrt.age") + 
                 offset(nodematch("role.class", diff = TRUE, keep = 1:2)) 
@@ -85,7 +98,7 @@ table(nw.inst %v% "deg.main", nw.inst %v% "deg.pers")
 # Formulas 
 formation.i <- ~edges + 
                 nodefactor(c("deg.main", "deg.pers")) + 
-                #nodefactor("deg.main","agecat2") +  ????
+                nodefactor("agecat2") +
                 nodefactor("riskg", base = 3) + 
                 absdiff("sqrt.age") + 
                 offset(nodematch("role.class", diff = TRUE, keep = 1:2)) 
@@ -100,10 +113,24 @@ fit.i <- netest(nw.inst,
 
 # Save data 
 est <- list(fit.m, fit.p, fit.i) 
-save(est, file = "H:/a_PhD Second Year/EpiModel/EpiModelHIV-master/est/fit_pta.rda") 
+save(est, file = "H:/a_PhD Second Year/EpiModel/EpiModelHIV/est/fit_pta.rda") 
 
 
 # Diagnostics ------------------------------------------------------------- 
 # 
-# dx <- netdx(est[[3]], nsims = 10000, ncores = 1, dynamic = FALSE) 
-# dx 
+ dx <- netdx(est[[3]], nsims = 10000, ncores = 1, dynamic = FALSE,
+             nwstats.formula = ~edges +
+               nodefactor(c("deg.main", "deg.pers")) + 
+               absdiff("sqrt.age") +
+               offset(nodematch("role.class", diff = TRUE, keep = 1:2)) +
+               concurrent +
+               nodefactor("riskg", base = 3) + 
+               concurrent +
+               nodefactor("deg.main","agecat2") +
+               nodefactor("deg.pers","agecat2") +
+               nodefactor("deg.inst","agecat2") )
+ dx 
+ 
+ st$stats.m
+ st$stats.p
+ st$stats.i
