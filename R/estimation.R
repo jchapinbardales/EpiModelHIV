@@ -1,5 +1,3 @@
-
-
 # MSM -----------------------------------------------------------------
 
 #' @title Calculate Target Statistics for Network Model Estimation
@@ -11,8 +9,8 @@
 #' @param method Method for calculating target statistics by race, with options of
 #'        \code{2} for preserving race-specific statistics and \code{1} for
 #'        averaging over the statistics and dropping the race-specific terms.
-#' #@param num.B Population size of black MSM.
-#' #@param num.W Population size of white MSM.
+#' @param num.B Population size of black MSM.
+#' @param num.W Population size of white MSM.
 #' @param num.Y Population size of Young MSM (15-24).
 #' @param num.O Population size of Older MSM (25-40).
 #' #@param deg.mp.B Degree distribution matrix for main and casual partners for
@@ -94,31 +92,36 @@
 #'
 calc_nwstats_msm <- function(time.unit = 7,
                              #method = 2,
-                             num.Y,
-                             num.O,
+                             num.B, 
+                             num.W, 
+                             num.Y, 
+                             num.O, 
                              deg.mp.Y,
                              deg.mp.O,
+                             deg.mp.overall,
                              mdeg.inst.Y,
                              mdeg.inst.O,
-                             qnts.B,
-                             qnts.W,
-                             prop.hom.mpi.B,
-                             prop.hom.mpi.W,
-                             balance = "mean",
+                             mdeg.inst.overall,
+                             qnts.B, 
+                             qnts.W, 
+                             prop.hom.mpi.B, 
+                             prop.hom.mpi.W, 
+                             balance = "mean", 
                              sqrt.adiff.BB,
                              sqrt.adiff.WW,
-                             sqrt.adiff.BW,
-                             diss.main,
-                             diss.pers,
-                             durs.main,
+                             sqrt.adiff.BW, 
+                             diss.main, 
+                             diss.pers, 
+                             durs.main, 
                              durs.pers,
-                             #durs.main.age,
+                             #durs.main.age, 
                              #durs.pers.age,
-                             ages,
-                             asmr.B,
-                             asmr.W,
+                             ages, 
+                             asmr.B, 
+                             asmr.W, 
                              role.Y.prob,
-                             role.O.prob) {
+                             role.O.prob,
+                             role.prob.overall) {
   
   if (sum(deg.mp.Y) != 1) {
     stop("deg.mp.Y must sum to 1.")
@@ -127,27 +130,7 @@ calc_nwstats_msm <- function(time.unit = 7,
     stop("deg.mp.O must sum to 1.")
   }
   
-  # if (sum(deg.mp.B) != 1) {
-  #   stop("deg.mp.B must sum to 1.")
-  # }
-  # if (sum(deg.mp.W) != 1) {
-  #   stop("deg.mp.W must sum to 1.")
-  # }
-  # if (!(method %in% 1:2)) {
-  #   stop("method must either be 1 for one-race models or 2 for two-race models", call. = FALSE)
-  # }
   
-  # if (sum(deg.mp.Y) != 1) {
-  #   stop("deg.mp.Y must sum to 1.")
-  # }
-  # if (sum(deg.mp.O) != 1) {
-  #   stop("deg.mp.O must sum to 1.")
-  # }
-  # if (!(method %in% 1:3)) {
-  #   stop("method must either be 1 for one-race models, 2 for two-race models,
-  #        or 3 for two-age, one-race models", call. = FALSE)
-  # }
-  # 
   
   #NEW PT & AGE VARS
   #num.Y = num.Y, 
@@ -178,7 +161,7 @@ calc_nwstats_msm <- function(time.unit = 7,
   #}
   
   #gives all 10000 people an attribute of casual 0,1,or 2;
-  deg.pers.overall <- apportion_lr(num, 0:2, colSums(deg.mp.overall)) #mean=0.3915
+  deg.pers.overall <- apportion_lr(num, 0:2, colSums(deg.mp.overall)) #mean=0.3986
   
   #gives all 10000 people an attribute of age+casual 0,1,or 2;
   deg.pers.Y <- apportion_lr(num.Y, c("Y0", "Y1", "Y2"), colSums(deg.mp.Y))  #colsum = totals of 0C, 1C, 2C for Young;
@@ -197,7 +180,7 @@ calc_nwstats_msm <- function(time.unit = 7,
   #}
   
   #overall deg.main for fitting model;
-  deg.main.overall <- apportion_lr(num, 0:1, rowSums(deg.mp.overall))
+  deg.main.overall <- apportion_lr(num, 0:1, rowSums(deg.mp.overall)) #mean=0.2882
   
   #gives all 10000 people an attribute of age+main 0, or 1;
   deg.main.Y <- apportion_lr(num.Y, c("Y0", "Y1"), rowSums(deg.mp.Y))  #rowsum = totals of 0M, 1M for Young;
@@ -219,7 +202,7 @@ calc_nwstats_msm <- function(time.unit = 7,
   totdeg.m.by.dp.overall <- c(num * deg.mp.overall[2, ])
   #num * % of people with main partner by deg casual
   #number of people with a main partner among those who have 0,1,2 casual partners
-  #2150  480  210
+  #2183.982  487.842  210.000
   
   totdeg.m.by.dp <- c(num.Y * deg.mp.Y[2, ], num.O * deg.mp.O[2, ])  #num.Y * % of people with main partner (across row2)
   #745.986  166.185   77.553 1437.996  321.657  132.447
@@ -230,7 +213,7 @@ calc_nwstats_msm <- function(time.unit = 7,
   
   # Persons in partnerships by race
   # if (method == 2) {
-     #totdeg.m.by.race <- c(sum(totdeg.m.by.dp[1:3]), sum(totdeg.m.by.dp[4:6]))
+  #totdeg.m.by.race <- c(sum(totdeg.m.by.dp[1:3]), sum(totdeg.m.by.dp[4:6]))
   # }
   
   # dont need unless want homophily more by age beyond sqrtabsdiff
@@ -250,7 +233,7 @@ calc_nwstats_msm <- function(time.unit = 7,
   #1440.912
   
   edges.m.overall <- (sum(totdeg.m.by.dp.overall)) / 2  #sum of number of main partners across those with 0/1/2 casuals
-  #1420;
+  #1440.912--makes sense add up number of main across levels of casuals by age=same sum overall;
   
   
   # Mixing
@@ -258,9 +241,9 @@ calc_nwstats_msm <- function(time.unit = 7,
   #   # Number of mixed-race partnerships, with balancing to decide
   #   edges.m.B2W <- totdeg.m.by.race[1] * (1 - prop.hom.mpi.B[1])
   #   edges.m.W2B <- totdeg.m.by.race[2] * (1 - prop.hom.mpi.W[1])
-   #  edges.het.m <- switch(balance,
+  #  edges.het.m <- switch(balance,
   #                         black = edges.m.B2W,
- #                          white = edges.m.W2B,
+  #                          white = edges.m.W2B,
   #                         mean = (edges.m.B2W + edges.m.W2B) / 2)
   # 
   #   # Number of same-race partnerships
@@ -278,21 +261,25 @@ calc_nwstats_msm <- function(time.unit = 7,
   #sqrt.adiff.m <- edges.m * mean(c(sqrt.adiff.BB[1], sqrt.adiff.BW[1], sqrt.adiff.WW[1]))
   # } #668.1029
   
- sqrt.adiff.m <- edges.m * mean(c(sqrt.adiff.BB[1], sqrt.adiff.BW[1], sqrt.adiff.WW[1]))
-#668.1029
- 
- sqrt.adiff.m.overall <- edges.m.overall * mean(c(sqrt.adiff.BB[1], sqrt.adiff.BW[1], sqrt.adiff.WW[1]))
- #658.4067
- 
- 
+  #Number of YOUNG men with main partner
+  
+  sqrt.adiff.m <- edges.m * mean(c(sqrt.adiff.BB[1], sqrt.adiff.BW[1], sqrt.adiff.WW[1]))
+  #668.1029
+  
+  sqrt.adiff.m.overall <- edges.m.overall * mean(c(sqrt.adiff.BB[1], sqrt.adiff.BW[1], sqrt.adiff.WW[1]))
+  #668.1029
+  
+  totdeg.m.Y <- c(num.Y * sum(deg.mp.Y[2, ]))
+  #989.724
+  
   # Compile target stats
   # if (method == 2) {
   #  stats.m <- c(edges.m, edges.nodemix.m[2:3], totdeg.m.by.dp[c(2:3, 5:6)], sqrt.adiff.m)
   # }
- #if (method == 1) {
-  stats.m.overall <- c(edges.m.overall, totdeg.m.by.dp.overall[2:3], sqrt.adiff.m.overall)
-  # 1420.0000            480.0000  210.0000  668.1029 
-  # edges,    #Mp people w/ 1C      2C        sqrtage (no change)
+  #if (method == 1) {
+  stats.m.overall <- c(edges.m.overall, totdeg.m.by.dp.overall[2:3], totdeg.m.Y, sqrt.adiff.m.overall)
+  # 1440.9120  487.8420  210.0000  668.1029                          #989.724    668.1029
+  # edges,    #Mp people w/ 1C      2C                               #Ypp w/ Mp  sqrtage (no change)
   
   # }
   # if (method == 1) {
@@ -312,12 +299,18 @@ calc_nwstats_msm <- function(time.unit = 7,
   #     Length of "target.stats" is 8 but should be 7.
   
   # Dissolution model
-  exp.mort <- (mean(asmr.B[ages]) + mean(asmr.W[ages])) / 2
+  exp.mort <- (mean(asmr.B[ages]) + mean(asmr.W[ages])) / 2 #3.588345e-05
   
   coef.diss.m <- dissolution_coefs(dissolution = diss.main,
                                    duration = durs.main / time.unit, #durs.main.age, vector of main durations;
                                    d.rate = exp.mort)
-  
+  # Dissolution Coefficients
+  # =======================
+  #   Dissolution Model: ~offset(edges)
+  # Target Statistics: 23.65325
+  # Crude Coefficient: 3.120303
+  # Mortality/Exit Rate: 3.588345e-05
+  # Adjusted Coefficient: 3.122002
   
   
   # Casual partnerships -----------------------------------------------------
@@ -331,8 +324,13 @@ calc_nwstats_msm <- function(time.unit = 7,
   #   totdeg.p.by.dm <- c(num * deg.mp.B[, 2] + num * deg.mp.B[, 3] * 2)
   # }
   totdeg.p.by.dm.overall <- c(num * deg.mp.overall[, 2] + num * deg.mp.overall[, 3] * 2)
-  #3015  900
-  #0M    1M - number of casual partners among main 0,1
+  #3079.043  907.842
+  #0M        1M - number of casual partners among main 0,1
+  
+  totdeg.p.by.Y<- c(num.Y * sum(deg.mp.Y[, 2]) + num.Y * sum(deg.mp.Y[, 3]) * 2)
+  #1344.252, rather than summing here though, could have left as for overall,
+  #gotten 2 values (0MY, 1MY), and then just taken totdeg.p.by.Y[2] in stats.p.overall
+  
   
   totdeg.p.by.dm <- c(num.Y * deg.mp.Y[, 2] + num.Y * deg.mp.Y[, 3] * 2,
                       num.O * deg.mp.O[, 2] + num.O * deg.mp.O[, 3] * 2)
@@ -360,7 +358,7 @@ calc_nwstats_msm <- function(time.unit = 7,
   # }
   
   conc.p.overall <- sum(deg.mp.overall[, 3] * num)
-  #885 - # of pp(regardless of main) who had 2 concurrent Casuals;
+  #920.289 - # of pp(regardless of main) who had 2 concurrent Casuals;
   
   conc.p.by.age <- c(sum(deg.mp.Y[, 3]) * num.Y, sum(deg.mp.O[, 3]) * num.O)
   #sum deg of Y-0M,1M among those with 2C
@@ -372,7 +370,7 @@ calc_nwstats_msm <- function(time.unit = 7,
   #1993.442
   
   edges.p.overall <- sum(totdeg.p.by.dm.overall) / 2
-  #1957.5
+  #1993.442 -- makes sense, adding up across ages should be same as overall
   
   # Mixing
   # if (method == 2) {
@@ -402,7 +400,7 @@ calc_nwstats_msm <- function(time.unit = 7,
   #1168.822
   
   sqrt.adiff.p.overall <- edges.p.overall * mean(c(sqrt.adiff.BB[2], sqrt.adiff.BW[2], sqrt.adiff.WW[2]))
-  #1147.748
+  #1168.822
   
   # Compile target statistics
   # if (method == 2) {
@@ -413,9 +411,11 @@ calc_nwstats_msm <- function(time.unit = 7,
   #   stats.p <- c(edges.p, totdeg.p.by.dm[2], conc.p, sqrt.adiff.p)
   # }
   
-  stats.p.overall <- c(edges.p.overall, totdeg.p.by.dm.overall[2], conc.p.overall, sqrt.adiff.p.overall)
-  #1957.500  900.000            885.000 1168.822
-  #edges     #Cpartners of 1M   conc    sqrtage
+  #stats.p.overall <- c(edges.p.overall, totdeg.p.by.dm.overall[2], totdeg.p.by.Y, conc.p.overall, sqrt.adiff.p.overall)
+  #1993.442  907.842            1344.252                              920.289 1168.822
+  #edges     #Cpartners of 1M   #Cpartners among Y (summed over Mp)   conc    sqrtage
+  stats.p.overall <- c(edges.p.overall, totdeg.p.by.dm.overall[2], totdeg.p.by.Y, conc.p.by.age[1:2], sqrt.adiff.p.overall)
+
   
   stats.p <- c(edges.p, totdeg.p.by.dm[c(2, 4)],  #what about totdeg.p.by.age? is this only used if going to account for mixing beyond sq root?
                conc.p.by.age, sqrt.adiff.p)       #i think don't need unless mixing beyond sqrtabsdiff
@@ -430,6 +430,13 @@ calc_nwstats_msm <- function(time.unit = 7,
                                    duration = durs.pers / time.unit, #durs.pers, when race;
                                    d.rate = exp.mort)
   
+  # Dissolution Coefficients
+  # =======================
+  #   Dissolution Model: ~offset(edges)
+  # Target Statistics: 14.20763
+  # Crude Coefficient: 2.580795
+  # Mortality/Exit Rate: 3.588345e-05
+  # Adjusted Coefficient: 2.581815
   
   
   # Instant partnerships ----------------------------------------------------
@@ -444,8 +451,8 @@ calc_nwstats_msm <- function(time.unit = 7,
   # }
   
   num.inst.overall <- num * deg.mp.overall * mdeg.inst * time.unit
-  #317.1391 141.71897 58.56874
-  #125.1257  30.70032 13.43139
+  #320.1473 146.56291 60.96462
+  #127.1913  28.76227 12.38121
   #one off rates by PT combo overall
   
   num.inst.Y <- num.Y * deg.mp.Y * mdeg.inst.Y * time.unit  
@@ -491,14 +498,14 @@ calc_nwstats_msm <- function(time.unit = 7,
   #239.0139          454.1879  -- summed # one-off partners across M/C matrix
   
   totdeg.i.overall <- sum(num.inst.overall)
-  #686.6843
+  #696.0096
   
   # Number of partnerships
   edges.i <- sum(totdeg.i) / 2
   #346.6009
   
   edges.i.overall <- sum(totdeg.i.overall) / 2
-  #343.3421
+  #348.0048 -- hm, why are edges overall and by age for M and C but not I?
   
   # Mixing
   # if (method == 2) {
@@ -529,7 +536,7 @@ calc_nwstats_msm <- function(time.unit = 7,
   #188.4354
   
   sqrt.adiff.i.overall <- edges.i.overall * mean(c(sqrt.adiff.BB[3], sqrt.adiff.BW[3], sqrt.adiff.WW[3]))
-  #186.6637
+  #189.1986
   
   # if (!is.na(qnts.B[1]) & !is.na(qnts.W[1])) {
   #   if (method == 2) {
@@ -575,7 +582,7 @@ calc_nwstats_msm <- function(time.unit = 7,
   # num.riskg[-3], doesn't include the middle group (75.13) -- not sure why?  sqrt.adiff.i
   
   #stats.i.overall 
-  #343.34213  125.12570 141.71897  30.70032  58.56874  13.43139   0.00000  14.05786 142.73906 441.29450 186.66367
+  #348.00482  127.19130 146.56291  28.76227  60.96462  12.38121   0.00000  14.05786 142.73906 441.29450 189.19862
   #edges      Y1M,0C    Y0M,1C     Y1M,1C    Y0M,2C    Y1M,2C     num.riskg[-3]                         sqrt.adiff.i
   
   # Compile results ---------------------------------------------------------
@@ -745,12 +752,12 @@ base_nw_msm <- function(nwstats) {
 #' @export
 #'
 assign_degree <- function(nw, deg.type, nwstats) {
- 
+  
   #trying to do diagnostics on the fitted network with no degrees by PT -- may 
   # need to change this below to be deg.mp.overall to get correct assigned degrees.
   # above should all work, no degree variables in the base network.
   
-   
+  
   if (!("network" %in% class(nw))) {
     stop("nw must be of class network")
   }
@@ -766,7 +773,7 @@ assign_degree <- function(nw, deg.type, nwstats) {
   #   dist.W <- colSums(nwstats$deg.mp.W)
   # }
   
-
+  
   # if (deg.type == "main") {
   #   attr.name <- "deg.main"
   #   dist.Y <- rowSums(nwstats$deg.mp.overall) #deg.mp.Y     #0.716 0.284, % of pp with 0M, 1M
@@ -805,8 +812,8 @@ assign_degree <- function(nw, deg.type, nwstats) {
   #   stop("O degree distributions do not sum to 1")
   # }
   if (!isTRUE(all.equal(sum(colSums(nwstats$deg.mp.overall)), 1, tolerance = 5e-6))) {
-       stop("Degree distributions do not sum to 1")
-     }
+    stop("Degree distributions do not sum to 1")
+  }
   
   #browser()
   
@@ -834,11 +841,11 @@ assign_degree <- function(nw, deg.type, nwstats) {
   #num.degrees.O <- length(dist.O)
   num.degrees <- length(dist)
   
- #  deg.Y <- apportion_lr(nY, 0:(num.degrees.Y - 1), dist.Y, shuffled = TRUE) #vector of degrees of nodes;
- #  deg.O <- apportion_lr(nO, 0:(num.degrees.O - 1), dist.O, shuffled = TRUE)
+  #  deg.Y <- apportion_lr(nY, 0:(num.degrees.Y - 1), dist.Y, shuffled = TRUE) #vector of degrees of nodes;
+  #  deg.O <- apportion_lr(nO, 0:(num.degrees.O - 1), dist.O, shuffled = TRUE)
   deg <- apportion_lr(nT, 0:(num.degrees - 1), dist, shuffled = TRUE)
   #deg.age <- c(apportion_lr(nY, 0:(num.degrees.Y - 1), dist.Y, shuffled = TRUE),
-   #            apportion_lr(nO, 0:(num.degrees.O - 1), dist.O, shuffled = TRUE))
+  #            apportion_lr(nO, 0:(num.degrees.O - 1), dist.O, shuffled = TRUE))
   
   # if (nwstats$method == 2) {
   #   deg.B <- paste0("B", deg.B)
@@ -855,10 +862,10 @@ assign_degree <- function(nw, deg.type, nwstats) {
   # else if agecat=Y then do;
   # deg.age=paste0("O", deg);
   
-   #deg[agecat2=="Y"] <- paste0("Y", deg)
-   #deg[agecat2=="O"] <- paste0("O", deg)
-    #deg.age <- paste0("Y", deg.Y) #labels deg.Y as Y+deg (Y0,Y1,Y2) for casual
-   #deg.O <- paste0("O", deg.O)
+  #deg[agecat2=="Y"] <- paste0("Y", deg)
+  #deg[agecat2=="O"] <- paste0("O", deg)
+  #deg.age <- paste0("Y", deg.Y) #labels deg.Y as Y+deg (Y0,Y1,Y2) for casual
+  #deg.O <- paste0("O", deg.O)
   
   #deg.Y <- paste0("Y", deg.Y)
   #deg.O <- paste0("O", deg.O)
@@ -884,6 +891,6 @@ assign_degree <- function(nw, deg.type, nwstats) {
   #nw <- set.vertex.attribute(nw, attrname = attr.name, value = deg.Y, v = vY)
   #nw <- set.vertex.attribute(nw, attrname = attr.name, value = deg.O, v = vO)
   
-
+  
   return(nw)
 }

@@ -22,7 +22,7 @@ num.O <- 6307
 #done 11/1/2016
 
 # 
-# # mean/pers degree distributions matrices. 
+# # mean/pers degree distributions matrices by race. 
 # deg.mp.B <- deg.mp.W <- (matrix(c(0.506, 0.151, 0.053, 0.207, 0.061, 0.022),  #.15157=.152 and .054 in notes
 #                                 byrow = TRUE, nrow = 2) + 
 #                          matrix(c(0.435, 0.184, 0.095, 0.233, 0.033, 0.020),  #.021 in notes
@@ -38,11 +38,26 @@ deg.mp.Y <- matrix(c(0.509, 0.169, 0.054, 0.202, 0.045, 0.021),  #% 0MAIN0CAS,0M
 deg.mp.O <- matrix(c(0.455, 0.164, 0.081, 0.228, 0.051, 0.021),  
                    byrow = TRUE, nrow = 2)
 
-#overall deg.mp for fitting model;
-deg.mp.overall <-   (matrix(c(0.509, 0.169, 0.054, 0.202, 0.045, 0.021),  
-                              byrow = TRUE, nrow = 2) + 
-                     matrix(c(0.455, 0.164, 0.081, 0.228, 0.051, 0.021),  
-                              byrow = TRUE, nrow = 2))/2
+#overall deg.mp for fitting model - not 50/50 pop so weight by size of age grps;
+deg.mp.overall <-   ((matrix(c(0.509, 0.169, 0.054, 0.202, 0.045, 0.021),  #Young
+                             byrow = TRUE, nrow = 2)*3693) + 
+                       (matrix(c(0.455, 0.164, 0.081, 0.228, 0.051, 0.021),  #Old
+                               byrow = TRUE, nrow = 2)*6307))/10000
+# deg.mp.overall
+# totdeg.m.by.dp.overall_ex <- c(10000 * deg.mp.overall[2, ])
+# totdeg.m.by.dp.overall_ex
+# totdeg.m.by.dp.overall_ex[2:3]
+# deg.mp.Y
+# totdeg.m.by.age <- c(num.Y * deg.mp.Y[2, ])
+# totdeg.m.by.age
+# sum(totdeg.m.by.age)
+# totdeg.m.Y <- c(num.Y * sum(deg.mp.Y[2, ]))
+# totdeg.m.Y
+# totdeg.m.O <- c(num.Y * sum(deg.mp.O[2, ]))
+# totdeg.m.O
+#totdeg.p.by.dm.overall <- c(10000 * deg.mp.overall[, 2] + 10000* deg.mp.overall[, 3] * 2)
+#totdeg.p.by.Y<- c(num.Y * sum(deg.mp.Y[, 2]) + num.Y * sum(deg.mp.Y[, 3]) * 2)
+#1344.252
 
 #done 11/1/2016
 # mean deg not captured by mean(deg.mp.Y)=0.166667, that just means the mean of 1/6 groups (ie. sum of 1/6 groups)
@@ -148,10 +163,11 @@ mdeg.inst.Y <- matrix(c(0.008519, 0.010380, 0.012908, 0.008292, 0.011870, 0.0118
 mdeg.inst.O <- matrix(c(0.010280, 0.013939, 0.011883, 0.008336, 0.006404, 0.006404),  
                       byrow = TRUE, nrow = 2)
 
-mdeg.inst <- (matrix(c(0.008519, 0.010380, 0.012908, 0.008292, 0.011870, 0.011870),  
-                      byrow = TRUE, nrow = 2) + 
-              matrix(c(0.010280, 0.013939, 0.011883, 0.008336, 0.006404, 0.006404),  
-                      byrow = TRUE, nrow = 2))/2
+#for overall, not 50/50 pop, so weight by size of age grps;
+mdeg.inst <- ((matrix(c(0.008519, 0.010380, 0.012908, 0.008292, 0.011870, 0.011870),  
+                     byrow = TRUE, nrow = 2)*3693) + 
+                (matrix(c(0.010280, 0.013939, 0.011883, 0.008336, 0.006404, 0.006404),  
+                       byrow = TRUE, nrow = 2)*6307))/10000
 
 
 #Daily probs of one-off partnership:
@@ -211,23 +227,31 @@ sqrt.adiff.WW <- c(0.520, 0.632, 0.590)
 ################## PT and AGE ############################
 #Y=18-24
 #O=25-40
+#I dont think this is right -- taking 1/mean(medianrates) does
+#not hit mean of median duration nor does ln1/mean(medianrates)
 rates.main <- mean(c(0.00787667250636301,  #YYMAIN
                      0.00285833888890699,  #YOMAIN
                      0.00182407152778933)) #OOMAIN
 rates.pers <- mean(c(0.00682903626167434,  #YYCAS
                      0.00835117085011982,  #YOCAS
                      0.00572848909553674)) #OOCAS
+durs.main <- (log(2))/rates.main  ## leaving as such but problematic
+durs.pers <- (log(2))/rates.pers  
 
-durs.main <- 1/rates.main  ## should be log2/rates.main.age if separated by age?
-durs.pers <- 1/rates.pers  ## should be log2/rates.main.age if separated by age?
-
+#for aggregate median durations by PT (not stratified by age)
+#I think it's best to just input the value of the mean of the median duration
+#and not perform and rate back-calculations;
+#this is still not a weight mean -- should it be?
 #=mean of median durations across ages, one duration for main, one duration for casual;
 #durs.main=238.8709 (YY 126, YO|OY 349, OO 548)
 #durs.pers=143.481 (YY 146, YO|OY 119, OO 174)
-
-## rates are based on median not mean, so shouldn't transformation to duration
-## be ln2/rate to hit the median? not 1/rate if going to have separated by age
-## and not taking mean of medians?
+#durs.main <- mean(c(111111,  #YYMAIN
+#                    111111,  #YOMAIN
+#                    111111))  #OOMAIN
+#durs.pers <- mean(c(111111,  #YYCAS
+#                    111111,  #YOCAS
+#                    111111))  #OOCAS
+                                    
 
 # durations separated out by age
 # rates.main.YY <- 0.00787667250636301  #YYMAIN
@@ -237,12 +261,12 @@ durs.pers <- 1/rates.pers  ## should be log2/rates.main.age if separated by age?
 # rates.pers.YO <- 0.00835117085011982  #YOCAS
 # rates.pers.OO <- 0.00572848909553674  #OOCAS
 # 
-# durs.main.YY <- 1/rates.main.YY
-# durs.main.YO <- 1/rates.main.YO
-# durs.main.OO <- 1/rates.main.OO
-# durs.pers.YY <- 1/rates.pers.YY
-# durs.pers.YO <- 1/rates.pers.YO
-# durs.pers.OO <- 1/rates.pers.OO
+# durs.main.YY <- (log(2))/rates.main.YY
+# durs.main.YO <- (log(2))/rates.main.YO
+# durs.main.OO <- (log(2))/rates.main.OO
+# durs.pers.YY <- (log(2))/rates.pers.YY
+# durs.pers.YO <- (log(2))/rates.pers.YO
+# durs.pers.OO <- (log(2))/rates.pers.OO
 
 
 # Age-sex-specific mortality rates 
@@ -269,28 +293,40 @@ asmr.W <- c(rep(0, 17),
 role.Y.prob <- c(0.13964, 0.32883, 0.53153)  #I, R, V
 role.O.prob <- c(0.2941, 0.2594, 0.4465)  #I, R, V 
 
-role.prob.overall <- (c(0.13964, 0.32883, 0.53153) + c(0.2941, 0.2594, 0.4465))/2
+role.prob.overall <- ((c(0.13964, 0.32883, 0.53153)*3693) 
+                      + (c(0.2941, 0.2594, 0.4465)*6307))/10000
 
 #done 11/1/2016
 
+# durs.main
+# 165.5727
+# durs.pers
+# 99.45343
+# deg.mp.overall
+#      [,1]      [,2]      [,3]
+# [1,] 0.4749422 0.1658465 0.0710289
+# [2,] 0.2183982 0.0487842 0.0210000
+# mdeg.inst
+#      [,1]        [,2]        [,3]
+# [1,] 0.009629663 0.012624661 0.012261532
+# [2,] 0.008319751 0.008422594 0.008422594
+# role.prob.overall
+# 0.2370579 0.2850405 0.4779016
 
 
 # Create meanstats 
 st <- calc_nwstats_msm( 
-  #method = 1, 
   time.unit = time.unit, 
-  #num.B = num.B, 
-  #num.W = num.W, 
+  num.B = num.B, 
+  num.W = num.W, 
   num.Y = num.Y, 
   num.O = num.O, 
-  #deg.mp.B = deg.mp.B, 
-  #deg.mp.W = deg.mp.W,
   deg.mp.Y = deg.mp.Y,
   deg.mp.O = deg.mp.O,
-  #mdeg.inst.B = mdeg.inst.B, 
-  #mdeg.inst.W = mdeg.inst.W, 
+  deg.mp.overall=deg.mp.overall,
   mdeg.inst.Y = mdeg.inst.Y,
   mdeg.inst.O = mdeg.inst.O,
+  mdeg.inst.overall = mdeg.inst.overall,
   qnts.B = qnts.B, 
   qnts.W = qnts.W, 
   prop.hom.mpi.B = prop.hom.mpi.B, 
@@ -302,16 +338,15 @@ st <- calc_nwstats_msm(
   diss.main = ~offset(edges), 
   diss.pers = ~offset(edges), 
   durs.main = durs.main, 
-  durs.pers = durs.pers, 
-  #durs.main.age = durs.main.age,
+  durs.pers = durs.pers,
+  #durs.main.age = durs.main.age, 
   #durs.pers.age = durs.pers.age,
   ages = ages, 
   asmr.B = asmr.B, 
   asmr.W = asmr.W, 
-  #role.B.prob = role.B.prob, 
-  #role.W.prob = role.W.prob #,
   role.Y.prob = role.Y.prob,
-  role.O.prob = role.O.prob
+  role.O.prob = role.O.prob,
+  role.prob.overall=role.prob.overall
 ) 
 
 st
@@ -377,51 +412,3 @@ st$stats.p
 # Adjusted Coefficient: 2.971747
 
 
-
-
-
-
-
-
-
-
-
-
-
-# RACE Looks like this:
-# Network Statistics Summary
-# ==========================
-#   Mean degree frequencies by race
-# Black (0/1) 0.712 0.288
-# White (0/1): 0.712 0.288
-# 
-# Casual degree frequencies by race
-# Black (0/1/2) 0.6905 0.2145 0.095
-# White (0/1/2): 0.6905 0.2145 0.095
-# 
-# Main network model target statistics:
-#   1440 470 210 667.68
-# 
-# Casual network model target statistics:
-#   2022.5 890 950 1185.859
-# 
-# Instant network model target statistics:
-#   338.5872 123.6851 146.3925 25.93342 63.47831 11.58727 0 14 142.8 441 184.0786
-
-# IE.  With nothing specified in the dissolution models (just offset), based
-#      on the main duration/casual duration, this is what we should expect?
-# Main Model Dissolution Coefficients
-# =======================
-#   Dissolution Model: ~offset(edges)
-# Target Statistics: 58.14292
-# Crude Coefficient: 4.045555
-# Mortality/Exit Rate: 3.588345e-05
-# Adjusted Coefficient: 4.049737
-# 
-# Casual Model Dissolution Coefficients
-# =======================
-#   Dissolution Model: ~offset(edges)
-# Target Statistics: 23.74488
-# Crude Coefficient: 3.12434
-# Mortality/Exit Rate: 3.588345e-05
-# Adjusted Coefficient: 3.126046

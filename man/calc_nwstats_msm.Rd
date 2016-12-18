@@ -4,14 +4,18 @@
 \alias{calc_nwstats_msm}
 \title{Calculate Target Statistics for Network Model Estimation}
 \usage{
-calc_nwstats_msm(time.unit = 7, num.Y, num.O, deg.mp.Y, deg.mp.O, mdeg.inst.Y,
-  mdeg.inst.O, qnts.B, qnts.W, prop.hom.mpi.B, prop.hom.mpi.W,
-  balance = "mean", sqrt.adiff.BB, sqrt.adiff.WW, sqrt.adiff.BW, diss.main,
-  diss.pers, durs.main, durs.pers, ages, asmr.B, asmr.W, role.Y.prob,
-  role.O.prob)
+calc_nwstats_msm(time.unit = 7, num.B, num.W, num.Y, num.O, deg.mp.Y,
+  deg.mp.O, deg.mp.overall, mdeg.inst.Y, mdeg.inst.O, mdeg.inst.overall, qnts.B,
+  qnts.W, prop.hom.mpi.B, prop.hom.mpi.W, balance = "mean", sqrt.adiff.BB,
+  sqrt.adiff.WW, sqrt.adiff.BW, diss.main, diss.pers, durs.main, durs.pers,
+  ages, asmr.B, asmr.W, role.Y.prob, role.O.prob, role.prob.overall)
 }
 \arguments{
 \item{time.unit}{Time unit relative to 1 for daily.}
+
+\item{num.B}{Population size of black MSM.}
+
+\item{num.W}{Population size of white MSM.}
 
 \item{num.Y}{Population size of Young MSM (15-24).}
 
@@ -96,10 +100,8 @@ insertive, receptive, and versatile, for young MSM.}
 insertive, receptive, and versatile, for older MSM.}
 
 \item{method}{Method for calculating target statistics by race, with options of
-       \code{2} for preserving race-specific statistics and \code{1} for
-       averaging over the statistics and dropping the race-specific terms.
-#@param num.B Population size of black MSM.
-#@param num.W Population size of white MSM.}
+\code{2} for preserving race-specific statistics and \code{1} for
+averaging over the statistics and dropping the race-specific terms.}
 
 \item{durs.main.age}{Vector of length 3 with the duration of YY, YO, and OO main
 partnerships in days.}
