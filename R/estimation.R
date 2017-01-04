@@ -166,7 +166,7 @@ calc_nwstats_msm <- function(time.unit = 7,
   #gives all 10000 people an attribute of age+casual 0,1,or 2;
   deg.pers.Y <- apportion_lr(num.Y, c("Y0", "Y1", "Y2"), colSums(deg.mp.Y))  #colsum = totals of 0C, 1C, 2C for Young;
   deg.pers.O <- apportion_lr(num.O, c("O0", "O1", "O2"), colSums(deg.mp.O))  #colsum = totals of 0C, 1C, 2C for Old;
-  #across levels of main;
+  #sum over of main;
   
   
   
@@ -185,7 +185,7 @@ calc_nwstats_msm <- function(time.unit = 7,
   #gives all 10000 people an attribute of age+main 0, or 1;
   deg.main.Y <- apportion_lr(num.Y, c("Y0", "Y1"), rowSums(deg.mp.Y))  #rowsum = totals of 0M, 1M for Young;
   deg.main.O <- apportion_lr(num.O, c("O0", "O1"), rowSums(deg.mp.O))  #rowsum = totals of 0M, 1M for Old;
-  #across levels of casual;
+  #sum over levels of casual;
   
   
   # Main partnerships -------------------------------------------------------
@@ -278,8 +278,8 @@ calc_nwstats_msm <- function(time.unit = 7,
   # }
   #if (method == 1) {
   stats.m.overall <- c(edges.m.overall, totdeg.m.by.dp.overall[2:3], totdeg.m.Y, sqrt.adiff.m.overall)
-  # 1440.9120  487.8420  210.0000  668.1029                          #989.724    668.1029
-  # edges,    #Mp people w/ 1C      2C                               #Ypp w/ Mp  sqrtage (no change)
+  # 1440.9120  487.8420         210.0000                             #989.724    668.1029
+  # edges,    #Mp people w/ 1C  2C                                   #Ypp w/ Mp  sqrtage (no change)
   
   # }
   # if (method == 1) {
@@ -302,7 +302,7 @@ calc_nwstats_msm <- function(time.unit = 7,
   exp.mort <- (mean(asmr.B[ages]) + mean(asmr.W[ages])) / 2 #3.588345e-05
   
   coef.diss.m <- dissolution_coefs(dissolution = diss.main,
-                                   duration = durs.main / time.unit, #durs.main.age, vector of main durations;
+                                   duration = durs.main / time.unit, 
                                    d.rate = exp.mort)
   # Dissolution Coefficients
   # =======================
@@ -415,7 +415,9 @@ calc_nwstats_msm <- function(time.unit = 7,
   #1993.442  907.842            1344.252                              920.289 1168.822
   #edges     #Cpartners of 1M   #Cpartners among Y (summed over Mp)   conc    sqrtage
   stats.p.overall <- c(edges.p.overall, totdeg.p.by.dm.overall[2], totdeg.p.by.Y, conc.p.by.age[1:2], sqrt.adiff.p.overall)
-
+  #1993.442   907.842           1344.252            276.975        643.314          1168.822
+  #edges     #Cpartners of 1M   #Cpartners among Y  #Y w/ 2ConCasp #O w/ 2ConCasp   sqrtage
+                                                    #need to specify both ts when term w/ "by" in it
   
   stats.p <- c(edges.p, totdeg.p.by.dm[c(2, 4)],  #what about totdeg.p.by.age? is this only used if going to account for mixing beyond sq root?
                conc.p.by.age, sqrt.adiff.p)       #i think don't need unless mixing beyond sqrtabsdiff
@@ -454,6 +456,11 @@ calc_nwstats_msm <- function(time.unit = 7,
   #320.1473 146.56291 60.96462
   #127.1913  28.76227 12.38121
   #one off rates by PT combo overall
+  
+  num.inst.Y.overall <- num.Y * mdeg.inst.Y.overall * time.unit
+  #3693 * 0.009749584 * 7
+  #one off rates for Young overall (don't need to number of people across
+  #the M/C deg matrix since want collapsed over PT)
   
   num.inst.Y <- num.Y * deg.mp.Y * mdeg.inst.Y * time.unit  
   num.inst.O <- num.O * deg.mp.O * mdeg.inst.O * time.unit
@@ -561,15 +568,15 @@ calc_nwstats_msm <- function(time.unit = 7,
     
     stats.i <- c(edges.i, num.inst.Y[-1], num.inst.O,   # not num.riskg by race, just overall, no homophily;
                  num.riskg[-3], sqrt.adiff.i)           # num.inst.Y[-1] takes out first value 0M0C
-    # num.riskg[-3] takes out the middle group (75.13) -- not sure why?
+    # num.riskg[-3] takes out the middle group (75.13) 
     
-    stats.i.overall <- c(edges.i.overall, num.inst.overall[-1], num.riskg[-3], sqrt.adiff.i.overall)
+    stats.i.overall <- c(edges.i.overall, num.inst.overall[-1], num.inst.Y.overall, num.riskg[-3], sqrt.adiff.i.overall)
   }
   else {
     stats.i <- c(edges.i, num.inst.Y[-1], num.inst.O,   #no riskg, no homophily;
                  sqrt.adiff.i)
     
-    stats.i.overall <- c(edges.i.overall, num.inst.overall[-1], sqrt.adiff.i.overall)
+    stats.i.overall <- c(edges.i.overall, num.inst.overall[-1], num.inst.Y.overall, sqrt.adiff.i.overall)
   }
   
   # 346.600894             43.300011  45.348341  13.808312  18.018974  6.443879 
@@ -583,7 +590,13 @@ calc_nwstats_msm <- function(time.unit = 7,
   
   #stats.i.overall 
   #348.00482  127.19130 146.56291  28.76227  60.96462  12.38121   0.00000  14.05786 142.73906 441.29450 189.19862
-  #edges      Y1M,0C    Y0M,1C     Y1M,1C    Y0M,2C    Y1M,2C     num.riskg[-3]                         sqrt.adiff.i
+  #edges      #1M,0C    #0M,1C     #1M,1C    #0M,2C    #1M,2C     #num.riskg[-3]                         sqrt.adiff.i
+              ##one off partner rates by PT combo overall
+  
+              ##need a num.inst target stat for agecat2 overall (not by PT)
+              #num.inst.Y.overall
+  
+  
   
   # Compile results ---------------------------------------------------------
   out <- list()
@@ -787,13 +800,14 @@ assign_degree <- function(nw, deg.type, nwstats) {
   if (deg.type == "main") {
     attr.name <- "deg.main"
     attr.name2 <- "deg.main.age"
-    dist <- rowSums(nwstats$deg.mp.overall) #deg.mp.Y     #0.716 0.284, % of pp with 0M, 1M
-  }
+    dist <- rowSums(nwstats$deg.mp.overall)     #0.716 0.284, % of pp with 0M, 1M
+  }                        #deg.mp.Y - 0.732 0.268
+  
   if (deg.type == "pers") {
     attr.name <- "deg.pers"
     attr.name2 <- "deg.pers.age"
-    dist <- colSums(nwstats$deg.mp.overall) #deg.mp.Y     #0.6970 0.2145 0.0885, % of pp with 0C, 1C, 2C
-  }
+    dist <- colSums(nwstats$deg.mp.overall)      #0.6970 0.2145 0.0885, % of pp with 0C, 1C, 2C
+  }                        #deg.mp.Y - 0.711 0.214 0.075
   
   
   # if (!isTRUE(all.equal(sum(colSums(nwstats$deg.mp.B)), 1, tolerance = 5e-6))) {

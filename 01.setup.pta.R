@@ -169,6 +169,8 @@ mdeg.inst <- ((matrix(c(0.008519, 0.010380, 0.012908, 0.008292, 0.011870, 0.0118
                 (matrix(c(0.010280, 0.013939, 0.011883, 0.008336, 0.006404, 0.006404),  
                        byrow = TRUE, nrow = 2)*6307))/10000
 
+mdeg.inst.Y.overall <-0.009749584  #ts = num.Y*mdeg.inst.Y.overall*time.unit = 252 (old = 475.8...does that make sense?)
+mdeg.inst.O.overall <-0.010778212      #total num.inst.overall ~ 700, so that's pretty close to 252+476;
 
 #Daily probs of one-off partnership:
 #Appendix Note: We can take the total number of AI partners reported for 6 months, 
@@ -235,23 +237,23 @@ rates.main <- mean(c(0.00787667250636301,  #YYMAIN
 rates.pers <- mean(c(0.00682903626167434,  #YYCAS
                      0.00835117085011982,  #YOCAS
                      0.00572848909553674)) #OOCAS
-durs.main <- (log(2))/rates.main  ## leaving as such but problematic
-durs.pers <- (log(2))/rates.pers  
+durs.main <- 1/rates.main  ## leaving as such but problematic
+durs.pers <- 1/rates.pers  
 
 #for aggregate median durations by PT (not stratified by age)
-#I think it's best to just input the value of the mean of the median duration
-#and not perform and rate back-calculations;
-#this is still not a weight mean -- should it be?
 #=mean of median durations across ages, one duration for main, one duration for casual;
 #durs.main=238.8709 (YY 126, YO|OY 349, OO 548)
 #durs.pers=143.481 (YY 146, YO|OY 119, OO 174)
-#durs.main <- mean(c(111111,  #YYMAIN
-#                    111111,  #YOMAIN
-#                    111111))  #OOMAIN
-#durs.pers <- mean(c(111111,  #YYCAS
-#                    111111,  #YOCAS
-#                    111111))  #OOCAS
-                                    
+
+rates.main.age <- (c(0.00787667250636301,  #YYMAIN
+                     0.00285833888890699,  #YOMAIN
+                     0.00182407152778933)) #OOMAIN
+rates.pers.age <- (c(0.00682903626167434,  #YYCAS
+                     0.00835117085011982,  #YOCAS
+                     0.00572848909553674)) #OOCAS
+durs.main.age <- 1/rates.main.age  #vector of main 3: YY, YO, OO;
+durs.pers.age <- 1/rates.pers.age  #vector of pers 3: YY, YO, OO;
+
 
 # durations separated out by age
 # rates.main.YY <- 0.00787667250636301  #YYMAIN
@@ -261,12 +263,12 @@ durs.pers <- (log(2))/rates.pers
 # rates.pers.YO <- 0.00835117085011982  #YOCAS
 # rates.pers.OO <- 0.00572848909553674  #OOCAS
 # 
-# durs.main.YY <- (log(2))/rates.main.YY
-# durs.main.YO <- (log(2))/rates.main.YO
-# durs.main.OO <- (log(2))/rates.main.OO
-# durs.pers.YY <- (log(2))/rates.pers.YY
-# durs.pers.YO <- (log(2))/rates.pers.YO
-# durs.pers.OO <- (log(2))/rates.pers.OO
+# durs.main.YY <- 1/rates.main.YY
+# durs.main.YO <- 1/rates.main.YO
+# durs.main.OO <- 1/rates.main.OO
+# durs.pers.YY <- 1/rates.pers.YY
+# durs.pers.YO <- 1/rates.pers.YO
+# durs.pers.OO <- 1/rates.pers.OO
 
 
 # Age-sex-specific mortality rates 
@@ -338,7 +340,7 @@ st <- calc_nwstats_msm(
   diss.main = ~offset(edges), 
   diss.pers = ~offset(edges), 
   durs.main = durs.main, 
-  durs.pers = durs.pers,
+  durs.pers = durs.pers, 
   #durs.main.age = durs.main.age, 
   #durs.pers.age = durs.pers.age,
   ages = ages, 

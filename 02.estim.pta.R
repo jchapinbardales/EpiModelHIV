@@ -5,6 +5,12 @@ rm(list = ls())
 
 load("C:/Users/jchapi2/Documents/GitHub/EpiModelHIV/est/nwstats.rda") 
 
+
+############################################################
+## ADDING CONCURRENT BY AGE, STILL EGDES-ONLY DISSOLUTION ##
+############################################################
+
+
 # 1. Main Model ----------------------------------------------------------- 
 
 st$stats.m
@@ -31,7 +37,7 @@ formation.m <- ~edges +
 #age homophily
 #race - but not considering this really;
 #age! - main degrees differ by age;
-st$stats.m
+st$stats.m.overall
 st$deg.pers
 nw.main$role.class
 
@@ -75,7 +81,7 @@ nw.pers <- nw.main
 nw.pers <- assign_degree(nw.pers, deg.type = "main", nwstats = st) 
 
 
-# Formulas 
+# Formulas -- adding in concurrent by age term this time;
 formation.p <- ~edges + 
   nodefactor("deg.main") +
   nodefactor("agecat2") + 
@@ -111,7 +117,11 @@ dx.p <- netdx(fit.p, nsims = 10, nsteps=1000, ncores = 1, dynamic = TRUE,
                 offset(nodematch("role.class", diff = TRUE, keep = 1:2))) 
 dx.p
 
-plot(dx.p)
+plot(dx.p) 
+
+#Plots and sim means are off from target stat for most of these;
+#Could be issue with tergm lite;
+#Try diagnostics on cross-section
 
 dx.p2 <- netdx(fit.p, nsims = 10000, ncores = 1, dynamic = FALSE,
               nwstats.formula = ~edges + 
@@ -154,6 +164,36 @@ fit.i <- netest(nw.inst,
                 coef.diss = dissolution_coefs(~offset(edges), 1), 
                 set.control.ergm = control.ergm(MPLE.max.dyad.types = 1e9, MCMLE.maxit = 250)) 
 
+#Current error:
+#Error : cannot allocate vector of size 4.5 Gb
+#Error in fit$covar : $ operator is invalid for atomic vectors
+
+# Instantaneous Diagnostics ------------------------------------------------------------- 
+
+dx.i <- netdx(fit.p, nsims = 10, nsteps=1000, ncores = 1, dynamic = TRUE,
+              nwstats.formula = ~edges + 
+                nodefactor(c("deg.main", "deg.pers")) +
+                nodefactor("agecat2") +
+                concurrent(by="agecat2") + 
+                absdiff("sqrt.age") + 
+                offset(nodematch("role.class", diff = TRUE, keep = 1:2))) 
+dx.i
+
+plot(dx.i) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #### CURRENT ERROR ####
 #   Error in vector.namesmatch(target.stats, names(nw.stats)) : 
 #   Length of "target.stats" is 11 but should be 12.
@@ -186,6 +226,37 @@ dx <- netdx(est[[3]], nsims = 10000, ncores = 1, dynamic = FALSE,
               nodefactor("deg.inst","agecat2") )  #need a deg.inst.age in assign_deg
 dx 
 
-st$stats.m
-st$stats.p
-st$stats.i
+
+
+
+
+
+##############################################################
+## stILL CONCURRENT BY AGE, ADDING AGExPT DISSOLUTION RATES ##
+##############################################################
+
+#Ok, assuming tergm lite issue can be resolved, let’s now work on 
+#Adding in differential dissolution rates by pt and age
+#this requires recoding the estimation file for ‘st’ with not only an ~edges term
+#but also a term for #agecat2
+#requires recoding main and casual models with different rates by age
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
