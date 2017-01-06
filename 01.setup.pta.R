@@ -231,13 +231,15 @@ sqrt.adiff.WW <- c(0.520, 0.632, 0.590)
 #O=25-40
 #I dont think this is right -- taking 1/mean(medianrates) does
 #not hit mean of median duration nor does ln1/mean(medianrates)
-rates.main <- mean(c(0.00787667250636301,  #YYMAIN
-                     0.00285833888890699,  #YOMAIN
-                     0.00182407152778933)) #OOMAIN
-rates.pers <- mean(c(0.00682903626167434,  #YYCAS
-                     0.00835117085011982,  #YOCAS
-                     0.00572848909553674)) #OOCAS
-durs.main <- 1/rates.main  ## leaving as such but problematic
+ rates.main <- mean(c(0.00787667250636301,  #YYMAIN
+                      0.00285833888890699,  #YOMAIN
+                      0.00182407152778933)) #OOMAIN
+ rates.pers <- mean(c(0.00682903626167434,  #YYCAS
+                      0.00835117085011982,  #YOCAS
+                      0.00572848909553674)) #OOCAS
+
+
+durs.main <- 1/rates.main  
 durs.pers <- 1/rates.pers  
 
 #for aggregate median durations by PT (not stratified by age)
@@ -245,12 +247,23 @@ durs.pers <- 1/rates.pers
 #durs.main=238.8709 (YY 126, YO|OY 349, OO 548)
 #durs.pers=143.481 (YY 146, YO|OY 119, OO 174)
 
-rates.main.age <- (c(0.00787667250636301,  #YYMAIN
-                     0.00285833888890699,  #YOMAIN
-                     0.00182407152778933)) #OOMAIN
-rates.pers.age <- (c(0.00682903626167434,  #YYCAS
-                     0.00835117085011982,  #YOCAS
-                     0.00572848909553674)) #OOCAS
+# rates.main.age <- (c(0.00787667250636301,  #YYMAIN
+#                      0.00285833888890699,  #YOMAIN
+#                      0.00182407152778933)) #OOMAIN
+# rates.pers.age <- (c(0.00682903626167434,  #YYCAS
+#                      0.00835117085011982,  #YOCAS
+#                      0.00572848909553674)) #OOCAS
+
+#rates rearranged because in dissolution model, going to categorize
+#alphabetically by OO, OY, YY; and OO will be referent
+rates.main.age <- mean(c(0.00182407152778933,  #OOMAIN
+                         0.00285833888890699,  #YOMAIN
+                         0.00787667250636301)) #YYMAIN
+
+rates.pers.age <- mean(c(0.00572848909553674,  #OOCAS
+                         0.00835117085011982,  #YOCAS
+                         0.00682903626167434)) #YYCAS
+
 durs.main.age <- 1/rates.main.age  #vector of main 3: YY, YO, OO;
 durs.pers.age <- 1/rates.pers.age  #vector of pers 3: YY, YO, OO;
 
@@ -341,8 +354,8 @@ st <- calc_nwstats_msm(
   diss.pers = ~offset(edges), 
   durs.main = durs.main, 
   durs.pers = durs.pers, 
-  #durs.main.age = durs.main.age, 
-  #durs.pers.age = durs.pers.age,
+  durs.main.age = durs.main.age, 
+  durs.pers.age = durs.pers.age,
   ages = ages, 
   asmr.B = asmr.B, 
   asmr.W = asmr.W, 
@@ -354,7 +367,7 @@ st <- calc_nwstats_msm(
 st
 
 #Save summary statistics data object "st"
-save(st, file = "C:/Users/jchapi2/Documents/GitHub/EpiModelHIV/est/nwstats.rda") #("est/nwstats.rda")
+save(st, file = "C:/Users/jchapi2/Documents/GitHub/EpiModelHIV/est/st.rda") #("est/nwstats.rda")
 rm(list = ls()) 
 
 #NEW PT & AGE VARS

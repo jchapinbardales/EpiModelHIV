@@ -3,7 +3,9 @@
 suppressMessages(library(EpiModelHIV)) 
 rm(list = ls()) 
 
-load("C:/Users/jchapi2/Documents/GitHub/EpiModelHIV/est/nwstats.rda") 
+load("C:/Users/jchapi2/Documents/GitHub/EpiModelHIV/est/st.rda") 
+load("C:/Users/jchapi2/Documents/GitHub/EpiModelHIV/est/nw.main.rda") 
+load("C:/Users/jchapi2/Documents/GitHub/EpiModelHIV/est/nw.pers.rda") 
 
 
 ############################################################
@@ -13,8 +15,6 @@ load("C:/Users/jchapi2/Documents/GitHub/EpiModelHIV/est/nwstats.rda")
 
 # 1. Main Model ----------------------------------------------------------- 
 
-st$stats.m
-st$coef.diss.m
 
 # Initialize network 
 nw.main <- base_nw_msm(st) 
@@ -22,8 +22,8 @@ nw.main <- base_nw_msm(st)
 
 # Assign degree -- assign casual degree to main network (because global constraint)
 nw.main <- assign_degree(nw.main, deg.type = "pers", nwstats = st) 
-nw.main
-?assign_degree()
+#nw.main
+#save(nw.main, file = "C:/Users/jchapi2/Documents/GitHub/EpiModelHIV/est/nw.main.rda")
 
 # Formulas 
 formation.m <- ~edges + 
@@ -37,9 +37,9 @@ formation.m <- ~edges +
 #age homophily
 #race - but not considering this really;
 #age! - main degrees differ by age;
-st$stats.m.overall
-st$deg.pers
-nw.main$role.class
+#st$stats.m.overall
+#st$deg.pers
+#nw.main$role.class
 
 # Fit model 
 fit.m <- netest(nw.main, 
@@ -79,13 +79,15 @@ nw.pers <- nw.main
 
 # Assign degree -- assign main degree to casual network (because global constraint)
 nw.pers <- assign_degree(nw.pers, deg.type = "main", nwstats = st) 
+#nw.pers
+#save(nw.pers, file = "C:/Users/jchapi2/Documents/GitHub/EpiModelHIV/est/nw.pers.rda")
 
 
-# Formulas -- adding in concurrent by age term this time;
+# Formulas 
 formation.p <- ~edges + 
   nodefactor("deg.main") +
   nodefactor("agecat2") + 
-  concurrent(by="agecat2") + 
+  concurrent + 
   absdiff("sqrt.age") + 
   offset(nodematch("role.class", diff = TRUE, keep = 1:2)) 
 
@@ -97,7 +99,8 @@ fit.p <- netest(nw.pers,
                 target.stats = st$stats.p, 
                 coef.diss = st$coef.diss.p, 
                 constraints = ~bd(maxout = 2), 
-                set.control.ergm = control.ergm(MPLE.max.dyad.types = 1e9, MCMLE.maxit = 250)) 
+                set.control.ergm = control.ergm(MPLE.max.dyad.types = 1e9, MCMLE.maxit = 250),
+                edapprox = FALSE) 
 
 fit.p
 
@@ -112,6 +115,21 @@ dx.p <- netdx(fit.p, nsims = 10, nsteps=1000, ncores = 1, dynamic = TRUE,
               nwstats.formula = ~edges + 
                 nodefactor("deg.main") +
                 nodefactor("agecat2") +
+                concurrent+ 
+                absdiff("sqrt.age") + 
+                offset(nodematch("role.class", diff = TRUE, keep = 1:2))) 
+dx.p
+
+plot(dx.p) 
+
+
+
+##Concurrent by age checks;
+
+dx.p <- netdx(fit.p, nsims = 10, nsteps=1000, ncores = 1, dynamic = TRUE,
+              nwstats.formula = ~edges + 
+                nodefactor("deg.main") +
+                nodefactor("agecat2") +
                 concurrent(by="agecat2") + 
                 absdiff("sqrt.age") + 
                 offset(nodematch("role.class", diff = TRUE, keep = 1:2))) 
@@ -119,9 +137,18 @@ dx.p
 
 plot(dx.p) 
 
+
 #Plots and sim means are off from target stat for most of these;
 #Could be issue with tergm lite;
 #Try diagnostics on cross-section
+
+#concurrent check;
+#note test stats for concurrent:
+#conc.p.overall: 920.289
+#note test stats for concurrent(by="agecat2"):
+#conc.p.by.age[1:2]:  276.975        643.314
+#                     #Y w/ 2ConCasp #O w/ 2ConCasp
+
 
 dx.p2 <- netdx(fit.p, nsims = 10000, ncores = 1, dynamic = FALSE,
               nwstats.formula = ~edges + 
@@ -170,13 +197,14 @@ fit.i <- netest(nw.inst,
 
 # Instantaneous Diagnostics ------------------------------------------------------------- 
 
-dx.i <- netdx(fit.p, nsims = 10, nsteps=1000, ncores = 1, dynamic = TRUE,
+dx.i <- netdx(fit.i, nsims = 10, nsteps=1000, ncores = 1, dynamic = TRUE, 
               nwstats.formula = ~edges + 
                 nodefactor(c("deg.main", "deg.pers")) +
                 nodefactor("agecat2") +
-                concurrent(by="agecat2") + 
+                nodefactor("riskg", base = 3) + 
                 absdiff("sqrt.age") + 
-                offset(nodematch("role.class", diff = TRUE, keep = 1:2))) 
+                offset(nodematch("role.class", diff = TRUE, keep = 1:2)))
+
 dx.i
 
 plot(dx.i) 

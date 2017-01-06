@@ -114,8 +114,8 @@ calc_nwstats_msm <- function(time.unit = 7,
                              diss.pers, 
                              durs.main, 
                              durs.pers,
-                             #durs.main.age, 
-                             #durs.pers.age,
+                             durs.main.age, 
+                             durs.pers.age,
                              ages, 
                              asmr.B, 
                              asmr.W, 
@@ -411,14 +411,14 @@ calc_nwstats_msm <- function(time.unit = 7,
   #   stats.p <- c(edges.p, totdeg.p.by.dm[2], conc.p, sqrt.adiff.p)
   # }
   
-  #stats.p.overall <- c(edges.p.overall, totdeg.p.by.dm.overall[2], totdeg.p.by.Y, conc.p.overall, sqrt.adiff.p.overall)
+  stats.p.overall <- c(edges.p.overall, totdeg.p.by.dm.overall[2], totdeg.p.by.Y, conc.p.overall, sqrt.adiff.p.overall)
   #1993.442  907.842            1344.252                              920.289 1168.822
   #edges     #Cpartners of 1M   #Cpartners among Y (summed over Mp)   conc    sqrtage
-  stats.p.overall <- c(edges.p.overall, totdeg.p.by.dm.overall[2], totdeg.p.by.Y, conc.p.by.age[1:2], sqrt.adiff.p.overall)
+  #stats.p.overall <- c(edges.p.overall, totdeg.p.by.dm.overall[2], totdeg.p.by.Y, conc.p.by.age[1:2], sqrt.adiff.p.overall)
   #1993.442   907.842           1344.252            276.975        643.314          1168.822
   #edges     #Cpartners of 1M   #Cpartners among Y  #Y w/ 2ConCasp #O w/ 2ConCasp   sqrtage
                                                     #need to specify both ts when term w/ "by" in it
-  
+                                                   
   stats.p <- c(edges.p, totdeg.p.by.dm[c(2, 4)],  #what about totdeg.p.by.age? is this only used if going to account for mixing beyond sq root?
                conc.p.by.age, sqrt.adiff.p)       #i think don't need unless mixing beyond sqrtabsdiff
   #totdeg.p.by.dm[c(2, 4)] = # pp with Cas partners for Y1M, O1M
@@ -595,7 +595,8 @@ calc_nwstats_msm <- function(time.unit = 7,
   
               ##need a num.inst target stat for agecat2 overall (not by PT)
               #num.inst.Y.overall
-  
+              #3693 * 0.009749584 * 7 = 252
+              #one off rates for Young overall
   
   
   # Compile results ---------------------------------------------------------
@@ -634,6 +635,8 @@ calc_nwstats_msm <- function(time.unit = 7,
   out$time.unit <- time.unit
   out$num.Y <- num.Y
   out$num.O <- num.O
+  out$num.B <- num.B
+  out$num.W <- num.W
   
   out$deg.mp.overall <- deg.mp.overall
   out$deg.mp.Y <- deg.mp.Y
@@ -673,6 +676,9 @@ base_nw_msm <- function(nwstats) {
   
   num.Y <- nwstats$num.Y
   num.O <- nwstats$num.O
+
+  num.B <- nwstats$num.B
+  num.W <- nwstats$num.W
   
   # Initialize network
   n <- num.Y + num.O

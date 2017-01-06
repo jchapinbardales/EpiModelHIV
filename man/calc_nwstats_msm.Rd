@@ -8,7 +8,8 @@ calc_nwstats_msm(time.unit = 7, num.B, num.W, num.Y, num.O, deg.mp.Y,
   deg.mp.O, deg.mp.overall, mdeg.inst.Y, mdeg.inst.O, mdeg.inst.overall, qnts.B,
   qnts.W, prop.hom.mpi.B, prop.hom.mpi.W, balance = "mean", sqrt.adiff.BB,
   sqrt.adiff.WW, sqrt.adiff.BW, diss.main, diss.pers, durs.main, durs.pers,
-  ages, asmr.B, asmr.W, role.Y.prob, role.O.prob, role.prob.overall)
+  durs.main.age, durs.pers.age, ages, asmr.B, asmr.W, role.Y.prob, role.O.prob,
+  role.prob.overall)
 }
 \arguments{
 \item{time.unit}{Time unit relative to 1 for daily.}
@@ -80,6 +81,12 @@ partnerships in days.}
 \item{durs.pers}{Vector of length 3 with the duration of BB, BW, and WW
 casual partnerships in days.}
 
+\item{durs.main.age}{Vector of length 3 with the duration of YY, YO, and OO main
+partnerships in days.}
+
+\item{durs.pers.age}{Vector of length 3 with the duration of YY, YO, and OO
+casual partnerships in days.}
+
 \item{ages}{Integer vector of ages in years that defines range of possible
 initial ages in the population.}
 
@@ -102,12 +109,6 @@ insertive, receptive, and versatile, for older MSM.}
 \item{method}{Method for calculating target statistics by race, with options of
 \code{2} for preserving race-specific statistics and \code{1} for
 averaging over the statistics and dropping the race-specific terms.}
-
-\item{durs.main.age}{Vector of length 3 with the duration of YY, YO, and OO main
-partnerships in days.}
-
-\item{durs.pers.age}{Vector of length 3 with the duration of YY, YO, and OO
-casual partnerships in days.}
 }
 \description{
 Calculates the target statistics for the formation and dissolution
