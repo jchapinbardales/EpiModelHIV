@@ -7,9 +7,9 @@
 calc_nwstats_msm(time.unit = 7, num.B, num.W, num.Y, num.O, deg.mp.Y,
   deg.mp.O, deg.mp.overall, mdeg.inst.Y, mdeg.inst.O, mdeg.inst.overall, qnts.B,
   qnts.W, prop.hom.mpi.B, prop.hom.mpi.W, balance = "mean", sqrt.adiff.BB,
-  sqrt.adiff.WW, sqrt.adiff.BW, diss.main, diss.pers, durs.main, durs.pers,
-  durs.main.age, durs.pers.age, ages, asmr.B, asmr.W, role.Y.prob, role.O.prob,
-  role.prob.overall)
+  sqrt.adiff.WW, sqrt.adiff.BW, prop.hom.mpi.Y, prop.hom.mpi.O, diss.main,
+  diss.pers, durs.main, durs.pers, durs.main.age, durs.pers.age, ages, asmr.B,
+  asmr.W, role.Y.prob, role.O.prob, role.prob.overall)
 }
 \arguments{
 \item{time.unit}{Time unit relative to 1 for daily.}
@@ -109,6 +109,18 @@ insertive, receptive, and versatile, for older MSM.}
 \item{method}{Method for calculating target statistics by race, with options of
 \code{2} for preserving race-specific statistics and \code{1} for
 averaging over the statistics and dropping the race-specific terms.}
+
+\item{prop.mix.OO}{Vector of length 2 with the proportion of partnerships
+that are between one Old and one Old partners in main and 
+casual black-white ongoing partnerships.}
+
+\item{prop.mix.OY}{Vector of length 2 with the proportion of partnerships
+that are between one Old and one Young partners (no direction) in
+main and casual black-white ongoing partnerships.}
+
+\item{prop.mix.YY}{Vector of length 2 with the proportion of partnerships
+that are between one Young and one Young partners in main and 
+casual black-white ongoing partnerships.}
 }
 \description{
 Calculates the target statistics for the formation and dissolution

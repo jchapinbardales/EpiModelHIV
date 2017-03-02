@@ -26,11 +26,12 @@ nw.main <- assign_degree(nw.main, deg.type = "pers", nwstats = st)
 #save(nw.main, file = "C:/Users/jchapi2/Documents/GitHub/EpiModelHIV/est/nw.main.rda")
 
 # Formulas 
-formation.m <- ~edges + 
+formation.m <- ~edges + nodemix("agecat2", base = 1) +
   nodefactor("deg.pers") +
-  nodefactor("agecat2") + 
+  #nodefactor("agecat2") + 
   absdiff("sqrt.age") + 
   offset(nodematch("role.class", diff = TRUE, keep = 1:2)) 
+
 
 #think what are the factors that go into the network formation -- the formation of main edges;
 #the number of casual partners they have
@@ -57,7 +58,19 @@ summary(fit.m)
 
 # Main Diagnostics ------------------------------------------------------------- 
 
+#new with homophily;
+dx <- netdx(fit.m, nsims = 10, nsteps=1000, ncores = 1, dynamic = TRUE, 
+            nwstats.formula = ~edges + nodemix("agecat2", base = 1) +
+              nodefactor("deg.pers") +
+              absdiff("sqrt.age") + 
+              offset(nodematch("role.class", diff = TRUE, keep = 1:2))) 
+dx  
+ 
 
+plot(dx) 
+
+
+#old, pre-homophily;
 dx <- netdx(fit.m, nsims = 10, nsteps=1000, ncores = 1, dynamic = TRUE,
             nwstats.formula = ~edges +
               nodefactor("deg.pers") + 
@@ -84,12 +97,32 @@ nw.pers <- assign_degree(nw.pers, deg.type = "main", nwstats = st)
 
 
 # Formulas 
-formation.p <- ~edges + 
+formation.p <- ~edges + nodemix("agecat2", base = 1) +
   nodefactor("deg.main") +
-  nodefactor("agecat2") + 
+  #nodefactor("agecat2") + 
   concurrent + 
   absdiff("sqrt.age") + 
   offset(nodematch("role.class", diff = TRUE, keep = 1:2)) 
+
+
+# Formulas - taking out homophily;
+formation.p <- ~edges + #nodemix("agecat2", base = 1) +
+  nodefactor("deg.main") +
+  #nodefactor("agecat2") + 
+  concurrent + 
+  absdiff("sqrt.age") + 
+  offset(nodematch("role.class", diff = TRUE, keep = 1:2)) 
+
+
+
+# Fit model --with approximation
+fit.p <- netest(nw.pers, 
+                formation = formation.p, 
+                coef.form = c(-Inf, -Inf), 
+                target.stats = st$stats.p, 
+                coef.diss = st$coef.diss.p, 
+                constraints = ~bd(maxout = 2), 
+                set.control.ergm = control.ergm(MPLE.max.dyad.types = 1e9, MCMLE.maxit = 250))
 
 
 # Fit model 
@@ -100,7 +133,7 @@ fit.p <- netest(nw.pers,
                 coef.diss = st$coef.diss.p, 
                 constraints = ~bd(maxout = 2), 
                 set.control.ergm = control.ergm(MPLE.max.dyad.types = 1e9, MCMLE.maxit = 250),
-                edapprox = FALSE) 
+                edapprox = FALSE)
 
 fit.p
 
@@ -111,6 +144,19 @@ summary(fit.p)
 
 # Casual Diagnostics ------------------------------------------------------------- 
 
+#new, with homophily;
+dx.p <- netdx(fit.p, nsims = 10, nsteps=1000, ncores = 1, dynamic = TRUE,
+              nwstats.formula = ~edges + nodemix("agecat2", base = 1) +
+                nodefactor("deg.main") +
+                concurrent+ 
+                #absdiff("sqrt.age") + 
+                offset(nodematch("role.class", diff = TRUE, keep = 1:2))) 
+dx.p
+
+plot(dx.p) 
+
+
+#old no homophily;
 dx.p <- netdx(fit.p, nsims = 10, nsteps=1000, ncores = 1, dynamic = TRUE,
               nwstats.formula = ~edges + 
                 nodefactor("deg.main") +

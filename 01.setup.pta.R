@@ -212,6 +212,20 @@ sqrt.adiff.BB <- c(0.417, 0.498, 0.456)
 sqrt.adiff.BW <- c(0.454, 0.629, 0.585) 
 sqrt.adiff.WW <- c(0.520, 0.632, 0.590) 
 
+#Age mixing - Proportion of ongoing partnerships that are OO,OY,YY;
+              #(main, casl) 
+              #for main/casual dissolution model;
+#prop.mix.OO<-c(0.4895, 0.4813) 
+#prop.mix.OY<-c(0.2996, 0.3688) 
+#prop.mix.YY<-c(0.211, 0.15) 
+#not right -- need at person level not dyad level
+        
+# Proportion of men in same-race partnerships (main, casl, inst) 
+prop.hom.mpi.Y <- c(0.5595, 0.4941)   
+prop.hom.mpi.O <- c(0.7877, 0.7097) 
+
+#2.28.2017 only homophily in main and casual partnerships in 
+#order to get duration to run;
 
 # Mean durations 
 # rates.main <- mean(c(0.00287612937991679,  #BBMAIN
@@ -256,16 +270,16 @@ durs.pers <- 1/rates.pers
 
 #rates rearranged because in dissolution model, going to categorize
 #alphabetically by OO, OY, YY; and OO will be referent
-rates.main.age <- mean(c(0.00182407152778933,  #OOMAIN
-                         0.00285833888890699,  #YOMAIN
-                         0.00787667250636301)) #YYMAIN
+rates.main.age <- (c(0.00182407152778933,  #OOMAIN
+                     0.00285833888890699,  #YOMAIN
+                     0.00787667250636301)) #YYMAIN
 
-rates.pers.age <- mean(c(0.00572848909553674,  #OOCAS
-                         0.00835117085011982,  #YOCAS
-                         0.00682903626167434)) #YYCAS
+rates.pers.age <- (c(0.00572848909553674,  #OOCAS
+                     0.00835117085011982,  #YOCAS
+                     0.00682903626167434)) #YYCAS
 
-durs.main.age <- 1/rates.main.age  #vector of main 3: YY, YO, OO;
-durs.pers.age <- 1/rates.pers.age  #vector of pers 3: YY, YO, OO;
+durs.main.age <- 1/rates.main.age  #vector of main 3: OO, OY, YY;
+durs.pers.age <- 1/rates.pers.age  #vector of pers 3: OO, OY, YY;
 
 
 # durations separated out by age
@@ -350,8 +364,10 @@ st <- calc_nwstats_msm(
   sqrt.adiff.BB = sqrt.adiff.BB, 
   sqrt.adiff.WW = sqrt.adiff.WW, 
   sqrt.adiff.BW = sqrt.adiff.BW, 
-  diss.main = ~offset(edges), 
-  diss.pers = ~offset(edges), 
+  prop.hom.mpi.Y = prop.hom.mpi.Y,
+  prop.hom.mpi.O = prop.hom.mpi.O,
+  diss.main = ~offset(edges)+offset(nodemix("agecat2", base=1)), 
+  diss.pers = ~offset(edges)+offset(nodemix("agecat2", base=1)), 
   durs.main = durs.main, 
   durs.pers = durs.pers, 
   durs.main.age = durs.main.age, 
@@ -365,6 +381,8 @@ st <- calc_nwstats_msm(
 ) 
 
 st
+
+
 
 #Save summary statistics data object "st"
 save(st, file = "C:/Users/jchapi2/Documents/GitHub/EpiModelHIV/est/st.rda") #("est/nwstats.rda")
@@ -383,9 +401,7 @@ rm(list = ls())
 #role.O.prob = role.O.prob,
 st$stats.m
 st$totdeg.p.by.dm
-
 st$asmr.B
-st$durs.main
 st$stats.m
 st$stats.p
 ?calc_nwstats_msm
@@ -426,4 +442,41 @@ st$stats.p
 # Mortality/Exit Rate: 3.588345e-05
 # Adjusted Coefficient: 2.971747
 
+
+
+# Network Statistics Summary
+# ==========================
+#   Mean degree frequencies by age
+# Young 15-24 (0/1) 0.732 0.268
+# Older 25-40 (0/1): 0.7 0.3
+# 
+# Casual degree frequencies by age
+# Young 15-24 (0/1/2) 0.711 0.214 0.075
+# Older 25-40 (0/1/2): 0.683 0.215 0.102
+# 
+# Main network model target statistics:
+#   1440.912 418.8331 285.4454 487.842 210 668.1029
+# 
+# Casual network model target statistics:
+#   1993.442 723.6067 310.3226 907.842 920.289 1168.822  #with absdiff term
+#   1993.442 907.842 920.289 1168.822 # no homophily terms
+#
+# Instant network model target statistics:
+#   348.0048 127.1913 146.5629 28.76227 60.96462 12.38121 252.0365 0 14.05786 142.7391 441.2945 189.1986
+# 
+# Main Model Dissolution Coefficients
+# =======================
+#   Dissolution Model: ~offset(edges) + offset(nodemix("agecat2", base = 1))
+# Target Statistics: 78.31773 49.97908 18.13674
+# Crude Coefficient: 4.347923 -0.4565301 -1.506699
+# Mortality/Exit Rate: 3.588345e-05
+# Adjusted Coefficient: 4.35356 -0.4585732 -1.511033
+# 
+# Casual Model Dissolution Coefficients
+# =======================
+#   Dissolution Model: ~offset(edges) + offset(nodemix("agecat2", base = 1))
+# Target Statistics: 24.93801 17.10624 20.91908
+# Crude Coefficient: 3.175468 -0.3962609 -0.1837898
+# Mortality/Exit Rate: 3.588345e-05
+# Adjusted Coefficient: 3.177259 -0.3968238 -0.1840787
 

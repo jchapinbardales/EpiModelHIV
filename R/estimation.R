@@ -50,6 +50,15 @@
 #' @param sqrt.adiff.BW Vector of length 3 with the mean absolute differences
 #'        in the square root of ages in main, casual, and one-off black-white
 #'        partnerships.
+#' @param prop.mix.OO Vector of length 2 with the proportion of partnerships
+#'        that are between one Old and one Old partners in main and 
+#'        casual black-white ongoing partnerships.
+#' @param prop.mix.OY Vector of length 2 with the proportion of partnerships
+#'        that are between one Old and one Young partners (no direction) in
+#'        main and casual black-white ongoing partnerships.
+#' @param prop.mix.YY Vector of length 2 with the proportion of partnerships
+#'        that are between one Young and one Young partners in main and 
+#'        casual black-white ongoing partnerships.
 #' @param diss.main Dissolution model formula for main partnerships.
 #' @param diss.pers Dissolution model formula for casual partnerships.
 #' @param durs.main Vector of length 3 with the duration of BB, BW, and WW main
@@ -110,6 +119,8 @@ calc_nwstats_msm <- function(time.unit = 7,
                              sqrt.adiff.BB,
                              sqrt.adiff.WW,
                              sqrt.adiff.BW, 
+                             prop.hom.mpi.Y,
+                             prop.hom.mpi.O,
                              diss.main, 
                              diss.pers, 
                              durs.main, 
@@ -144,7 +155,7 @@ calc_nwstats_msm <- function(time.unit = 7,
   #role.Y.prob = role.Y.prob,
   #role.O.prob = role.O.prob,
   
-  #browser()
+
   
   #num <- num.B + num.W
   #10000
@@ -217,8 +228,8 @@ calc_nwstats_msm <- function(time.unit = 7,
   # }
   
   # dont need unless want homophily more by age beyond sqrtabsdiff
-  #totdeg.m.by.age <- c(sum(totdeg.m.by.dp[1:3]), sum(totdeg.m.by.dp[4:6]))
-  #989.724                    1892.100
+ totdeg.m.by.age <- c(sum(totdeg.m.by.dp[1:3]), sum(totdeg.m.by.dp[4:6]))
+  #989.724  Y                  1892.100 O
   
   
   # Number of main partnerships -- weighted average across age (bc dist of age not 50/50)
@@ -234,6 +245,29 @@ calc_nwstats_msm <- function(time.unit = 7,
   
   edges.m.overall <- (sum(totdeg.m.by.dp.overall)) / 2  #sum of number of main partners across those with 0/1/2 casuals
   #1440.912--makes sense add up number of main across levels of casuals by age=same sum overall;
+  
+  #age.mix.m<-c((edges.m.overall*prop.mix.OY[1]),(edges.m.overall*prop.mix.YY[1]))
+              #1440.912*.2996=431.6972 1440*.211=304.0324, checked out;
+  
+  
+  
+  #Age Mixing beyond sqrtdiff -- to get mixed durations to run using tergmlite;
+  # Number of mixed-age partnerships, with balancing to decide
+    edges.m.Y2O <- totdeg.m.by.age[1] * (1 - prop.hom.mpi.Y[1])
+    edges.m.O2Y <- totdeg.m.by.age[2] * (1 - prop.hom.mpi.O[1])
+    edges.hetage.m <- switch(balance,
+                           young = edges.m.Y2O,
+                           old = edges.m.O2Y,
+                           mean = (edges.m.Y2O + edges.m.O2Y) / 2)
+   
+  # Number of same-age partnerships
+    edges.homage.m <- (totdeg.m.by.age - edges.hetage.m) / 2
+   
+  # Nodemix target stat: number of YY, YO, OO partnerships
+    #edges.nodemixage.m <- c(edges.homage.m[1], edges.hetage.m, edges.homage.m[2])
+    #making referent the OO as first order;
+    #number of OO, OY, YY partnerships
+    edges.nodemixage.m <- c(edges.homage.m[2], edges.hetage.m, edges.homage.m[1])
   
   
   # Mixing
@@ -277,9 +311,22 @@ calc_nwstats_msm <- function(time.unit = 7,
   #  stats.m <- c(edges.m, edges.nodemix.m[2:3], totdeg.m.by.dp[c(2:3, 5:6)], sqrt.adiff.m)
   # }
   #if (method == 1) {
-  stats.m.overall <- c(edges.m.overall, totdeg.m.by.dp.overall[2:3], totdeg.m.Y, sqrt.adiff.m.overall)
-  # 1440.9120  487.8420         210.0000                             #989.724    668.1029
-  # edges,    #Mp people w/ 1C  2C                                   #Ypp w/ Mp  sqrtage (no change)
+  
+  # stats.m.overall <- c(edges.m.overall, totdeg.m.by.dp.overall[2:3], totdeg.m.Y, sqrt.adiff.m.overall)
+  # # 1440.9120  487.8420         210.0000                             #989.724    668.1029
+  # # edges,    #Mp people w/ 1C  2C                                   #Ypp w/ Mp  sqrtage (no change)
+  
+  stats.m.overall <- c(edges.m.overall, edges.nodemixage.m[2:3], totdeg.m.by.dp.overall[2:3], sqrt.adiff.m.overall) #, totdeg.m.Y) #, sqrt.adiff.m.overall)
+  # 1440.9120  431.6972      304.0324     487.8420         210.0000        #989.724    668.1029
+  # edges,     #edges OY|YO  #edges YY    #Mp people w/ 1C  2C             #Ypp w/ Mp  sqrtage (no change)
+                                                                           #for when nodefactor (age) I think
+  
+  #age.mix.m not right -- from dyad level not person level;
+  #check if edges.nodemixage.m needs all three levels or just 2:3;
+  #edges.nodemixage.m[2:3]
+  #% of people with not-same-age main partners(OY|YO)  % of Y people with same-aged main partners (YY) 
+  #OO referent
+  
   
   # }
   # if (method == 1) {
@@ -287,7 +334,7 @@ calc_nwstats_msm <- function(time.unit = 7,
   # }
   
   
-  stats.m <- c(edges.m, totdeg.m.by.dp[c(2:3, 5:6)], sqrt.adiff.m)
+  stats.m <- c(edges.m, edges.nodemixage.m[2:3], totdeg.m.by.dp[c(2:3, 5:6)], sqrt.adiff.m)
   #1440.9120  166.1850        77.5530   321.6570           132.4470  668.1029
   #totedges   #Mp among Y,1C and Y,2C   #Mp among O,1C and O,2C      sqrtabsdiff in M
   
@@ -301,8 +348,11 @@ calc_nwstats_msm <- function(time.unit = 7,
   # Dissolution model
   exp.mort <- (mean(asmr.B[ages]) + mean(asmr.W[ages])) / 2 #3.588345e-05
   
+  
+  #browser()
+  
   coef.diss.m <- dissolution_coefs(dissolution = diss.main,
-                                   duration = durs.main / time.unit, 
+                                   duration = durs.main.age / time.unit, 
                                    d.rate = exp.mort)
   # Dissolution Coefficients
   # =======================
@@ -372,6 +422,28 @@ calc_nwstats_msm <- function(time.unit = 7,
   edges.p.overall <- sum(totdeg.p.by.dm.overall) / 2
   #1993.442 -- makes sense, adding up across ages should be same as overall
   
+  #age.mix.p<-c((edges.p.overall*prop.mix.OY[2]),(edges.m.overall*prop.mix.YY[2]))
+  #1440.912*0.3688=   1440*0.15=    , checked out;
+  
+  
+  # Number of mixed-age partnerships, with balancing to decide
+    edges.p.Y2O <- totdeg.p.by.age[1] * (1 - prop.hom.mpi.Y[2])
+    edges.p.O2Y <- totdeg.p.by.age[2] * (1 - prop.hom.mpi.O[2])
+    edges.hetage.p <- switch(balance,
+                      young = edges.p.Y2O, old = edges.p.O2Y,
+                       mean = (edges.p.Y2O + edges.p.O2Y) / 2)
+ 
+  # Number of same-age partnerships
+    edges.homage.p <- (totdeg.p.by.age - edges.hetage.p) / 2
+   
+  # Nodemix target stat: number of YY, YO, OO partnerships
+    #edges.nodemixage.p <- c(edges.homage.p[1], edges.hetage.p, edges.homage.p[2])
+    #making referent the OO as first order;
+    #number of OO, OY, YY partnerships
+    edges.nodemixage.p <- c(edges.homage.p[2], edges.hetage.p, edges.homage.p[1])
+    
+  ##concerned about referent order -- check on this;
+  
   # Mixing
   # if (method == 2) {
   #   # Number of mixed-race partnerships, with balancing to decide
@@ -410,14 +482,18 @@ calc_nwstats_msm <- function(time.unit = 7,
   # if (method == 1) {
   #   stats.p <- c(edges.p, totdeg.p.by.dm[2], conc.p, sqrt.adiff.p)
   # }
-  
-  stats.p.overall <- c(edges.p.overall, totdeg.p.by.dm.overall[2], totdeg.p.by.Y, conc.p.overall, sqrt.adiff.p.overall)
+  #no homophily model ts: stats.p.overall <- c(edges.p.overall, totdeg.p.by.dm.overall[2], conc.p.overall, sqrt.adiff.p.overall) #totdeg.p.by.Y for nodefactor age var;
+  stats.p.overall <- c(edges.p.overall, edges.nodemixage.p[2:3], totdeg.p.by.dm.overall[2], conc.p.overall, sqrt.adiff.p.overall) #totdeg.p.by.Y for nodefactor age var;
   #1993.442  907.842            1344.252                              920.289 1168.822
   #edges     #Cpartners of 1M   #Cpartners among Y (summed over Mp)   conc    sqrtage
   #stats.p.overall <- c(edges.p.overall, totdeg.p.by.dm.overall[2], totdeg.p.by.Y, conc.p.by.age[1:2], sqrt.adiff.p.overall)
   #1993.442   907.842           1344.252            276.975        643.314          1168.822
   #edges     #Cpartners of 1M   #Cpartners among Y  #Y w/ 2ConCasp #O w/ 2ConCasp   sqrtage
                                                     #need to specify both ts when term w/ "by" in it
+  #age.mix.p not right - from dyad level not person level;
+  #edges.nodemixage.p[2:3]
+  #% of people with not-same-age cas partners(OY|YO)  % of Y people with same-aged cas partners (YY) 
+  #OO referent
                                                    
   stats.p <- c(edges.p, totdeg.p.by.dm[c(2, 4)],  #what about totdeg.p.by.age? is this only used if going to account for mixing beyond sq root?
                conc.p.by.age, sqrt.adiff.p)       #i think don't need unless mixing beyond sqrtabsdiff
@@ -429,7 +505,7 @@ calc_nwstats_msm <- function(time.unit = 7,
   
   # Dissolution model
   coef.diss.p <- dissolution_coefs(dissolution = diss.pers,
-                                   duration = durs.pers / time.unit, #durs.pers, when race;
+                                   duration = durs.pers.age / time.unit, #durs.pers, when race;
                                    d.rate = exp.mort)
   
   # Dissolution Coefficients
