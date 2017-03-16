@@ -32,14 +32,23 @@ param_msm(nwstats, race.method = 1, last.neg.test.B.int = 301,
   ccr5.heteroz.rr = 0.3, num.inst.ai.classes = 1,
   base.ai.main.BB.rate = 0.17, base.ai.main.BW.rate = 0.26,
   base.ai.main.WW.rate = 0.23, base.ai.pers.BB.rate = 0.11,
-  base.ai.pers.BW.rate = 0.16, base.ai.pers.WW.rate = 0.14, ai.scale = 1,
+  base.ai.pers.BW.rate = 0.16, base.ai.pers.WW.rate = 0.14,
+  base.ai.main.YY.rate = 1.0988, base.ai.main.OY.rate = 1.1498,
+  base.ai.main.OO.rate = 1.4319, base.ai.pers.YY.rate = 0.7293,
+  base.ai.pers.OY.rate = 0.7631, base.ai.pers.OO.rate = 0.9504,
+  ai.scale = 1, cond.pers.always.prob = 0.216,
+  cond.inst.always.prob = 0.326, cond.always.prob.corr = 0.5,
   cond.main.BB.prob = 0.38, cond.main.BW.prob = 0.1,
-  cond.main.WW.prob = 0.15, cond.pers.always.prob = 0.216,
-  cond.pers.BB.prob = 0.26, cond.pers.BW.prob = 0.26,
-  cond.pers.WW.prob = 0.26, cond.inst.always.prob = 0.326,
+  cond.main.WW.prob = 0.15, cond.pers.BB.prob = 0.26,
+  cond.pers.BW.prob = 0.26, cond.pers.WW.prob = 0.26,
   cond.inst.BB.prob = 0.27, cond.inst.BW.prob = 0.27,
-  cond.inst.WW.prob = 0.27, cond.always.prob.corr = 0.5, cond.rr.BB = 1,
-  cond.rr.BW = 1, cond.rr.WW = 1, cond.diag.main.beta = -0.67,
+  cond.inst.WW.prob = 0.27, cond.main.YY.prob = 0.5194,
+  cond.main.OY.prob = 0.3318, cond.main.OO.prob = 0.3037,
+  cond.pers.YY.prob = 0.7077, cond.pers.OY.prob = 0.6714,
+  cond.pers.OO.prob = 0.7637, cond.inst.YY.prob = 0.7172,
+  cond.inst.OY.prob = 0.6619, cond.inst.OO.prob = 0.7799, cond.rr.BB = 1,
+  cond.rr.BW = 1, cond.rr.WW = 1, cond.rr.YY = 1, cond.rr.OY = 1,
+  cond.rr.OO = 1, cond.diag.main.beta = -0.67,
   cond.discl.main.beta = -0.85, cond.diag.pers.beta = -0.67,
   cond.discl.pers.beta = -0.85, cond.diag.inst.beta = -0.67,
   cond.discl.inst.beta = -0.85, vv.iev.BB.prob = 0.42,
@@ -258,8 +267,35 @@ partnerships (acts per day).}
 \item{base.ai.pers.WW.rate}{Expected coital frequency in white-white casual
 partnerships (acts per day).}
 
+\item{base.ai.main.YY.rate}{Expected coital frequency in young-young main
+partnerships (acts per day).}
+
+\item{base.ai.main.OY.rate}{Expected coital frequency in old-young|young-old main
+partnerships (acts per day).}
+
+\item{base.ai.main.OO.rate}{Expected coital frequency in old-old main
+partnerships (acts per day).}
+
+\item{base.ai.pers.YY.rate}{Expected coital frequency in young-young casual
+partnerships (acts per day).}
+
+\item{base.ai.pers.OY.rate}{Expected coital frequency in old-young|young-old casual
+partnerships (acts per day).}
+
+\item{base.ai.pers.OO.rate}{Expected coital frequency in old-old casual
+partnerships (acts per day).}
+
 \item{ai.scale}{General relative scaler for all act rates for model
 calibration.}
+
+\item{cond.pers.always.prob}{Fraction of men in casual partnerships who always
+use condoms in those partnerships.}
+
+\item{cond.inst.always.prob}{Fraction of men in instant partnerships who always
+use condoms in those partnerships.}
+
+\item{cond.always.prob.corr}{Correlation coefficient for probability of always
+using condoms in both casual and one-off}
 
 \item{cond.main.BB.prob}{Probability of condom use in a black-black main
 partnership.}
@@ -270,9 +306,6 @@ partnership.}
 \item{cond.main.WW.prob}{Probability of condom use in a white-white main
 partnership.}
 
-\item{cond.pers.always.prob}{Fraction of men in casual partnerships who always
-use condoms in those partnerships.}
-
 \item{cond.pers.BB.prob}{Of men who are not consistent condom users, per-act
 probability of condom use in a black-black casual partnerships.}
 
@@ -281,9 +314,6 @@ probability of condom use in a black-white casual partnerships.}
 
 \item{cond.pers.WW.prob}{Of men who are not consistent condom users, per-act
 probability of condom use in a white-white casual partnerships.}
-
-\item{cond.inst.always.prob}{Fraction of men in instant partnerships who always
-use condoms in those partnerships.}
 
 \item{cond.inst.BB.prob}{Of men who are not consistent condom users, per-act
 probability of condom use in a black-black one-off partnerships.}
@@ -294,8 +324,32 @@ probability of condom use in a black-white one-off partnerships.}
 \item{cond.inst.WW.prob}{Of men who are not consistent condom users, per-act
 probability of condom use in a white-white one-off partnerships.}
 
-\item{cond.always.prob.corr}{Correlation coefficient for probability of always
-using condoms in both casual and one-off}
+\item{cond.main.YY.prob}{Probability of condom use in a young-young main
+partnership.}
+
+\item{cond.main.OY.prob}{Probability of condom use in a old-young|young-old main
+partnership.}
+
+\item{cond.main.OO.prob}{Probability of condom use in a old-old main
+partnership.}
+
+\item{cond.pers.YY.prob}{Of men who are not consistent condom users, per-act
+probability of condom use in a young-young casual partnerships.}
+
+\item{cond.pers.OY.prob}{Of men who are not consistent condom users, per-act
+probability of condom use in a old-young|young-old casual partnerships.}
+
+\item{cond.pers.OO.prob}{Of men who are not consistent condom users, per-act
+probability of condom use in a old-old casual partnerships.}
+
+\item{cond.inst.YY.prob}{Of men who are not consistent condom users, per-act
+probability of condom use in a young-young one-off partnerships.}
+
+\item{cond.inst.OY.prob}{Of men who are not consistent condom users, per-act
+probability of condom use in a old-young|young-old one-off partnerships.}
+
+\item{cond.inst.OO.prob}{Of men who are not consistent condom users, per-act
+probability of condom use in a old-old one-off partnerships.}
 
 \item{cond.rr.BB}{Condom probability scaler for black-black partnerships for
 model calibration purposes.}
@@ -304,6 +358,15 @@ model calibration purposes.}
 model calibration purposes.}
 
 \item{cond.rr.WW}{Condom probability scaler for white-white partnerships for
+model calibration purposes.}
+
+\item{cond.rr.YY}{Condom probability scaler for young-young partnerships for
+model calibration purposes.}
+
+\item{cond.rr.OY}{Condom probability scaler for old-young|young-old partnerships for
+model calibration purposes.}
+
+\item{cond.rr.OO}{Condom probability scaler for old-old partnerships for
 model calibration purposes.}
 
 \item{cond.diag.main.beta}{Beta multiplier for the log odds of using a

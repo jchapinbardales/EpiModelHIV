@@ -220,7 +220,7 @@ sqrt.adiff.WW <- c(0.520, 0.632, 0.590)
 #prop.mix.YY<-c(0.211, 0.15) 
 #not right -- need at person level not dyad level
         
-# Proportion of men in same-race partnerships (main, casl, inst) 
+# Proportion of men in same-age partnerships (main, casl) 
 prop.hom.mpi.Y <- c(0.5595, 0.4941)   
 prop.hom.mpi.O <- c(0.7877, 0.7097) 
 
@@ -262,20 +262,20 @@ durs.pers <- 1/rates.pers
 #durs.pers=143.481 (YY 146, YO|OY 119, OO 174)
 
 # rates.main.age <- (c(0.00787667250636301,  #YYMAIN
-#                      0.00285833888890699,  #YOMAIN
+#                      0.00285833888890699,  #OYMAIN
 #                      0.00182407152778933)) #OOMAIN
 # rates.pers.age <- (c(0.00682903626167434,  #YYCAS
-#                      0.00835117085011982,  #YOCAS
+#                      0.00835117085011982,  #OYCAS
 #                      0.00572848909553674)) #OOCAS
 
 #rates rearranged because in dissolution model, going to categorize
 #alphabetically by OO, OY, YY; and OO will be referent
 rates.main.age <- (c(0.00182407152778933,  #OOMAIN
-                     0.00285833888890699,  #YOMAIN
+                     0.00285833888890699,  #OYMAIN
                      0.00787667250636301)) #YYMAIN
 
 rates.pers.age <- (c(0.00572848909553674,  #OOCAS
-                     0.00835117085011982,  #YOCAS
+                     0.00835117085011982,  #OYCAS
                      0.00682903626167434)) #YYCAS
 
 durs.main.age <- 1/rates.main.age  #vector of main 3: OO, OY, YY;
@@ -284,10 +284,10 @@ durs.pers.age <- 1/rates.pers.age  #vector of pers 3: OO, OY, YY;
 
 # durations separated out by age
 # rates.main.YY <- 0.00787667250636301  #YYMAIN
-# rates.main.YO <- 0.00285833888890699  #YOMAIN
+# rates.main.YO <- 0.00285833888890699  #OYMAIN
 # rates.main.OO <- 0.00182407152778933  #OOMAIN
 # rates.pers.YY <- 0.00682903626167434  #YYCAS
-# rates.pers.YO <- 0.00835117085011982  #YOCAS
+# rates.pers.YO <- 0.00835117085011982  #OYCAS
 # rates.pers.OO <- 0.00572848909553674  #OOCAS
 # 
 # durs.main.YY <- 1/rates.main.YY

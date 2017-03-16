@@ -147,38 +147,76 @@
 #'        partnerships (acts per day).
 #' @param base.ai.pers.WW.rate Expected coital frequency in white-white casual
 #'        partnerships (acts per day).
+#'        
+#' @param base.ai.main.YY.rate Expected coital frequency in young-young main
+#'        partnerships (acts per day).
+#' @param base.ai.main.OY.rate Expected coital frequency in old-young|young-old main
+#'        partnerships (acts per day).
+#' @param base.ai.main.OO.rate Expected coital frequency in old-old main
+#'        partnerships (acts per day).
+#' @param base.ai.pers.YY.rate Expected coital frequency in young-young casual
+#'        partnerships (acts per day).
+#' @param base.ai.pers.OY.rate Expected coital frequency in old-young|young-old casual
+#'        partnerships (acts per day).
+#' @param base.ai.pers.OO.rate Expected coital frequency in old-old casual
+#'        partnerships (acts per day).
+#'        
 #' @param ai.scale General relative scaler for all act rates for model
 #'        calibration.
+#' @param cond.pers.always.prob Fraction of men in casual partnerships who always
+#'        use condoms in those partnerships.
+#' @param cond.inst.always.prob Fraction of men in instant partnerships who always
+#'        use condoms in those partnerships.
+#' @param cond.always.prob.corr Correlation coefficient for probability of always
+#'        using condoms in both casual and one-off
 #' @param cond.main.BB.prob Probability of condom use in a black-black main
 #'        partnership.
 #' @param cond.main.BW.prob Probability of condom use in a black-white main
 #'        partnership.
 #' @param cond.main.WW.prob Probability of condom use in a white-white main
 #'        partnership.
-#' @param cond.pers.always.prob Fraction of men in casual partnerships who always
-#'        use condoms in those partnerships.
 #' @param cond.pers.BB.prob Of men who are not consistent condom users, per-act
 #'        probability of condom use in a black-black casual partnerships.
 #' @param cond.pers.BW.prob Of men who are not consistent condom users, per-act
 #'        probability of condom use in a black-white casual partnerships.
 #' @param cond.pers.WW.prob Of men who are not consistent condom users, per-act
 #'        probability of condom use in a white-white casual partnerships.
-#' @param cond.inst.always.prob Fraction of men in instant partnerships who always
-#'        use condoms in those partnerships.
 #' @param cond.inst.BB.prob Of men who are not consistent condom users, per-act
 #'        probability of condom use in a black-black one-off partnerships.
 #' @param cond.inst.BW.prob Of men who are not consistent condom users, per-act
 #'        probability of condom use in a black-white one-off partnerships.
 #' @param cond.inst.WW.prob Of men who are not consistent condom users, per-act
 #'        probability of condom use in a white-white one-off partnerships.
-#' @param cond.always.prob.corr Correlation coefficient for probability of always
-#'        using condoms in both casual and one-off
 #' @param cond.rr.BB Condom probability scaler for black-black partnerships for
 #'        model calibration purposes.
 #' @param cond.rr.BW Condom probability scaler for black-white partnerships for
 #'        model calibration purposes.
 #' @param cond.rr.WW Condom probability scaler for white-white partnerships for
 #'        model calibration purposes.
+#' @param cond.main.YY.prob Probability of condom use in a young-young main
+#'        partnership.
+#' @param cond.main.OY.prob Probability of condom use in a old-young|young-old main
+#'        partnership.
+#' @param cond.main.OO.prob Probability of condom use in a old-old main
+#'        partnership.
+#' @param cond.pers.YY.prob Of men who are not consistent condom users, per-act
+#'        probability of condom use in a young-young casual partnerships.
+#' @param cond.pers.OY.prob Of men who are not consistent condom users, per-act
+#'        probability of condom use in a old-young|young-old casual partnerships.
+#' @param cond.pers.OO.prob Of men who are not consistent condom users, per-act
+#'        probability of condom use in a old-old casual partnerships.
+#' @param cond.inst.YY.prob Of men who are not consistent condom users, per-act
+#'        probability of condom use in a young-young one-off partnerships.
+#' @param cond.inst.OY.prob Of men who are not consistent condom users, per-act
+#'        probability of condom use in a old-young|young-old one-off partnerships.
+#' @param cond.inst.OO.prob Of men who are not consistent condom users, per-act
+#'        probability of condom use in a old-old one-off partnerships.
+#' @param cond.rr.YY Condom probability scaler for young-young partnerships for
+#'        model calibration purposes.
+#' @param cond.rr.OY Condom probability scaler for old-young|young-old partnerships for
+#'        model calibration purposes.
+#' @param cond.rr.OO Condom probability scaler for old-old partnerships for
+#'        model calibration purposes. 
 #' @param cond.diag.main.beta Beta multiplier for the log odds of using a
 #'        condom in a main partnership if the HIV-infected man has been
 #'        diagnosed.
@@ -244,17 +282,17 @@ param_msm <- function(nwstats,
                       mean.test.W.int = 315,
                       testing.pattern = "memoryless",
                       test.window.int = 21,
-
+                      
                       tt.traj.B.prob = c(0.077, 0.000, 0.356, 0.567),
                       tt.traj.W.prob = c(0.052, 0.000, 0.331, 0.617),
-
+                      
                       tx.init.B.prob = 0.092,
                       tx.init.W.prob = 0.127,
                       tx.halt.B.prob = 0.0102,
                       tx.halt.W.prob = 0.0071,
                       tx.reinit.B.prob = 0.00066,
                       tx.reinit.W.prob = 0.00291,
-
+                      
                       max.time.off.tx.full.int = 520 * 7,
                       max.time.on.tx.part.int = 52 * 15 * 7,
                       max.time.off.tx.part.int = 520 * 7,
@@ -271,18 +309,18 @@ param_msm <- function(nwstats,
                       full.supp.up.slope = 0.25,
                       part.supp.down.slope = 0.25,
                       part.supp.up.slope = 0.25,
-
+                      
                       b.B.rate = 1e-3 / 7,
                       b.W.rate = 1e-3 / 7,
                       birth.age = 18,
                       b.method = "fixed",
-
+                      
                       URAI.prob = 0.0082 * 1.09,
                       UIAI.prob = 0.0031 * 1.09,
                       acute.rr = 6,
                       circ.rr = 0.4,
                       condom.rr = 0.295,
-
+                      
                       disc.outset.main.B.prob = 0.685,
                       disc.outset.main.W.prob = 0.889,
                       disc.at.diag.main.B.prob = 1,
@@ -297,14 +335,29 @@ param_msm <- function(nwstats,
                       disc.post.diag.pers.W.prob = 0,
                       disc.inst.B.prob = 0.445,
                       disc.inst.W.prob = 0.691,
-
+                      
+                      # disc.outset.main.Y.prob = ,
+                      # disc.outset.main.O.prob = ,
+                      # disc.at.diag.main.Y.prob = 1,
+                      # disc.at.diag.main.O.prob = 1,
+                      # disc.post.diag.main.Y.prob = 0,
+                      # disc.post.diag.main.O.prob = 0,
+                      # disc.outset.pers.Y.prob = ,
+                      # disc.outset.pers.O.prob = ,
+                      # disc.at.diag.pers.Y.prob = 1,
+                      # disc.at.diag.pers.O.prob = 1,
+                      # disc.post.diag.pers.Y.prob = 0,
+                      # disc.post.diag.pers.O.prob = 0,
+                      # disc.inst.Y.prob = ,
+                      # disc.inst.O.prob = ,
+                      
                       circ.B.prob = 0.874,
                       circ.W.prob = 0.918,
-
+                      
                       ccr5.B.prob = c(0, 0.034),
                       ccr5.W.prob = c(0.021, 0.176),
                       ccr5.heteroz.rr = 0.3,
-
+                      
                       num.inst.ai.classes = 1,
                       base.ai.main.BB.rate = 0.17,
                       base.ai.main.BW.rate = 0.26,
@@ -312,34 +365,62 @@ param_msm <- function(nwstats,
                       base.ai.pers.BB.rate = 0.11,
                       base.ai.pers.BW.rate = 0.16,
                       base.ai.pers.WW.rate = 0.14,
+                      
+                      base.ai.main.YY.rate = 1.0988,
+                      base.ai.main.OY.rate = 1.1498,
+                      base.ai.main.OO.rate = 1.4319,
+                      base.ai.pers.YY.rate = 0.7293,
+                      base.ai.pers.OY.rate = 0.7631,
+                      base.ai.pers.OO.rate = 0.9504,
                       ai.scale = 1,
-
+                      
+                      cond.pers.always.prob = 0.216,
+                      cond.inst.always.prob = 0.326,
+                      cond.always.prob.corr = 0.5,
+                      
                       cond.main.BB.prob = 0.38,
                       cond.main.BW.prob = 0.10,
                       cond.main.WW.prob = 0.15,
-                      cond.pers.always.prob = 0.216,
                       cond.pers.BB.prob = 0.26,
                       cond.pers.BW.prob = 0.26,
                       cond.pers.WW.prob = 0.26,
-                      cond.inst.always.prob = 0.326,
                       cond.inst.BB.prob = 0.27,
                       cond.inst.BW.prob = 0.27,
                       cond.inst.WW.prob = 0.27,
-                      cond.always.prob.corr = 0.5,
+
+                      cond.main.YY.prob = 0.5194,
+                      cond.main.OY.prob = 0.3318,
+                      cond.main.OO.prob = 0.3037,
+                      cond.pers.YY.prob = 0.7077,
+                      cond.pers.OY.prob = 0.6714,
+                      cond.pers.OO.prob = 0.7637,
+                      cond.inst.YY.prob = 0.7172,
+                      cond.inst.OY.prob = 0.6619,
+                      cond.inst.OO.prob = 0.7799,
+
+                      #calibration scalars;
                       cond.rr.BB = 1,
                       cond.rr.BW = 1,
                       cond.rr.WW = 1,
+                      cond.rr.YY = 1,
+                      cond.rr.OY = 1,
+                      cond.rr.OO = 1,
+                      
                       cond.diag.main.beta = -0.67,
                       cond.discl.main.beta = -0.85,
                       cond.diag.pers.beta = -0.67,
                       cond.discl.pers.beta = -0.85,
                       cond.diag.inst.beta = -0.67,
                       cond.discl.inst.beta = -0.85,
-
+                      
                       vv.iev.BB.prob = 0.42,
                       vv.iev.BW.prob = 0.56,
                       vv.iev.WW.prob = 0.49,
-
+                      
+                      # vv.iev.YY.prob = ,
+                      # vv.iev.OY.prob = ,
+                      # vv.iev.OO.prob = ,
+                      
                       prep.start = Inf,
                       prep.elig.model = "base",
                       prep.class.prob = c(0.211, 0.07, 0.1, 0.619),
@@ -351,15 +432,15 @@ param_msm <- function(nwstats,
                       prep.risk.int = 182,
                       prep.risk.reassess = TRUE,
                       ...) {
-
+  
   p <- get_args(formal.args = formals(sys.function()),
                 dot.args = list(...))
-
+  
   if (!(testing.pattern %in% c("memoryless", "interval"))) {
     stop("testing.pattern must be \"memoryless\" or \"interval\" ",
-          call. = FALSE)
+         call. = FALSE)
   }
-
+  
   if (race.method == 1) {
     p$last.neg.test.B.int = (last.neg.test.B.int + last.neg.test.W.int)/2
     p$last.neg.test.W.int = (last.neg.test.B.int + last.neg.test.W.int)/2
@@ -408,35 +489,38 @@ param_msm <- function(nwstats,
     p$vv.iev.BW.prob = (vv.iev.BB.prob + vv.iev.BW.prob + vv.iev.WW.prob)/3
     p$vv.iev.WW.prob = (vv.iev.BB.prob + vv.iev.BW.prob + vv.iev.WW.prob)/3
   }
-
+  
   p$time.unit <- nwstats$time.unit
-
+  
   intvars <- grep(names(p), pattern = ".int", fixed = TRUE)
   p[intvars] <- lapply(p[intvars], FUN = function(x) round(x / p$time.unit))
-
+  
   ratevars <- grep(names(p), pattern = ".rate", fixed = TRUE)
   p[ratevars] <- lapply(p[ratevars], FUN = function(x) x * p$time.unit)
-
-  p$role.B.prob <- nwstats$role.B.prob
-  p$role.W.prob <- nwstats$role.W.prob
-
+  
+  # p$role.B.prob <- nwstats$role.B.prob
+  # p$role.W.prob <- nwstats$role.W.prob
+  
+  p$role.Y.prob <- nwstats$role.Y.prob
+  p$role.O.prob <- nwstats$role.O.prob
+  
   p$inst.trans.matrix <- matrix(1, nrow = 1)
   p$role.trans.matrix <- matrix(c(1, 0, 0,
                                   0, 1, 0,
                                   0, 0, 1),
                                 nrow = 3)
-
-
+  
+  
   p$riskh.start <- max(1, prep.start - prep.risk.int - 1)
-
+  
   p$method <- nwstats$method
   p$modes <- 1
-
+  
   p$asmr.B <- nwstats$asmr.B
   p$asmr.W <- nwstats$asmr.W
-
+  
   p$nwstats <- NULL
-
+  
   class(p) <- "param.net"
   return(p)
 }
@@ -463,24 +547,32 @@ param_msm <- function(nwstats,
 init_msm <- function(nwstats,
                      prev.B = 0.15,
                      prev.W = 0.15,
+                     
+                     # prev.Y = ,
+                     # prev.O = ,
                      ...) {
-
+  
   p <- get_args(formal.args = formals(sys.function()),
                 dot.args = list(...))
-
-  p$num.B <- nwstats$num.B
+  
+  p$num.B <- nwstats$num.B  #do I need these?
   p$num.W <- nwstats$num.W
-
+  
+  p$num.Y <- nwstats$num.Y
+  p$num.O <- nwstats$num.O
+  
   p$ages <- nwstats$ages
-
+  
+  #where does init.prev.age.slope.B come from?  how would this apply to agecat2?
   p$init.prev.age.slope.B <- prev.B / 12
   p$init.prev.age.slope.W <- prev.W / 12
-
+  
   p$nwstats <- NULL
-
+  
   class(p) <- "init.net"
   return(p)
 }
+
 
 
 #' @title Epidemic Model Control Settings
