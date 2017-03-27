@@ -250,7 +250,8 @@ trans_msm <- function(dat, at){
     dat$epi$trans.Y[at] <- sum(inf.agecat2 == "Y", na.rm = TRUE) / length(infected)
     dat$epi$trans.O[at] <- sum(inf.agecat2 == "O", na.rm = TRUE) / length(infected)
     dat$epi$trans.YY[at] <- sum(inf.agecat2 == "Y" & infd.agecat2 == "Y", na.rm = TRUE) / length(infected)
-    dat$epi$trans.OY[at] <- sum(sum(inf.agecat2 == "O" & infd.agecat2 == "Y"), sum(inf.agecat2 == "Y" & infd.agecat2 == "O"), na.rm = TRUE) / length(infected)
+    dat$epi$trans.OY[at] <- sum(sum(inf.agecat2 == "O" & infd.agecat2 == "Y"), 
+                                sum(inf.agecat2 == "Y" & infd.agecat2 == "O"), na.rm = TRUE) / length(infected)
     dat$epi$trans.OO[at] <- sum(inf.agecat2 == "O" & infd.agecat2 == "O", na.rm = TRUE) / length(infected)
     
     #age of infector + PT
