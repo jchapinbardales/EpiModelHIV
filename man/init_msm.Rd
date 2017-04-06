@@ -4,17 +4,17 @@
 \alias{init_msm}
 \title{Epidemic Model Initial Conditions}
 \usage{
-init_msm(nwstats, prev.B = 0.15, prev.W = 0.15, ...)
+init_msm(nwstats, prev.Y = 0.2192, prev.O = 0.3452, ...)
 }
 \arguments{
 \item{nwstats}{Target statistics for the network model. An object of class
 \code{nwstats} output from \code{\link{calc_nwstats_msm}}.}
 
+\item{...}{Additional arguments passed to function.}
+
 \item{prev.B}{Initial disease prevalence among black MSM.}
 
 \item{prev.W}{Initial disease prevalence among white MSM.}
-
-\item{...}{Additional arguments passed to function.}
 }
 \value{
 A list object of class \code{init_msm}, which can be passed to EpiModel

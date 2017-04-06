@@ -454,40 +454,40 @@ param_msm <- function(nwstats,
     p$tx.halt.W.prob = (tx.halt.B.prob + tx.halt.W.prob)/2
     p$tx.reinit.B.prob = (tx.reinit.B.prob + tx.reinit.W.prob)/2
     p$tx.reinit.W.prob = (tx.reinit.B.prob + tx.reinit.W.prob)/2
-    p$disc.outset.main.B.prob = (disc.outset.main.B.prob + disc.outset.main.W.prob)/2
-    p$disc.outset.main.W.prob = (disc.outset.main.B.prob + disc.outset.main.W.prob)/2
-    p$disc.outset.pers.B.prob = (disc.outset.pers.B.prob + disc.outset.pers.W.prob)/2
-    p$disc.outset.pers.W.prob = (disc.outset.pers.B.prob + disc.outset.pers.W.prob)/2
-    p$disc.inst.B.prob = (disc.inst.B.prob + disc.inst.W.prob)/2
-    p$disc.inst.W.prob = (disc.inst.B.prob + disc.inst.W.prob)/2
-    p$circ.B.prob = (circ.B.prob + circ.W.prob)/2
-    p$circ.W.prob = (circ.B.prob + circ.W.prob)/2
-    p$ccr5.B.prob = (ccr5.B.prob + ccr5.W.prob)/2
-    p$ccr5.W.prob = (ccr5.B.prob + ccr5.W.prob)/2
-    p$base.ai.main.BB.rate = (base.ai.main.BB.rate + base.ai.main.BW.rate +
-                                base.ai.main.WW.rate)/3
-    p$base.ai.main.BW.rate = (base.ai.main.BB.rate + base.ai.main.BW.rate +
-                                base.ai.main.WW.rate)/3
-    p$base.ai.main.WW.rate = (base.ai.main.BB.rate + base.ai.main.BW.rate +
-                                base.ai.main.WW.rate)/3
-    p$base.ai.pers.BB.rate = (base.ai.pers.BB.rate + base.ai.pers.BW.rate +
-                                base.ai.pers.WW.rate)/3
-    p$base.ai.pers.BW.rate = (base.ai.pers.BB.rate + base.ai.pers.BW.rate +
-                                base.ai.pers.WW.rate)/3
-    p$base.ai.pers.WW.rate = (base.ai.pers.BB.rate + base.ai.pers.BW.rate +
-                                base.ai.pers.WW.rate)/3
-    p$cond.main.BB.prob = (cond.main.BB.prob + cond.main.BW.prob + cond.main.WW.prob)/3
-    p$cond.main.BW.prob = (cond.main.BB.prob + cond.main.BW.prob + cond.main.WW.prob)/3
-    p$cond.main.WW.prob = (cond.main.BB.prob + cond.main.BW.prob + cond.main.WW.prob)/3
-    p$cond.pers.BB.prob = (cond.pers.BB.prob + cond.pers.BW.prob + cond.pers.WW.prob)/3
-    p$cond.pers.BW.prob = (cond.pers.BB.prob + cond.pers.BW.prob + cond.pers.WW.prob)/3
-    p$cond.pers.WW.prob = (cond.pers.BB.prob + cond.pers.BW.prob + cond.pers.WW.prob)/3
-    p$cond.inst.BB.prob = (cond.inst.BB.prob + cond.inst.BW.prob + cond.inst.WW.prob)/3
-    p$cond.inst.BW.prob = (cond.inst.BB.prob + cond.inst.BW.prob + cond.inst.WW.prob)/3
-    p$cond.inst.WW.prob = (cond.inst.BB.prob + cond.inst.BW.prob + cond.inst.WW.prob)/3
-    p$vv.iev.BB.prob = (vv.iev.BB.prob + vv.iev.BW.prob + vv.iev.WW.prob)/3
-    p$vv.iev.BW.prob = (vv.iev.BB.prob + vv.iev.BW.prob + vv.iev.WW.prob)/3
-    p$vv.iev.WW.prob = (vv.iev.BB.prob + vv.iev.BW.prob + vv.iev.WW.prob)/3
+    # p$disc.outset.main.B.prob = (disc.outset.main.B.prob + disc.outset.main.W.prob)/2
+    # p$disc.outset.main.W.prob = (disc.outset.main.B.prob + disc.outset.main.W.prob)/2
+    # p$disc.outset.pers.B.prob = (disc.outset.pers.B.prob + disc.outset.pers.W.prob)/2
+    # p$disc.outset.pers.W.prob = (disc.outset.pers.B.prob + disc.outset.pers.W.prob)/2
+    # p$disc.inst.B.prob = (disc.inst.B.prob + disc.inst.W.prob)/2
+    # p$disc.inst.W.prob = (disc.inst.B.prob + disc.inst.W.prob)/2
+    # p$circ.B.prob = (circ.B.prob + circ.W.prob)/2
+    # p$circ.W.prob = (circ.B.prob + circ.W.prob)/2
+    # p$ccr5.B.prob = (ccr5.B.prob + ccr5.W.prob)/2
+    # p$ccr5.W.prob = (ccr5.B.prob + ccr5.W.prob)/2
+    # p$base.ai.main.BB.rate = (base.ai.main.BB.rate + base.ai.main.BW.rate +
+    #                             base.ai.main.WW.rate)/3
+    # p$base.ai.main.BW.rate = (base.ai.main.BB.rate + base.ai.main.BW.rate +
+    #                             base.ai.main.WW.rate)/3
+    # p$base.ai.main.WW.rate = (base.ai.main.BB.rate + base.ai.main.BW.rate +
+    #                             base.ai.main.WW.rate)/3
+    # p$base.ai.pers.BB.rate = (base.ai.pers.BB.rate + base.ai.pers.BW.rate +
+    #                             base.ai.pers.WW.rate)/3
+    # p$base.ai.pers.BW.rate = (base.ai.pers.BB.rate + base.ai.pers.BW.rate +
+    #                             base.ai.pers.WW.rate)/3
+    # p$base.ai.pers.WW.rate = (base.ai.pers.BB.rate + base.ai.pers.BW.rate +
+    #                             base.ai.pers.WW.rate)/3
+    # p$cond.main.BB.prob = (cond.main.BB.prob + cond.main.BW.prob + cond.main.WW.prob)/3
+    # p$cond.main.BW.prob = (cond.main.BB.prob + cond.main.BW.prob + cond.main.WW.prob)/3
+    # p$cond.main.WW.prob = (cond.main.BB.prob + cond.main.BW.prob + cond.main.WW.prob)/3
+    # p$cond.pers.BB.prob = (cond.pers.BB.prob + cond.pers.BW.prob + cond.pers.WW.prob)/3
+    # p$cond.pers.BW.prob = (cond.pers.BB.prob + cond.pers.BW.prob + cond.pers.WW.prob)/3
+    # p$cond.pers.WW.prob = (cond.pers.BB.prob + cond.pers.BW.prob + cond.pers.WW.prob)/3
+    # p$cond.inst.BB.prob = (cond.inst.BB.prob + cond.inst.BW.prob + cond.inst.WW.prob)/3
+    # p$cond.inst.BW.prob = (cond.inst.BB.prob + cond.inst.BW.prob + cond.inst.WW.prob)/3
+    # p$cond.inst.WW.prob = (cond.inst.BB.prob + cond.inst.BW.prob + cond.inst.WW.prob)/3
+    # p$vv.iev.BB.prob = (vv.iev.BB.prob + vv.iev.BW.prob + vv.iev.WW.prob)/3
+    # p$vv.iev.BW.prob = (vv.iev.BB.prob + vv.iev.BW.prob + vv.iev.WW.prob)/3
+    # p$vv.iev.WW.prob = (vv.iev.BB.prob + vv.iev.BW.prob + vv.iev.WW.prob)/3
   }
   
   p$time.unit <- nwstats$time.unit
@@ -564,8 +564,8 @@ init_msm <- function(nwstats,
   p$ages <- nwstats$ages
   
   #where does init.prev.age.slope.B come from?  how would this apply to agecat2?
-  p$init.prev.age.slope.B <- prev.B / 12
-  p$init.prev.age.slope.W <- prev.W / 12
+  # p$init.prev.age.slope.B <- prev.B / 12
+  # p$init.prev.age.slope.W <- prev.W / 12
   
   p$nwstats <- NULL
   

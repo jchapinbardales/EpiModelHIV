@@ -280,8 +280,8 @@ st
 
 
 #Save summary statistics data object "st"
-save(st, file = "C:/Users/jchapi2/Documents/GitHub/EpiModelHIV/est/st.rda") #("est/nwstats.rda")
-rm(list = ls()) 
+#save(st, file = "C:/Users/jchapi2/Documents/GitHub/EpiModelHIV/est/st.rda") #("est/nwstats.rda")
+
 
 #NEW PT & AGE VARS
 #num.Y = num.Y, 
