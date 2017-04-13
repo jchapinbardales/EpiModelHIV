@@ -45,7 +45,6 @@ births_msm <- function(dat, at){
   nBirths.W <- rpois(1, b.W.rate * numW)
   nBirths <- nBirths.B + nBirths.W
 
-
   ## Update Attr
   if (nBirths > 0) {
     dat <- setBirthAttr_msm(dat, at, nBirths.B, nBirths.W)
@@ -155,6 +154,10 @@ setBirthAttr_msm <- function(dat, at, nBirths.B, nBirths.W) {
 
   # PrEP
   dat$attr$prepStat[newIds] <- 0
+
+  # Agecat2
+  dat$attr$agecat2[newIds] <- "Y"
+
 
   return(dat)
 }

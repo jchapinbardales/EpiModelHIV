@@ -52,7 +52,7 @@ dat <- progress_msm(dat, at)
 dat <- vl_msm(dat, at)
 # dat <- update_aiclass_msm(dat, at)
 # dat <- update_roleclass_msm(dat, at)
-dat <- simnet_msm(dat, at)
+dat <- simnet_msm(dat, at)                  #doesn't work right now;
 dat <- disclose_msm(dat, at)
 dat <- acts_msm(dat, at)
 dat <- condoms_msm(dat, at)

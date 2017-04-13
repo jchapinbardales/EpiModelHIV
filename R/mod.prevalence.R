@@ -23,26 +23,26 @@
 #' @export
 #'
 prevalence_msm <- function(dat, at) {
-  
+
   race <- dat$attr$race
   status <- dat$attr$status
   prepStat <- dat$attr$prepStat
   agecat2 <- dat$attr$agecat2
-  
+
   nsteps <- dat$control$nsteps
   rNA <- rep(NA, nsteps)
-  
+
   if (at == 1) {
-    dat$epi$num <- rNA
-    # dat$epi$num.B <- rNA
-    # dat$epi$num.W <- rNA
+    dat$epi$num <- rNA      #dat$epi for at=1, nsteps=52 (52 weeks in 1 year) so have 52 values for variables in dat$epi
+    dat$epi$num.B <- rNA    #the first value is at initiation (initial num=1000, etc)
+    dat$epi$num.W <- rNA    #had to leave num.B/W in because called into births_msm module
     dat$epi$num.Y <- rNA
     dat$epi$num.O <- rNA
     dat$epi$s.num <- rNA
     dat$epi$i.num <- rNA
     # dat$epi$i.num.B <- rNA
     # dat$epi$i.num.W <- rNA
-    dat$epi$i.num.Y <- rNA
+    dat$epi$i.num.Y <- rNA    #i.num.Y = at step 1, at initiation, number of Y nodes that are infected;
     dat$epi$i.num.O <- rNA
     dat$epi$i.prev <- rNA
     # dat$epi$i.prev.B <- rNA
@@ -53,7 +53,7 @@ prevalence_msm <- function(dat, at) {
     dat$epi$dth.gen <- rNA
     dat$epi$dth.dis <- rNA
     dat$epi$incid <- rNA
-    
+
     dat$epi$prepCurr <- rNA
     dat$epi$prepCov <- rNA
     dat$epi$prepElig <- rNA
@@ -62,15 +62,18 @@ prevalence_msm <- function(dat, at) {
     dat$epi$incid.prep1 <- rNA
     dat$epi$i.num.prep0 <- rNA
     dat$epi$i.num.prep1 <- rNA
-    
+
     dat$epi$cprob.always.pers <- rNA
     dat$epi$cprob.always.inst <- rNA
+
+    #additional variables to initialize here for age*PT:
+
   }
-  
-  
+
+
   dat$epi$num[at] <- length(status)
-  # dat$epi$num.B[at] <- sum(race == "B", na.rm = TRUE)
-  # dat$epi$num.W[at] <- sum(race == "W", na.rm = TRUE)
+  dat$epi$num.B[at] <- sum(race == "B", na.rm = TRUE)
+  dat$epi$num.W[at] <- sum(race == "W", na.rm = TRUE)
   dat$epi$num.Y[at] <- sum(agecat2 == "Y", na.rm = TRUE)
   dat$epi$num.O[at] <- sum(agecat2 == "O", na.rm = TRUE)
   dat$epi$s.num[at] <- sum(status == 0, na.rm = TRUE)
@@ -84,7 +87,10 @@ prevalence_msm <- function(dat, at) {
   # dat$epi$i.prev.W[at] <- dat$epi$i.num.W[at] / dat$epi$num.W[at]
   dat$epi$i.prev.Y[at] <- dat$epi$i.num.Y[at] / dat$epi$num.Y[at]
   dat$epi$i.prev.O[at] <- dat$epi$i.num.O[at] / dat$epi$num.O[at]
-  
+
+  #additional variables to initialize here for age*PT:
+
+
   dat$epi$prepCurr[at] <- sum(prepStat == 1, na.rm = TRUE)
   dat$epi$prepElig[at] <- sum(dat$attr$prepElig == 1, na.rm = TRUE)
   dat$epi$i.num.prep0[at] <- sum((is.na(prepStat) | prepStat == 0) &
@@ -98,7 +104,8 @@ prevalence_msm <- function(dat, at) {
     dat$epi$i.prev.prep1[at] <- dat$epi$i.num.prep1[at] /
       sum(prepStat == 1, na.rm = TRUE)
   }
-  
+
+
   return(dat)
 }
 

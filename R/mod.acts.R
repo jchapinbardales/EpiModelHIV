@@ -23,20 +23,20 @@
 #' @export
 #'
 acts_msm <- function(dat, at) {
-  
+
   for (type in c("main", "pers", "inst")) {
-    
+
     ## Variables ##
-    
+
     # Attributes
     status <- dat$attr$status
     race <- dat$attr$race
     agecat2 <- dat$attr$agecat2
-    
+
     # Parameters
     ai.scale <- dat$param$ai.scale
     if (type == "main") {
-      base.ai.YY.rate <- dat$param$base.ai.main.YY.rate
+      base.ai.YY.rate <- dat$param$base.ai.main.YY.rate  # giving 1.09 instead of 0.15 - wheres the transformation;
       base.ai.OY.rate <- dat$param$base.ai.main.OY.rate
       base.ai.OO.rate <- dat$param$base.ai.main.OO.rate
       # base.ai.BB.rate <- dat$param$base.ai.main.BB.rate
@@ -68,20 +68,20 @@ acts_msm <- function(dat, at) {
       ptype <- 3
       el <- dat$el[[3]]
     }
-    
+
     ## Processes ##
-    
+
     # Construct edgelist
-    
+
     st1 <- status[el[, 1]]
     st2 <- status[el[, 2]]
-    disc <- abs(st1 - st2) == 1
-    el[which(disc == 1 & st2 == 1), ] <- el[which(disc == 1 & st2 == 1), 2:1]
+    disc <- abs(st1 - st2) == 1 #discordant in which st1=1 and st2=0;
+    el[which(disc == 1 & st2 == 1), ] <- el[which(disc == 1 & st2 == 1), 2:1] #switches second place to first
     el <- cbind(el, status[el[, 1]], status[el[, 2]])
     colnames(el) <- c("p1", "p2", "st1", "st2")
-    
+
     if (nrow(el) > 0) {
-      
+
       # # Base AI rates
       # ai.rate <- rep(NA, nrow(el))
       # race.p1 <- race[el[, 1]]
@@ -91,7 +91,7 @@ acts_msm <- function(dat, at) {
       #            (num.B == 1) * base.ai.BW.rate +
       #            (num.B == 0) * base.ai.WW.rate
       # ai.rate <- ai.rate * ai.scale
-      
+
       # Base AI rates
       ai.rate <- rep(NA, nrow(el))
       agecat2.p1 <- agecat2[el[, 1]]
@@ -101,30 +101,30 @@ acts_msm <- function(dat, at) {
         (num.Y == 1) * base.ai.OY.rate +    #OY
         (num.Y == 0) * base.ai.OO.rate      #OO
       ai.rate <- ai.rate * ai.scale
-      
+
       # Final act number
       if (fixed == FALSE) {
         ai <- rpois(length(ai.rate), ai.rate)
       } else {
         ai <- round(ai.rate)
       }
-      
+
       # Full edge list
       el <- cbind(el, ptype, ai)
       colnames(el)[5:6] <- c("ptype", "ai")
-      
+
       if (type == "main") {
         dat$temp$el <- el
       } else {
         dat$temp$el <- rbind(dat$temp$el, el)
       }
     }
-    
+
   } # loop over type end
-  
+
   # Remove inactive edges from el
   dat$temp$el <- dat$temp$el[-which(dat$temp$el[, "ai"] == 0), ]
-  
+
   return(dat)
 }
 

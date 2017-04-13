@@ -66,7 +66,6 @@ initialize_msm <- function(x, param, init, control, s) {
     dat$nwparam[i] <- list(x[[i]][-which(names(x[[i]]) == "fit")])
   }
 
-
   ## Nodal attributes ##
 
   # Degree terms
@@ -102,12 +101,17 @@ initialize_msm <- function(x, param, init, control, s) {
   dat$attr$riskg <- get.vertex.attribute(nw[[3]], "riskg")
 
   # UAI group
-  p1 <- dat$param$cond.pers.always.prob
-  p2 <- dat$param$cond.inst.always.prob
+  p1 <- dat$param$cond.pers.always.prob  #prob of always using condom in casual partnership;
+  p2 <- dat$param$cond.inst.always.prob  #prob of always using condom in inst partnership;
   rho <- dat$param$cond.always.prob.corr
   uai.always <- bindata::rmvbin(num, c(p1, p2), bincorr = (1 - rho) * diag(2) + rho)
   dat$attr$cond.always.pers <- uai.always[, 1]
   dat$attr$cond.always.inst <- uai.always[, 2]
+  #gives an attribute 0/1 about whether that person will always use condoms in a casual partnership
+  #gives an attribute 0/1 about whether that person will always use condoms in a isnt partnership
+  #sum(dat$attr$cond.always.pers) = 2124
+  #sum(dat$attr$cond.always.inst) = 3258
+  #these are ~= to cond.pers.always.prob and cond.inst.always.prob proportions
 
   # Arrival and departure
   dat$attr$arrival.time <- rep(1, num)
@@ -138,18 +142,20 @@ initialize_msm <- function(x, param, init, control, s) {
   role.class <- get.vertex.attribute(nw[[1]], "role.class")
   dat$attr$role.class <- role.class
 
+
   # Ins.quot
   ins.quot <- rep(NA, num)
-  ins.quot[role.class == "I"]  <- 1
+  ins.quot[role.class == "I"]  <- 1  #if insertive, 1; if recep 0; if vers, then prob of being vers ass
   ins.quot[role.class == "R"]  <- 0
-  ins.quot[role.class == "V"]  <- runif(sum(role.class == "V"))
+  ins.quot[role.class == "V"]  <- runif(sum(role.class == "V"))  #assigns prob from random uniform dist (b/w 0 and 1)
   dat$attr$ins.quot <- ins.quot
 
+
   # HIV-related attributes
-  dat <- init_status_msm(dat)
+  dat <- init_status_msm(dat)   #calls function down below -- sets attributes for infection status
 
   # CCR5
-  dat <- init_ccr5_msm(dat)
+  dat <- init_ccr5_msm(dat)     #calls function down below -- sets ccr5 status (DD's can't be infected)
 
 
   # Network statistics
@@ -166,6 +172,7 @@ initialize_msm <- function(x, param, init, control, s) {
     dat$stats$nwstats <- list()
 
   }
+
 
   dat <- prevalence_msm(dat, at = 1)
 
@@ -222,7 +229,7 @@ remove_bad_roles_msm <- function(nw) {
 #'
 init_status_msm <- function(dat) {
 
-  num.B <- dat$init$num.B
+  num.B <- dat$init$num.B     #only need to set these to init for status
   num.W <- dat$init$num.W
   num.Y <- dat$init$num.Y
   num.O <- dat$init$num.O
@@ -246,7 +253,6 @@ init_status_msm <- function(dat) {
   nInfO <- round(dat$init$prev.O * num.O)
 
 
-  #### Help!
   # Age-based infection probability
   probInfCrB <- age[ids.B] * dat$init$init.prev.age.slope.B
   probInfB <- probInfCrB + (nInfB - sum(probInfCrB)) / num.B
@@ -269,10 +275,15 @@ init_status_msm <- function(dat) {
   # }
 
   while (sum(status[ids.Y]) != nInfY) {
-    status[ids.Y] <- rbinom(num.Y, 1, probInfY)
+    status[ids.Y] <- rbinom(num.Y, 1, nInfY/num.Y)  #rbinom(num.Y, 1, probInfY)
+    #there was issue here with no probInfY which had been created for race based on slope of age
+    #really, if we aren't accounting for increasing prevalence within age groups then didn't need
+    # I think the prob of Inf here when assigning status should just be the prevalence so I'm
+    #changing probInfY to nInfY/num.Y -- should this be or use actually prev.Y? Chose the former
+    #since probInfB was function of nInfB and num.B
   }
   while (sum(status[ids.O]) != nInfO) {
-    status[ids.O] <- rbinom(num.O, 1, probInfO)
+    status[ids.O] <- rbinom(num.O, 1, nInfO/num.O) #rbinom(num.O, 1, probInfO)
   }
   dat$attr$status <- status
 
@@ -641,21 +652,21 @@ init_status_msm <- function(dat) {
   dat$attr$inf.time <- inf.time
   dat$attr$vl <- vl
   dat$attr$diag.status <- diag.status
-  dat$attr$diag.time <- diag.time
+  dat$attr$diag.time <- diag.time         #NA
   dat$attr$last.neg.test <- last.neg.test
   dat$attr$tx.status <- tx.status
-  dat$attr$tx.init.time <- tx.init.time
+  dat$attr$tx.init.time <- tx.init.time   #NA, not race specific
   dat$attr$cum.time.on.tx <- cum.time.on.tx
   dat$attr$cum.time.off.tx <- cum.time.off.tx
-  dat$attr$infector <- infector
-  dat$attr$inf.role <- inf.role
-  dat$attr$inf.type <- inf.type
-  dat$attr$inf.diag <- inf.diag
-  dat$attr$inf.tx <- inf.tx
-  dat$attr$inf.stage <- inf.stage
+  dat$attr$infector <- infector           #NA
+  dat$attr$inf.role <- inf.role           #NA
+  dat$attr$inf.type <- inf.type           #NA
+  dat$attr$inf.diag <- inf.diag           #NA
+  dat$attr$inf.tx <- inf.tx               #NA
+  dat$attr$inf.stage <- inf.stage         #NA
 
-  dat$attr$inf.agecat2 <- inf.agecat2 ###added
-  dat$attr$infd.agecat2 <- infd.agecat2 ###added
+  dat$attr$inf.agecat2 <- inf.agecat2 ###added, NA
+  dat$attr$infd.agecat2 <- infd.agecat2 ###added, NA
 
 
   return(dat)
