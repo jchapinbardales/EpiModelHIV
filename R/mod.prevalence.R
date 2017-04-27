@@ -34,7 +34,7 @@ prevalence_msm <- function(dat, at) {
 
   if (at == 1) {
     dat$epi$num <- rNA      #dat$epi for at=1, nsteps=52 (52 weeks in 1 year) so have 52 values for variables in dat$epi
-    dat$epi$num.B <- rNA    #the first value is at initiation (initial num=1000, etc)
+    dat$epi$num.B <- rNA    #the first value is at initiation (initial num=10000, etc)
     dat$epi$num.W <- rNA    #had to leave num.B/W in because called into births_msm module
     dat$epi$num.Y <- rNA
     dat$epi$num.O <- rNA
@@ -67,6 +67,50 @@ prevalence_msm <- function(dat, at) {
     dat$epi$cprob.always.inst <- rNA
 
     #additional variables to initialize here for age*PT:
+    dat$epi$trans.main <- rNA
+    dat$epi$trans.casl <- rNA
+    dat$epi$trans.inst <- rNA
+
+    dat$epi$trans.recpt.sus <- rNA
+    dat$epi$trans.inst.sus <- rNA
+
+    dat$epi$trans.stage.act <- rNA
+    dat$epi$trans.stage.chr <- rNA
+    dat$epi$trans.stage.aids <- rNA
+
+    #dat$epi$trans.condoms[at] <- rNA
+
+    dat$epi$trans.undx <- rNA
+    dat$epi$trans.notinitiated <- rNA
+    dat$epi$trans.notretained <- rNA
+    dat$epi$trans.partsup <- rNA
+    dat$epi$trans.fullsup <- rNA
+
+    #age specific;
+    dat$epi$trans.Y <- rNA
+    dat$epi$trans.O <- rNA
+    dat$epi$trans.YY <- rNA
+    dat$epi$trans.OY <- rNA
+    dat$epi$trans.OO <- rNA
+
+    #age of infector + PT
+    dat$epi$trans.Ymain <- rNA
+    dat$epi$trans.Omain <- rNA
+    dat$epi$trans.Ycasl <- rNA
+    dat$epi$trans.Ocasl <- rNA
+    dat$epi$trans.Yinst <- rNA
+    dat$epi$trans.Oinst <- rNA
+
+    #agecombo + PT
+    dat$epi$trans.YYmain <- rNA
+    dat$epi$trans.OYmain <- rNA
+    dat$epi$trans.OOmain <- rNA
+    dat$epi$trans.YYcasl <- rNA
+    dat$epi$trans.OYcasl <- rNA
+    dat$epi$trans.OOcasl <- rNA
+    dat$epi$trans.YYinst <- rNA
+    dat$epi$trans.OYinst <- rNA
+    dat$epi$trans.OOinst <- rNA
 
   }
 
@@ -77,24 +121,23 @@ prevalence_msm <- function(dat, at) {
   dat$epi$num.Y[at] <- sum(agecat2 == "Y", na.rm = TRUE)
   dat$epi$num.O[at] <- sum(agecat2 == "O", na.rm = TRUE)
   dat$epi$s.num[at] <- sum(status == 0, na.rm = TRUE)
-  dat$epi$i.num[at] <- sum(status == 1, na.rm = TRUE)
+  dat$epi$i.num[at] <- sum(status == 1, na.rm = TRUE)   #of infected nodes, at step 1 weighted avg of prev Y/O and pop Y/O = 2987;
   # dat$epi$i.num.B[at] <- sum(status == 1 & race == "B", na.rm = TRUE)
   # dat$epi$i.num.W[at] <- sum(status == 1 & race == "W", na.rm = TRUE)
-  dat$epi$i.num.Y[at] <- sum(status == 1 & agecat2 == "Y", na.rm = TRUE)
-  dat$epi$i.num.O[at] <- sum(status == 1 & agecat2 == "O", na.rm = TRUE)
+  dat$epi$i.num.Y[at] <- sum(status == 1 & agecat2 == "Y", na.rm = TRUE)  #810 --> 810/3693=prev.Y
+  dat$epi$i.num.O[at] <- sum(status == 1 & agecat2 == "O", na.rm = TRUE)  #2177 --> 2177/6307=prev.O
   dat$epi$i.prev[at] <- dat$epi$i.num[at] / dat$epi$num[at]
   # dat$epi$i.prev.B[at] <- dat$epi$i.num.B[at] / dat$epi$num.B[at]
   # dat$epi$i.prev.W[at] <- dat$epi$i.num.W[at] / dat$epi$num.W[at]
   dat$epi$i.prev.Y[at] <- dat$epi$i.num.Y[at] / dat$epi$num.Y[at]
   dat$epi$i.prev.O[at] <- dat$epi$i.num.O[at] / dat$epi$num.O[at]
 
-  #additional variables to initialize here for age*PT:
-
-
+  #should I be taking prep stuff out?
   dat$epi$prepCurr[at] <- sum(prepStat == 1, na.rm = TRUE)
   dat$epi$prepElig[at] <- sum(dat$attr$prepElig == 1, na.rm = TRUE)
   dat$epi$i.num.prep0[at] <- sum((is.na(prepStat) | prepStat == 0) &
                                    status == 1, na.rm = TRUE)
+
   dat$epi$i.num.prep1[at] <- sum(prepStat == 1 & status == 1, na.rm = TRUE)
   dat$epi$i.prev.prep0[at] <- dat$epi$i.num.prep0[at] /
     sum((is.na(prepStat) | prepStat == 0), na.rm = TRUE)

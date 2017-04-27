@@ -34,7 +34,8 @@
 #'
 trans_msm <- function(dat, at){
 
-  # Variables -----------------------------------------------------------
+
+    # Variables -----------------------------------------------------------
 
   # Attributes
   vl <- dat$attr$vl
@@ -172,7 +173,9 @@ trans_msm <- function(dat, at){
 
   # Update attributes
 
-  infected <- infector <- inf.type <- NULL
+  infected <- infector <- inf.type <- inf.role <- inf.stage <- inf.condoms <-
+    inf.diag <- inf.cum.time.on.tx <- inf.vl <- NULL
+
   if (sum(trans.ip, trans.rp) > 0) {
 
     infected <- c(disc.ip[trans.ip == 1, 2],
@@ -186,6 +189,8 @@ trans_msm <- function(dat, at){
     inf.stage <- stage[infector]
     inf.diag <- diag.status[infector]
     inf.tx <- tx.status[infector]
+    inf.cum.time.on.tx <- dat$attr$cum.time.on.tx[infector]
+    inf.vl <- vl[infector]
 
     #age
     inf.agecat2 <-agecat2[infector]  #infectors age

@@ -25,7 +25,7 @@ control <- control_msm(simno = 0.253,
                        ncores = 1,
                        save.nwstats = TRUE,
                        verbose.int = 1)
-#sim <- netsim(est, param, init, control)
+sim <- netsim(est, param, init, control)
 # debug(stergm_prep)
 
 param
