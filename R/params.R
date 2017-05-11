@@ -147,7 +147,7 @@
 #'        partnerships (acts per day).
 #' @param base.ai.pers.WW.rate Expected coital frequency in white-white casual
 #'        partnerships (acts per day).
-#'        
+#'
 #' @param base.ai.main.YY.rate Expected coital frequency in young-young main
 #'        partnerships (acts per day).
 #' @param base.ai.main.OY.rate Expected coital frequency in old-young|young-old main
@@ -160,7 +160,7 @@
 #'        partnerships (acts per day).
 #' @param base.ai.pers.OO.rate Expected coital frequency in old-old casual
 #'        partnerships (acts per day).
-#'        
+#'
 #' @param ai.scale General relative scaler for all act rates for model
 #'        calibration.
 #' @param cond.pers.always.prob Fraction of men in casual partnerships who always
@@ -216,7 +216,7 @@
 #' @param cond.rr.OY Condom probability scaler for old-young|young-old partnerships for
 #'        model calibration purposes.
 #' @param cond.rr.OO Condom probability scaler for old-old partnerships for
-#'        model calibration purposes. 
+#'        model calibration purposes.
 #' @param cond.diag.main.beta Beta multiplier for the log odds of using a
 #'        condom in a main partnership if the HIV-infected man has been
 #'        diagnosed.
@@ -282,17 +282,17 @@ param_msm <- function(nwstats,
                       mean.test.W.int = 315,
                       testing.pattern = "memoryless",
                       test.window.int = 21,
-                      
+
                       tt.traj.B.prob = c(0.077, 0.000, 0.356, 0.567),
                       tt.traj.W.prob = c(0.052, 0.000, 0.331, 0.617),
-                      
+
                       tx.init.B.prob = 0.092,
                       tx.init.W.prob = 0.127,
                       tx.halt.B.prob = 0.0102,
                       tx.halt.W.prob = 0.0071,
                       tx.reinit.B.prob = 0.00066,
                       tx.reinit.W.prob = 0.00291,
-                      
+
                       max.time.off.tx.full.int = 520 * 7,
                       max.time.on.tx.part.int = 52 * 15 * 7,
                       max.time.off.tx.part.int = 520 * 7,
@@ -309,18 +309,18 @@ param_msm <- function(nwstats,
                       full.supp.up.slope = 0.25,
                       part.supp.down.slope = 0.25,
                       part.supp.up.slope = 0.25,
-                      
+
                       b.B.rate = 1e-3 / 7,
                       b.W.rate = 1e-3 / 7,
                       birth.age = 18,
                       b.method = "fixed",
-                      
+
                       URAI.prob = 0.0082 * 1.09,
                       UIAI.prob = 0.0031 * 1.09,
                       acute.rr = 6,
                       circ.rr = 0.4,
                       condom.rr = 0.295,
-                      
+
                       # disc.outset.main.B.prob = 0.685,
                       # disc.outset.main.W.prob = 0.889,
                       # disc.at.diag.main.B.prob = 1,
@@ -335,7 +335,7 @@ param_msm <- function(nwstats,
                       # disc.post.diag.pers.W.prob = 0,
                       # disc.inst.B.prob = 0.445,
                       # disc.inst.W.prob = 0.691,
-                      
+
                       disc.outset.main.Y.prob = 0.5672,
                       disc.outset.main.O.prob = 0.6102,
                       disc.at.diag.main.Y.prob = 1,
@@ -350,14 +350,14 @@ param_msm <- function(nwstats,
                       disc.post.diag.pers.O.prob = 0,
                       disc.inst.Y.prob = 0.4595,
                       disc.inst.O.prob = 0.5023,
-                      
+
                       circ.B.prob = 0.874,
                       circ.W.prob = 0.918,
-                      
+
                       ccr5.B.prob = c(0, 0.034),
                       ccr5.W.prob = c(0.021, 0.176),
                       ccr5.heteroz.rr = 0.3,
-                      
+
                       num.inst.ai.classes = 1,
                       # base.ai.main.BB.rate = 0.17,
                       # base.ai.main.BW.rate = 0.26,
@@ -365,7 +365,7 @@ param_msm <- function(nwstats,
                       # base.ai.pers.BB.rate = 0.11,
                       # base.ai.pers.BW.rate = 0.16,
                       # base.ai.pers.WW.rate = 0.14,
-                      
+
                       base.ai.main.YY.rate = 0.1565,
                       base.ai.main.OY.rate = 0.1638,
                       base.ai.main.OO.rate = 0.2040,
@@ -373,11 +373,11 @@ param_msm <- function(nwstats,
                       base.ai.pers.OY.rate = 0.1087,
                       base.ai.pers.OO.rate = 0.1354,
                       ai.scale = 1,
-                      
+
                       cond.pers.always.prob = 0.216,
                       cond.inst.always.prob = 0.326,
                       cond.always.prob.corr = 0.5,
-                      
+
                       # cond.main.BB.prob = 0.38,
                       # cond.main.BW.prob = 0.10,
                       # cond.main.WW.prob = 0.15,
@@ -405,22 +405,22 @@ param_msm <- function(nwstats,
                       cond.rr.YY = 1,
                       cond.rr.OY = 1,
                       cond.rr.OO = 1,
-                      
+
                       cond.diag.main.beta = -0.67,
                       cond.discl.main.beta = -0.85,
                       cond.diag.pers.beta = -0.67,
                       cond.discl.pers.beta = -0.85,
                       cond.diag.inst.beta = -0.67,
                       cond.discl.inst.beta = -0.85,
-                      
+
                       # vv.iev.BB.prob = 0.42,
                       # vv.iev.BW.prob = 0.56,
                       # vv.iev.WW.prob = 0.49,
-                      
+
                       vv.iev.YY.prob = 0.40,
                       vv.iev.OY.prob = 0.48,
                       vv.iev.OO.prob = 0.40,
-                      
+
                       prep.start = Inf,
                       prep.elig.model = "base",
                       prep.class.prob = c(0.211, 0.07, 0.1, 0.619),
@@ -432,15 +432,15 @@ param_msm <- function(nwstats,
                       prep.risk.int = 182,
                       prep.risk.reassess = TRUE,
                       ...) {
-  
+
   p <- get_args(formal.args = formals(sys.function()),
                 dot.args = list(...))
-  
+
   if (!(testing.pattern %in% c("memoryless", "interval"))) {
     stop("testing.pattern must be \"memoryless\" or \"interval\" ",
          call. = FALSE)
   }
-  
+
   if (race.method == 1) {
     p$last.neg.test.B.int = (last.neg.test.B.int + last.neg.test.W.int)/2
     p$last.neg.test.W.int = (last.neg.test.B.int + last.neg.test.W.int)/2
@@ -460,10 +460,10 @@ param_msm <- function(nwstats,
     # p$disc.outset.pers.W.prob = (disc.outset.pers.B.prob + disc.outset.pers.W.prob)/2
     # p$disc.inst.B.prob = (disc.inst.B.prob + disc.inst.W.prob)/2
     # p$disc.inst.W.prob = (disc.inst.B.prob + disc.inst.W.prob)/2
-    # p$circ.B.prob = (circ.B.prob + circ.W.prob)/2
-    # p$circ.W.prob = (circ.B.prob + circ.W.prob)/2
-    # p$ccr5.B.prob = (ccr5.B.prob + ccr5.W.prob)/2
-    # p$ccr5.W.prob = (ccr5.B.prob + ccr5.W.prob)/2
+    p$circ.B.prob = (circ.B.prob + circ.W.prob)/2
+    p$circ.W.prob = (circ.B.prob + circ.W.prob)/2
+    p$ccr5.B.prob = (ccr5.B.prob + ccr5.W.prob)/2
+    p$ccr5.W.prob = (ccr5.B.prob + ccr5.W.prob)/2
     # p$base.ai.main.BB.rate = (base.ai.main.BB.rate + base.ai.main.BW.rate +
     #                             base.ai.main.WW.rate)/3
     # p$base.ai.main.BW.rate = (base.ai.main.BB.rate + base.ai.main.BW.rate +
@@ -489,38 +489,38 @@ param_msm <- function(nwstats,
     # p$vv.iev.BW.prob = (vv.iev.BB.prob + vv.iev.BW.prob + vv.iev.WW.prob)/3
     # p$vv.iev.WW.prob = (vv.iev.BB.prob + vv.iev.BW.prob + vv.iev.WW.prob)/3
   }
-  
+
   p$time.unit <- nwstats$time.unit
-  
+
   intvars <- grep(names(p), pattern = ".int", fixed = TRUE)
   p[intvars] <- lapply(p[intvars], FUN = function(x) round(x / p$time.unit))
-  
+
   ratevars <- grep(names(p), pattern = ".rate", fixed = TRUE)
   p[ratevars] <- lapply(p[ratevars], FUN = function(x) x * p$time.unit)
-  
+
   # p$role.B.prob <- nwstats$role.B.prob
   # p$role.W.prob <- nwstats$role.W.prob
-  
+
   p$role.Y.prob <- nwstats$role.Y.prob
   p$role.O.prob <- nwstats$role.O.prob
-  
+
   p$inst.trans.matrix <- matrix(1, nrow = 1)
   p$role.trans.matrix <- matrix(c(1, 0, 0,
                                   0, 1, 0,
                                   0, 0, 1),
                                 nrow = 3)
-  
-  
+
+
   p$riskh.start <- max(1, prep.start - prep.risk.int - 1)
-  
+
   p$method <- nwstats$method
   p$modes <- 1
-  
+
   p$asmr.B <- nwstats$asmr.B
   p$asmr.W <- nwstats$asmr.W
-  
+
   p$nwstats <- NULL
-  
+
   class(p) <- "param.net"
   return(p)
 }
@@ -547,28 +547,28 @@ param_msm <- function(nwstats,
 init_msm <- function(nwstats,
                      # prev.B = 0.15,
                      # prev.W = 0.15,
-                     
+
                      prev.Y = 0.2192,
                      prev.O = 0.3452,
                      ...) {
-  
+
   p <- get_args(formal.args = formals(sys.function()),
                 dot.args = list(...))
-  
+
   p$num.B <- nwstats$num.B  #do I need these?
   p$num.W <- nwstats$num.W
-  
+
   p$num.Y <- nwstats$num.Y
   p$num.O <- nwstats$num.O
-  
+
   p$ages <- nwstats$ages
-  
+
   #where does init.prev.age.slope.B come from?  how would this apply to agecat2?
   # p$init.prev.age.slope.B <- prev.B / 12
   # p$init.prev.age.slope.W <- prev.W / 12
-  
+
   p$nwstats <- NULL
-  
+
   class(p) <- "init.net"
   return(p)
 }

@@ -19,7 +19,7 @@
 #' exist.
 #'
 #' @keywords module msm
-#' 
+#'
 #' @export
 #'
 verbose_msm <- function(x, type, s, at) {
@@ -46,6 +46,8 @@ verbose_msm <- function(x, type, s, at) {
                 "\nTot Prev: ", round(x$epi$i.num[at] / x$epi$num[at], 3),
                 "\nWht Prev: ", round(x$epi$i.num.W[at] / x$epi$num.W[at], 3),
                 "\nBlk Prev: ", round(x$epi$i.num.B[at] / x$epi$num.B[at], 3),
+                "\nYng Prev: ", round(x$epi$i.num.O[at] / x$epi$num.O[at], 3),
+                "\nOld Prev: ", round(x$epi$i.num.Y[at] / x$epi$num.Y[at], 3),
                 "\n\n", sep = "", file = fn)
           }
         }
@@ -56,8 +58,10 @@ verbose_msm <- function(x, type, s, at) {
           nsteps <- x$control$nsteps
           time.unit <- x$param$time.unit
           prev <- round(x$epi$i.prev[at], 3)
-          prev.B <- round(x$epi$i.prev.B[at], 3)
-          prev.W <- round(x$epi$i.prev.W[at], 3)
+          #prev.B <- round(x$epi$i.prev.B[at], 3)
+          #prev.W <- round(x$epi$i.prev.W[at], 3)
+          prev.Y <- round(x$epi$i.prev.Y[at], 3)
+          prev.O <- round(x$epi$i.prev.O[at], 3)
 
           cat("\014")
           cat("\nEpidemic Simulation")
@@ -74,8 +78,10 @@ verbose_msm <- function(x, type, s, at) {
           cat("\nCurr Incidence:", x$epi$incid[at])
           cat("\nCuml Incidence:", sum(x$epi$incid, na.rm = TRUE))
           cat("\nTotal Prevalence: ", x$epi$i.num[at], " (", prev, ")", sep = "")
-          cat("\nBlack Prevalence: ", x$epi$i.num.B[at], " (", prev.B, ")", sep = "")
-          cat("\nWhite Prevalence: ", x$epi$i.num.W[at], " (", prev.W, ")", sep = "")
+          #cat("\nBlack Prevalence: ", x$epi$i.num.B[at], " (", prev.B, ")", sep = "")
+          #cat("\nWhite Prevalence: ", x$epi$i.num.W[at], " (", prev.W, ")", sep = "")
+          cat("\nYoung Prevalence: ", x$epi$i.num.Y[at], " (", prev.Y, ")", sep = "")
+          cat("\nOld Prevalence: ", x$epi$i.num.O[at], " (", prev.O, ")", sep = "")
           cat("\n==============================")
 
         }
@@ -107,7 +113,7 @@ verbose_msm <- function(x, type, s, at) {
 #' exist.
 #'
 #' @keywords module het
-#' 
+#'
 #' @export
 #'
 verbose_het <- function(x, type, s, at) {

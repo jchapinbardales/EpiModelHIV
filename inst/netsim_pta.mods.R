@@ -20,12 +20,13 @@ init <- init_msm(nwstats = st,
                  prev.Y = 0.2192,
                  prev.O = 0.3452)
 control <- control_msm(simno = 0.253,
-                       nsteps = 52,
-                       nsims = 5,
+                       nsteps = 52, #1500
+                       nsims = 5, #1
                        ncores = 1,
                        save.nwstats = TRUE,
                        verbose.int = 1)
-sim <- netsim(est, param, init, control)
+#sim <- netsim(est, param, init, control)
+# to see code for netsim, just type netsim into console
 # debug(stergm_prep)
 
 param
@@ -42,8 +43,14 @@ dat <- initialize_msm(est, param, init, control, s = 1)
 
 
 at <- at + 1
+
 dat <- aging_msm(dat, at)
+
+
+at <- at + 1
 dat <- deaths_msm(dat, at)
+
+
 dat <- births_msm(dat, at)
 dat <- test_msm(dat, at)
 dat <- tx_msm(dat, at)

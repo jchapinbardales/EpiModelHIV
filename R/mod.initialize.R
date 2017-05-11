@@ -22,6 +22,7 @@
 #'
 initialize_msm <- function(x, param, init, control, s) {
 
+
   # Master data list
   dat <- list()
   dat$param <- param
@@ -130,8 +131,8 @@ initialize_msm <- function(x, param, init, control, s) {
   # One-off AI class
   inst.ai.class <- rep(NA, num)
   ncl <- param$num.inst.ai.classes
-  inst.ai.class[ids.B] <- sample(apportion_lr(num.B, 1:ncl, rep(1 / ncl, ncl))) #do i have to take these out or can leave?
-  inst.ai.class[ids.W] <- sample(apportion_lr(num.W, 1:ncl, rep(1 / ncl, ncl)))
+  #inst.ai.class[ids.B] <- sample(apportion_lr(num.B, 1:ncl, rep(1 / ncl, ncl))) #do i have to take these out or can leave?
+  #inst.ai.class[ids.W] <- sample(apportion_lr(num.W, 1:ncl, rep(1 / ncl, ncl)))
   #dat$attr$inst.ai.class <- inst.ai.class
 
   inst.ai.class[ids.Y] <- sample(apportion_lr(num.Y, 1:ncl, rep(1 / ncl, ncl)))
@@ -145,7 +146,7 @@ initialize_msm <- function(x, param, init, control, s) {
 
   # Ins.quot
   ins.quot <- rep(NA, num)
-  ins.quot[role.class == "I"]  <- 1  #if insertive, 1; if recep 0; if vers, then prob of being vers ass
+  ins.quot[role.class == "I"]  <- 1  #if insertive, 1; if recep 0; if vers, then prob of being vers
   ins.quot[role.class == "R"]  <- 0
   ins.quot[role.class == "V"]  <- runif(sum(role.class == "V"))  #assigns prob from random uniform dist (b/w 0 and 1)
   dat$attr$ins.quot <- ins.quot
@@ -175,6 +176,32 @@ initialize_msm <- function(x, param, init, control, s) {
 
 
   dat <- prevalence_msm(dat, at = 1)
+
+  #calls prev module only at step=1 and sets up vectors with rNAs, the epi vector
+  #with a variety of attributes that can be monitored from week to week over each
+  #simulation
+
+  # EXAMPLE:
+  #   if (at == 1) {
+  #   dat$epi$num <- rNA      #dat$epi for at=1, nsteps=52 (52 weeks in 1 year) so have 52 values for variables in dat$epi
+  #   dat$epi$num.B <- rNA    #the first value is at initiation (initial num=10000, etc)
+  #   dat$epi$num.W <- rNA    #had to leave num.B/W in because called into births_msm module
+  #   dat$epi$num.Y <- rNA
+  #   dat$epi$num.O <- rNA
+  #   dat$epi$s.num <- rNA
+  #   dat$epi$i.num <- rNA
+  #   dat$epi$i.num.Y <- rNA    #i.num.Y = at step 1, at initiation, number of Y nodes that are infected;
+  #   dat$epi$i.num.O <- rNA
+  #   dat$epi$i.prev <- rNA
+  #   dat$epi$i.prev.Y <- rNA
+  #   dat$epi$i.prev.O <- rNA
+  #   dat$epi$nBirths <- rNA
+  #   dat$epi$dth.gen <- rNA
+  #   dat$epi$dth.dis <- rNA
+  #   dat$epi$incid <- rNA
+
+
+
 
   class(dat) <- "dat"
   return(dat)
