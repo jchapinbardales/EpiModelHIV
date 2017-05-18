@@ -22,7 +22,6 @@
 #'
 disclose_msm <- function(dat, at){
 
-
   for (type in c("main", "pers", "inst")) {
 
     # Variables --------------------------------------------------------------
@@ -86,7 +85,7 @@ disclose_msm <- function(dat, at){
     disc.el <- rbind(posneg, negpos[, 2:1])
 
     # Check for not already disclosed
-    discl.list <- dat$temp$discl.list
+    discl.list <- dat$temp$discl.list  #even though this comes after main, won't include casual edges so won't match up (not individual)
     disclose.cdl <- discl.list[, 1] * 1e7 + discl.list[, 2]
     discord.cdl <- uid[disc.el[, 1]] * 1e7 + uid[disc.el[, 2]]
     notdiscl <- !(discord.cdl %in% disclose.cdl)
@@ -96,7 +95,7 @@ disclose_msm <- function(dat, at){
     nd <- disc.el[notdiscl, , drop = FALSE]
 
     # Check for positive diagnosis
-    notdiscl.dx <- which(diag.status[nd[, 1]] == 1)
+    notdiscl.dx <- which(diag.status[nd[, 1]] == 1) #find discordant, nondisclosed edges where pos is diagnosed
 
     # data frame of non-disclosed pairs where infected is dx'ed
     nd.dx <- nd[notdiscl.dx, , drop = FALSE]
@@ -142,7 +141,7 @@ disclose_msm <- function(dat, at){
 
         # Assign disclosure probs
         dl.prob <- vector("numeric", length = nrow(nd.dx))
-        dl.prob[pos.agecat2 == "Y" & new.rel == TRUE] <- disc.outset.Y.prob
+        dl.prob[pos.agecat2 == "Y" & new.rel == TRUE] <- disc.outset.Y.prob        #at=2, all are new rel so only outset probs;
         dl.prob[pos.agecat2 == "Y" & new.rel == FALSE & new.dx == TRUE] <- disc.at.diag.Y.prob
         dl.prob[pos.agecat2 == "Y" & new.rel == FALSE & new.dx == FALSE] <- disc.post.diag.Y.prob
 
@@ -165,19 +164,19 @@ disclose_msm <- function(dat, at){
         discl.mat <- cbind(pos = uid[nd.dx[discl, 1]],
                            neg = uid[nd.dx[discl, 2]],
                            discl.time = at)
-        dat$temp$discl.list <- rbind(dat$temp$discl.list, discl.mat)
+        dat$temp$discl.list <- rbind(dat$temp$discl.list, discl.mat) #adds list from main to that of casual, from m/c to inst for complete list of edges
       }
     }
   }
 
   if (at > 2) {
-    discl.list <- dat$temp$discl.list
-    master.el <- rbind(dat$el[[1]], dat$el[[2]], dat$el[[3]])
-    m <- which(match(discl.list[, 1] * 1e7 + discl.list[, 2],
+    discl.list <- dat$temp$discl.list  #sets the temp at that timestep to the discl.list
+    master.el <- rbind(dat$el[[1]], dat$el[[2]], dat$el[[3]])                 #creates master el
+    m <- which(match(discl.list[, 1] * 1e7 + discl.list[, 2],                 #gives a unique sequential id to the new discordant disclosed partnerships from that timestep
                      uid[master.el[, 1]] * 1e7 + uid[master.el[, 2]]) |
                  match(discl.list[, 2] * 1e7 + discl.list[, 1],
                        uid[master.el[, 1]] * 1e7 + uid[master.el[, 2]]))
-    dat$temp$discl.list <- discl.list[m, ]
+    dat$temp$discl.list <- discl.list[m, ]                                    #resets the temp discl list to the el according to the seq new disc discl edge id list
   }
 
   return(dat)

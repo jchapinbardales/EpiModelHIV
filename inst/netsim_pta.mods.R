@@ -14,14 +14,14 @@ load("C:/Users/jchapi2/Documents/GitHub/EpiModelHIV/est/st.rda")
 #data(st)
 
 param <- param_msm(nwstats = st,
-                   ai.scale = 1.323,
+                   ai.scale = 1,
                    prep.coverage = 0)
 init <- init_msm(nwstats = st,
                  prev.Y = 0.2192,
                  prev.O = 0.3452)
 control <- control_msm(simno = 0.253,
-                       nsteps = 52, #1500
-                       nsims = 5, #1
+                       nsteps = 1300, #1500
+                       nsims = 1, #1, 5 is alot - hyac;
                        ncores = 1,
                        save.nwstats = TRUE,
                        verbose.int = 1)
@@ -37,7 +37,6 @@ control
 at <- 1
 dat <- initialize_msm(est, param, init, control, s = 1)
 # dat <- reinit_msm(sim, param, init, control, s = 1)
-
 # mf <- dat$p[[1]]$model.form
 # mf$terms[[4]]
 
@@ -45,12 +44,7 @@ dat <- initialize_msm(est, param, init, control, s = 1)
 at <- at + 1
 
 dat <- aging_msm(dat, at)
-
-
-at <- at + 1
 dat <- deaths_msm(dat, at)
-
-
 dat <- births_msm(dat, at)
 dat <- test_msm(dat, at)
 dat <- tx_msm(dat, at)
@@ -59,7 +53,7 @@ dat <- progress_msm(dat, at)
 dat <- vl_msm(dat, at)
 # dat <- update_aiclass_msm(dat, at)
 # dat <- update_roleclass_msm(dat, at)
-dat <- simnet_msm(dat, at)                  #doesn't work right now;
+dat <- simnet_msm(dat, at)
 dat <- disclose_msm(dat, at)
 dat <- acts_msm(dat, at)
 dat <- condoms_msm(dat, at)

@@ -15,6 +15,7 @@ prep_msm <- function(dat, at) {
   if (at < dat$param$prep.start) {
     return(dat)
   }
+    #returns out bc at < prep.start=inf
 
   ## Variables
   status <- dat$attr$status

@@ -41,20 +41,20 @@ births_msm <- function(dat, at){
     numW <- dat$epi$num.W[at - 1]
   }
 
-  nBirths.B <- rpois(1, b.B.rate * numB)
+  nBirths.B <- rpois(1, b.B.rate * numB) # tho these are separate, same rate of 0.001/7
   nBirths.W <- rpois(1, b.W.rate * numW)
   nBirths <- nBirths.B + nBirths.W
 
   ## Update Attr
   if (nBirths > 0) {
-    dat <- setBirthAttr_msm(dat, at, nBirths.B, nBirths.W)
+    dat <- setBirthAttr_msm(dat, at, nBirths.B, nBirths.W)  #runs function below, gives attr to new births;
   }
 
 
   # Update Networks
   if (nBirths > 0) {
     for (i in 1:3) {
-      dat$el[[i]] <- add_vertices(dat$el[[i]], nBirths)
+      dat$el[[i]] <- add_vertices(dat$el[[i]], nBirths)  #addes the new vertices into dataset
     }
   }
 
@@ -79,8 +79,12 @@ setBirthAttr_msm <- function(dat, at, nBirths.B, nBirths.W) {
 
   # Demographic
   dat$attr$active[newIds] <- rep(1, nBirths)
-  dat$attr$uid[newIds] <- dat$temp$max.uid + (1:nBirths)
-  dat$temp$max.uid <- dat$temp$max.uid + nBirths
+  dat$attr$uid[newIds] <- dat$temp$max.uid + (1:nBirths) #uid doesn't get repeated then
+  dat$temp$max.uid <- dat$temp$max.uid + nBirths         #uid always add on to n + births
+                                                         #previous max (10000) + 8 new births last time + 14 births this time = 10022
+                                                         #but newIDs used below -- just for setting initial attributes
+                                                         #uid should be used for edgelists and referring to correct/same people
+                                                         #no matter the timestep (may infect and then die, don't refer to new birth guy who took over that newID)
 
   dat$attr$arrival.time[newIds] <- rep(at, nBirths)
 
@@ -110,12 +114,17 @@ setBirthAttr_msm <- function(dat, at, nBirths.B, nBirths.W) {
   dat$attr$circ[newIds[newW]] <- rbinom(nBirths.W, 1, dat$param$circ.W.prob)
 
   # Role
-  dat$attr$role.class[newIds[newB]] <- sample(c("I", "R", "V"),
-                                              nBirths.B, replace = TRUE,
-                                              prob = dat$param$role.B.prob)
-  dat$attr$role.class[newIds[newW]] <- sample(c("I", "R", "V"),
-                                              nBirths.W, replace = TRUE,
-                                              prob = dat$param$role.W.prob)
+  # dat$attr$role.class[newIds[newB]] <- sample(c("I", "R", "V"),
+  #                                             nBirths.B, replace = TRUE,
+  #                                             prob = dat$param$role.B.prob)
+  # dat$attr$role.class[newIds[newW]] <- sample(c("I", "R", "V"),
+  #                                             nBirths.W, replace = TRUE,
+  #                                             prob = dat$param$role.W.prob)
+
+  dat$attr$role.class[newIds] <- sample(c("I", "R", "V"),
+                                        nBirths, replace = TRUE,
+                                        prob = dat$param$role.Y.prob)  #assigning role to new Births in line w/ young role distribution;
+
 
   ins.quot <- rep(NA, nBirths)
   ins.quot[dat$attr$role.class[newIds] == "I"]  <- 1

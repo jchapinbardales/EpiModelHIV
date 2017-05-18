@@ -14,7 +14,6 @@
 #'
 simnet_msm <- function(dat, at) {
 
-
   ## Edges correction
   dat <- edges_correct_msm(dat, at)
 
@@ -41,7 +40,7 @@ simnet_msm <- function(dat, at) {
     new.edges.m <- attributes(dat$el[[1]])$changes
     new.edges.m <- new.edges.m[new.edges.m[, "to"] == 1, 1:2, drop = FALSE]
   }
-  dat$temp$new.edges <- matrix(dat$attr$uid[new.edges.m], ncol = 2)
+  dat$temp$new.edges <- matrix(dat$attr$uid[new.edges.m], ncol = 2)  #how does this organize the edges? reorders them bc last one not same...
 
 
   ## Casual network
