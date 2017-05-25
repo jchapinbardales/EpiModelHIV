@@ -36,7 +36,7 @@ acts_msm <- function(dat, at) {
     # Parameters
     ai.scale <- dat$param$ai.scale
     if (type == "main") {
-      base.ai.YY.rate <- dat$param$base.ai.main.YY.rate  # giving 1.09 instead of 0.15 - wheres the transformation;
+      base.ai.YY.rate <- dat$param$base.ai.main.YY.rate
       base.ai.OY.rate <- dat$param$base.ai.main.OY.rate
       base.ai.OO.rate <- dat$param$base.ai.main.OO.rate
       # base.ai.BB.rate <- dat$param$base.ai.main.BB.rate
@@ -75,9 +75,9 @@ acts_msm <- function(dat, at) {
 
     st1 <- status[el[, 1]]
     st2 <- status[el[, 2]]
-    disc <- abs(st1 - st2) == 1 #discordant in which st1=1 and st2=0;
-    el[which(disc == 1 & st2 == 1), ] <- el[which(disc == 1 & st2 == 1), 2:1] #switches second place to first
-    el <- cbind(el, status[el[, 1]], status[el[, 2]])
+    disc <- abs(st1 - st2) == 1 #discordant ;
+    el[which(disc == 1 & st2 == 1), ] <- el[which(disc == 1 & st2 == 1), 2:1] #switches second column to first for those disc pairs that the st2 position is the positive one
+    el <- cbind(el, status[el[, 1]], status[el[, 2]])                         #this makes is so either: 0 0, 1 0, 1 1 -- then subtract st1-st2=1 to get disc edgelist later (condoms)
     colnames(el) <- c("p1", "p2", "st1", "st2")
 
     if (nrow(el) > 0) {
@@ -96,10 +96,10 @@ acts_msm <- function(dat, at) {
       ai.rate <- rep(NA, nrow(el))
       agecat2.p1 <- agecat2[el[, 1]]
       agecat2.p2 <- agecat2[el[, 2]]
-      num.Y <- (agecat2.p1 == "Y") + (agecat2.p2 == "Y")  #does this create prob w/ num.Y= num of y nodes?
-      ai.rate <- (num.Y == 2) * base.ai.YY.rate +    #YY
-        (num.Y == 1) * base.ai.OY.rate +    #OY
-        (num.Y == 0) * base.ai.OO.rate      #OO
+      num.Y <- (agecat2.p1 == "Y") + (agecat2.p2 == "Y")  #does this create prob w/ num.Y= num of y nodes? no bc we dont set it to dat
+      ai.rate <- (num.Y == 2) * base.ai.YY.rate +    #YY 1.0955 0.7273
+        (num.Y == 1) * base.ai.OY.rate +    #OY 1.1466 0.7609
+        (num.Y == 0) * base.ai.OO.rate      #OO 1.4280 0.9478
       ai.rate <- ai.rate * ai.scale
 
       # Final act number
@@ -116,13 +116,13 @@ acts_msm <- function(dat, at) {
       if (type == "main") {
         dat$temp$el <- el
       } else {
-        dat$temp$el <- rbind(dat$temp$el, el)
+        dat$temp$el <- rbind(dat$temp$el, el) #concatenates other el from cas, inst
       }
     }
 
   } # loop over type end
 
-  # Remove inactive edges from el
+  # Remove inactive edges (acts = 0 this timestep) from el
   dat$temp$el <- dat$temp$el[-which(dat$temp$el[, "ai"] == 0), ]
 
   return(dat)

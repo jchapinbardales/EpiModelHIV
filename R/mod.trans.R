@@ -125,7 +125,7 @@ trans_msm <- function(dat, at){
   rp.vl <- vl[disc.rp[, 2]]
   rp.stage <- stage[disc.rp[, 2]]
 
-  # Attributes of susceptible
+  # Attributes of susceptible - no longer on right, reorder for ins, rec
   rp.circ <- circ[disc.rp[, 1]]
   rp.ccr5 <- ccr5[disc.rp[, 1]]
   rp.prep <- prepStat[disc.rp[, 1]]

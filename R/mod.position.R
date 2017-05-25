@@ -32,7 +32,7 @@ position_msm <- function(dat, at) {
   }
 
   status <- dat$attr$status
-  dal <- al[which(status[al[, 1]] == 1 & status[al[, 2]] == 0), ]
+  dal <- al[which(status[al[, 1]] == 1 & status[al[, 2]] == 0), ] #discordant act list
   dat$temp$al <- NULL
 
   role.class <- dat$attr$role.class
@@ -49,14 +49,14 @@ position_msm <- function(dat, at) {
 
 
   ## Process
-  pos.role.class <- role.class[dal[, 1]]
+  pos.role.class <- role.class[dal[, 1]]  #pos/neg ok bc discordant al
   neg.role.class <- role.class[dal[, 2]]
 
   ins <- rep(NA, length(pos.role.class))
-  ins[which(pos.role.class == "I")] <- 1  # "P"
+  ins[which(pos.role.class == "I")] <- 1  # "P" - higher potential risk of trans
   ins[which(pos.role.class == "R")] <- 0  # "N"
   ins[which(neg.role.class == "I")] <- 0  # "N"
-  ins[which(neg.role.class == "R")] <- 1  # "P"
+  ins[which(neg.role.class == "R")] <- 1  # "P" - higher potential risk of acq
 
   # vv <- which(pos.role.class == "V" & neg.role.class == "V")
   # vv.race.combo <- paste0(race[dal[, 1]][vv], race[dal[, 2]][vv])
@@ -77,15 +77,17 @@ position_msm <- function(dat, at) {
   ins[vv[iev == 1]] <- 2 # "Y"
   vv.remaining <- vv[iev == 0]
 
-  inspos.prob <- ins.quot[dal[, 1][vv.remaining]] /
+  inspos.prob <- ins.quot[dal[, 1][vv.remaining]] /   #assigned unif prob for being insertive of p1 who is still left vv for act /
                 (ins.quot[dal[, 1][vv.remaining]] + ins.quot[dal[, 2][vv.remaining]])
+  #assigned unif prob for being insertive of p1 who is still left vv for act + assigned unif prob for being insertive of p2 who is still left vv for act
+
   inspos <- rbinom(length(vv.remaining), 1, inspos.prob)
   ins[vv.remaining[inspos == 1]] <- 1  # "P"
   ins[vv.remaining[inspos == 0]] <- 0  # "N"
 
 
   ## Output
-  dat$temp$dal <- cbind(dal, ins)
+  dat$temp$dal <- cbind(dal, ins)  #pos, neg, ptype, uai, pid, insertive -- is actually pos/neg bc disc act list;
 
   return(dat)
 }

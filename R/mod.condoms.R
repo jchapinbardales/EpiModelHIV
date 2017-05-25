@@ -41,9 +41,9 @@ condoms_msm <- function(dat, at) {
     # cond.rr.WW <- dat$param$cond.rr.WW
 
     if (type == "main") {
-      cond.YY.prob <- dat$param$cond.main.YY.prob
-      cond.OY.prob <- dat$param$cond.main.OY.prob
-      cond.OO.prob <- dat$param$cond.main.OO.prob
+      cond.YY.prob <- dat$param$cond.main.YY.prob #0.5194
+      cond.OY.prob <- dat$param$cond.main.OY.prob #0.3318
+      cond.OO.prob <- dat$param$cond.main.OO.prob #0.3037
       #   cond.BB.prob <- dat$param$cond.main.BB.prob
       #   cond.BW.prob <- dat$param$cond.main.BW.prob
       #   cond.WW.prob <- dat$param$cond.main.WW.prob
@@ -53,9 +53,9 @@ condoms_msm <- function(dat, at) {
       ptype <- 1
     }
     if (type == "pers") {
-      cond.YY.prob <- dat$param$cond.pers.YY.prob
-      cond.OY.prob <- dat$param$cond.pers.OY.prob
-      cond.OO.prob <- dat$param$cond.pers.OO.prob
+      cond.YY.prob <- dat$param$cond.pers.YY.prob #0.2923
+      cond.OY.prob <- dat$param$cond.pers.OY.prob #0.3286
+      cond.OO.prob <- dat$param$cond.pers.OO.prob #0.2363
       #   cond.BB.prob <- dat$param$cond.pers.BB.prob
       #   cond.BW.prob <- dat$param$cond.pers.BW.prob
       #   cond.WW.prob <- dat$param$cond.pers.WW.prob
@@ -65,9 +65,9 @@ condoms_msm <- function(dat, at) {
       ptype <- 2
     }
     if (type == "inst") {
-      cond.YY.prob <- dat$param$cond.inst.YY.prob
-      cond.OY.prob <- dat$param$cond.inst.OY.prob
-      cond.OO.prob <- dat$param$cond.inst.OO.prob
+      cond.YY.prob <- dat$param$cond.inst.YY.prob #0.2828
+      cond.OY.prob <- dat$param$cond.inst.OY.prob #0.3381
+      cond.OO.prob <- dat$param$cond.inst.OO.prob #0.2201
       #   cond.BB.prob <- dat$param$cond.inst.BB.prob
       #   cond.BW.prob <- dat$param$cond.inst.BW.prob
       #   cond.WW.prob <- dat$param$cond.inst.WW.prob
@@ -94,9 +94,9 @@ condoms_msm <- function(dat, at) {
     agecat2.p1 <- agecat2[elt[, 1]]  #taking partner 1
     agecat2.p2 <- agecat2[elt[, 2]]  #taking partner 2
     num.Y <- (agecat2.p1 == "Y") + (agecat2.p2 == "Y")  #concordant age edges
-    cond.prob <- (num.Y == 2) * (cond.YY.prob * cond.rr.YY) + #if num.Y=2 then both YY -- all of these some value in params
-      (num.Y == 1) * (cond.OY.prob * cond.rr.OY) +
-      (num.Y == 0) * (cond.OO.prob * cond.rr.OO)
+    cond.prob <- (num.Y == 2) * (cond.YY.prob * cond.rr.YY) + #if num.Y=2 then both YY -- all of these some value in params #0.5194 0.2923
+      (num.Y == 1) * (cond.OY.prob * cond.rr.OY) + #0.3318 0.3286
+      (num.Y == 0) * (cond.OO.prob * cond.rr.OO) #0.3037 0.2363
 
 
     # Transform to UAI logit
@@ -104,16 +104,17 @@ condoms_msm <- function(dat, at) {
     uai.logodds <- log(uai.prob / (1 - uai.prob))
 
     # Diagnosis modifier
-    pos.diag <- diag.status[elt[, 1]]
-    isDx <- which(pos.diag == 1)
-    uai.logodds[isDx] <- uai.logodds[isDx] + diag.beta
+    pos.diag <- diag.status[elt[, 1]]   #el=p1, p2, st1, st2, ptype, ai
+    isDx <- which(pos.diag == 1)        #so take those whose p1 is positive diag -- we did switch those pos to p1, but could be that p2 is also pos
+                                        #and we don't know whether they are diagnosed...?
+    uai.logodds[isDx] <- uai.logodds[isDx] + diag.beta #uai prob for those who are diagnosed positive;
 
     # Disclosure modifier
     isDiscord <- which((elt[, "st1"] - elt[, "st2"]) == 1)
-    delt <- elt[isDiscord, ]
-    discl.list <- dat$temp$discl.list
+    delt <- elt[isDiscord, ]          #creating discordant el;
+    discl.list <- dat$temp$discl.list  #list of those disclosed and at what time (first time is only 2)
     disclose.cdl <- discl.list[, 1] * 1e7 + discl.list[, 2]
-    delt.cdl <- uid[delt[, 1]] * 1e7 + uid[delt[, 2]]
+    delt.cdl <- uid[delt[, 1]] * 1e7 + uid[delt[, 2]]  #creating some unique uid for dyad (XXXX000XXXX)
     discl.disc <- (delt.cdl %in% disclose.cdl)
 
     discl <- rep(NA, nrow(elt))
@@ -135,7 +136,7 @@ condoms_msm <- function(dat, at) {
       ca2 <- cond.always[elt[, 2]]
       uai.prob <- ifelse(ca1 == 1 | ca2 == 1, 0, uai.prob)
       if (type == "pers") {
-        dat$epi$cprob.always.pers[at] <- mean(uai.prob == 0)
+        dat$epi$cprob.always.pers[at] <- mean(uai.prob == 0) #% of dyads that had a partner with always cond use
       } else {
         dat$epi$cprob.always.inst[at] <- mean(uai.prob == 0)
       }
@@ -143,19 +144,20 @@ condoms_msm <- function(dat, at) {
 
     ai.vec <- elt[, "ai"]
     pos <- rep(elt[, "p1"], ai.vec)
-    neg <- rep(elt[, "p2"], ai.vec)
-    ptype <- rep(elt[, "ptype"], ai.vec)
+    neg <- rep(elt[, "p2"], ai.vec)  #why does this assign neg to partners who may be positive but in st2 bc other partner st1 also positive?
+    ptype <- rep(elt[, "ptype"], ai.vec)  #should be p1 and p2 not pos/neg since p2 could be pos if seroconcordant pos but still want uai prob for these;
 
     uai.prob.peract <- rep(uai.prob, ai.vec)
     uai <- rbinom(length(pos), 1, uai.prob.peract)
 
     if (type == "main") {
-      pid <- rep(1:length(ai.vec), ai.vec)
-      al <- cbind(pos, neg, ptype, uai, pid)
+      pid <- rep(1:length(ai.vec), ai.vec)  #numbering out ids for all acts, repeat id for same pair multiple acts;
+      al <- cbind(pos, neg, ptype, uai, pid) #[1620,] 5885 5874     1   1  902
+                                             #[1621,] 5885 5874     1   0  902
     } else {
       pid <- rep(max(al[, "pid"]) + (1:length(ai.vec)), ai.vec)
       tmp.al <- cbind(pos, neg, ptype, uai, pid)
-      al <- rbind(al, tmp.al)
+      al <- rbind(al, tmp.al)   #concatenate casuals to main for act list -- this is not necessarily discordant el -- just full right?;
     }
 
   } # end ptype loop

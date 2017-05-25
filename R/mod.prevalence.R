@@ -24,6 +24,7 @@
 #'
 prevalence_msm <- function(dat, at) {
 
+
   race <- dat$attr$race
   status <- dat$attr$status
   prepStat <- dat$attr$prepStat
