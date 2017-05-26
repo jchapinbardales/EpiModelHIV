@@ -20,11 +20,17 @@ aging_msm <- function(dat, at) {
 
   age <- dat$attr$age
   active <- dat$attr$active
+  agecat2 <- dat$attr$agecat2
 
-  age[active == 1] <- age[active == 1] + time.unit / 365
+  age[active == 1] <- age[active == 1] + time.unit / 365 #5292;
+
+  agecat2[floor(age)==25] <- "O"
+
+  #agecat2[age >= 25] <- "O"
 
   dat$attr$age <- age
   dat$attr$sqrt.age <- sqrt(age)
+  dat$attr$agecat2 <- agecat2
 
   return(dat)
 }
