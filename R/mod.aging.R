@@ -24,9 +24,45 @@ aging_msm <- function(dat, at) {
 
   age[active == 1] <- age[active == 1] + time.unit / 365 #5292;
 
+  #for all new 25 year olds, going to assign them agecat2="O" -- will happen again and again for
+  #25 yr olds through their first year, but oh well; could reassign every time step but that's annoying, agecat2[age >= 25] <- "O"
   agecat2[floor(age)==25] <- "O"
 
-  #agecat2[age >= 25] <- "O"
+
+  #agecat2[age>25 & age<=25.0192307692307692] <- "O"  #catches people in that first week
+
+
+  #update roles when turn 25 -- dont want this to continue redrawing every timestep during 25th year;
+  #nolds<-sum(dat$attr$age>=25 & dat$attr$age<25.0192307692307692)
+  #
+
+  role.class <-dat$attr$role.class
+  old.class <-dat$attr$role.class
+
+  activenum<-sum(dat$attr$active==1)
+  newolds <- rep(0, activenum)
+  newolds[age>=25 & age<25.0192307692307692 & active==1] <- 1
+  nolds<-sum(newolds)
+
+
+  role.class[newolds==1] <- sample(c("I", "R", "V"),
+                                        nolds, replace = TRUE,
+                                        prob = dat$param$role.O.prob)  #assigning role to new Olds in line w/ old role distribution;
+#old.class[newolds==1]
+# before  [1] "I" "V" "R" "V" "V" "I" "V" "V" "V" "R" "R" "R" "V" "I" "R"
+# after   [1] "V" "V" "R" "V" "I" "I" "R" "V" "I" "R" "V" "I" "I" "R" "I"
+
+  ins.quot <- dat$attr$ins.quot
+  old.ins.quot <- dat$attr$ins.quot
+
+  ins.quot[newolds==1 & role.class == "I"]  <- 1
+  ins.quot[newolds==1 & role.class == "R"]  <- 0
+  ins.quot[newolds==1 & role.class == "V"]  <- runif(sum(role.class[newolds==1] == "V"))
+
+
+  dat$attr$role.class <- role.class
+  dat$attr$ins.quot <- ins.quot
+
 
   dat$attr$age <- age
   dat$attr$sqrt.age <- sqrt(age)
