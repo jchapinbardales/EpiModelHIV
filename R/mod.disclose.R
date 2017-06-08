@@ -33,7 +33,7 @@ disclose_msm <- function(dat, at){
     diag.time <- dat$attr$diag.time
     race <- dat$attr$race
     agecat2 <- dat$attr$agecat2            #agecat2 missing for new births -- is that okay? race gets assigned to these, where?
-                                           #nope, not okay, needed to go back to births module and set agecat2 attribute to dat
+                                           #nope, not okay, went back to births module and set agecat2 attribute to dat
                                            #for new births;
     # Parameters and network
     if (type == "main") {

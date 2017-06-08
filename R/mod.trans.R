@@ -34,7 +34,6 @@
 #'
 trans_msm <- function(dat, at){
 
-
     # Variables -----------------------------------------------------------
 
   # Attributes
@@ -165,8 +164,8 @@ trans_msm <- function(dat, at){
   # Transmission --------------------------------------------------------
 
   ## Bernoulli transmission events
-  trans.ip <- rbinom(length(ip.tprob), 1, ip.tprob) #vector of 0s and 1's;
-  trans.rp <- rbinom(length(rp.tprob), 1, rp.tprob)
+  trans.ip <- rbinom(length(ip.tprob), 1, ip.tprob) #vector of 0s and 1's, binomial draw based on tp for infected partner;
+  trans.rp <- rbinom(length(rp.tprob), 1, rp.tprob) #vector of 0s and 1's, binomial draw based on tp for receptive partner;
 
 
   # Output --------------------------------------------------------------

@@ -20,12 +20,12 @@ init <- init_msm(nwstats = st,
                  prev.Y = 0.2192,
                  prev.O = 0.3452)
 control <- control_msm(simno = 0.253,
-                       nsteps = 1300, #1500
+                       nsteps = 52, #1500
                        nsims = 1, #1, 5 is alot - hyac;
                        ncores = 1,
                        save.nwstats = TRUE,
                        verbose.int = 1)
-#sim <- netsim(est, param, init, control)
+sim <- netsim(est, param, init, control)
 # to see code for netsim, just type netsim into console
 # debug(stergm_prep)
 
@@ -33,6 +33,7 @@ param
 init
 control
 
+set.seed(86)
 
 at <- 1
 dat <- initialize_msm(est, param, init, control, s = 1)

@@ -99,10 +99,33 @@ calc_resim_nwstats <- function(dat, at) {
     edges <- nrow(dat$el[[nw]])
     meandeg <- round(edges / n, 3)
     concurrent <- round(mean(get_degree(dat$el[[nw]]) > 1), 3)
+
     mat <- matrix(c(edges, meandeg, concurrent), ncol = 3, nrow = 1)
+
+    # num <- dat$epi$num[at]
+    # num.Y <- dat$epi$num.Y[at]
+    # num.O <- dat$epi$num.O[at]
+    # nBirths <- dat$epi$nBirths[at]
+    # dth.all <- dat$epi$dth.gen[at] + dat$epi$dth.dis[at]
+    # inc <- dat$epi$incid[at]
+
+    #births - Y
+    #deaths by age, incid by age
+    #% of agediscordant pairs
+    #prop of roles by age
+
+    #matnum <- matrix(c(num, num.Y, num.O, nBirths, dth.all, inc), ncol = 6, nrow = 1)
+
+
     if (at == 2) {
       dat$stats$nwstats[[nw]] <- mat
       colnames(dat$stats$nwstats[[nw]]) <- c("edges", "meand", "conc")
+
+      # dat$stats$numstats <- matnum
+      # colnames(dat$stats$nwstats[[nw]]) <- c("num", "num.Y", "num.O")
+
+
+
     }
     if (at > 2) {
       dat$stats$nwstats[[nw]] <- rbind(dat$stats$nwstats[[nw]], mat)
@@ -111,6 +134,7 @@ calc_resim_nwstats <- function(dat, at) {
 
   return(dat)
 }
+
 
 
 
