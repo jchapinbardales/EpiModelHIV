@@ -78,7 +78,7 @@ trans_msm <- function(dat, at){
   colnames(disc.rp)[1:2] <- c("i", "r")
 
 
-  # PATP: Insertive Man Infected (Col 1) --------------------------------
+  # PATP: Insertive Man Infector (Col 1) --------------------------------
 
   # Attributes of infected
   ip.vl <- vl[disc.ip[, 1]]
@@ -118,7 +118,7 @@ trans_msm <- function(dat, at){
   stopifnot(ip.tprob >= 0, ip.tprob <= 1)
 
 
-  # PATP: Receptive Man Infected (Col 2) --------------------------------
+  # PATP: Receptive Man Infector (Col 2) --------------------------------
 
   # Attributes of infected
   rp.vl <- vl[disc.rp[, 2]]
@@ -164,7 +164,7 @@ trans_msm <- function(dat, at){
   # Transmission --------------------------------------------------------
 
   ## Bernoulli transmission events
-  trans.ip <- rbinom(length(ip.tprob), 1, ip.tprob) #vector of 0s and 1's, binomial draw based on tp for infected partner;
+  trans.ip <- rbinom(length(ip.tprob), 1, ip.tprob) #vector of 0s and 1's, binomial draw based on tp for insertive partner;
   trans.rp <- rbinom(length(rp.tprob), 1, rp.tprob) #vector of 0s and 1's, binomial draw based on tp for receptive partner;
 
 
@@ -172,45 +172,47 @@ trans_msm <- function(dat, at){
 
   # Update attributes
 
-  infected <- infector <- inf.type <- inf.role <- inf.stage <- inf.condoms <-
-    inf.diag <- inf.cum.time.on.tx <- inf.vl <- NULL
+    infected <- infector <- inf.type <- inf.role <- inf.stage <- inf.condoms <-
+      inf.diag <- inf.cum.time.on.tx <- inf.vl <- inf.agecat2 <- infd.agecat2 <- NULL
 
   if (sum(trans.ip, trans.rp) > 0) {
 
     infected <- c(disc.ip[trans.ip == 1, 2],
                   disc.rp[trans.rp == 1, 1])
-    infector <- c(disc.ip[trans.ip == 1, 1],
-                  disc.rp[trans.rp == 1, 2])
-    inf.role <- c(rep(0, sum(trans.ip)), rep(1, sum(trans.rp)))
+    infector <- c(disc.ip[trans.ip == 1, 1], #vector of uid's length of # who transmitted as insertive partner
+                  disc.rp[trans.rp == 1, 2]) #vector of uid's length of # who transmitted as receptive partner
+
+    inf.role <- c(rep(0, sum(trans.ip)), rep(1, sum(trans.rp))) #role of person who acquired (susceptible)
+                #for as many who transmitted as insertive partner, put 0 for receptive role of person who acquired
+                #for as many who transmitted as receptive partner, put 1 for insertive role of person who acquired
     inf.type <- c(disc.ip[trans.ip == 1, "ptype"],
                   disc.rp[trans.rp == 1, "ptype"])
 
     inf.stage <- stage[infector]
-    inf.diag <- diag.status[infector]
-    inf.tx <- tx.status[infector]
+    inf.diag  <- diag.status[infector]
+    inf.tx    <- tx.status[infector]
     inf.cum.time.on.tx <- dat$attr$cum.time.on.tx[infector]
     inf.vl <- vl[infector]
 
     #age
-    inf.agecat2 <-agecat2[infector]  #infectors age
-    infd.agecat2 <-agecat2[infected]  #infected persons age
+    inf.agecat2 <- agecat2[infector]  #infectors age
+    infd.agecat2 <- agecat2[infected]  #infected persons age
 
 
-
-
-    dat$attr$status[infected] <- 1
-    dat$attr$inf.time[infected] <- at
-    dat$attr$vl[infected] <- 0
-    dat$attr$stage[infected] <- 1
-    dat$attr$stage.time[infected] <- 0
+    dat$attr$status[infected]      <- 1
+    dat$attr$inf.time[infected]    <- at
+    dat$attr$vl[infected]          <- 0
+    dat$attr$stage[infected]       <- 1
+    dat$attr$stage.time[infected]  <- 0
     dat$attr$diag.status[infected] <- 0
-    dat$attr$tx.status[infected] <- 0
+    dat$attr$tx.status[infected]   <- 0
 
-    dat$attr$infector[infected] <- infector
-    dat$attr$inf.role[infected] <- inf.role
-    dat$attr$inf.type[infected] <- inf.type
-    dat$attr$inf.diag[infected] <- inf.diag
-    dat$attr$inf.tx[infected] <- inf.tx
+    dat$attr$infector[infected]  <- infector
+    dat$attr$inf.role[infected]  <- inf.role #0=sus rec, 1=sus ins, so yes, role of infected/one who acquired
+    dat$attr$inf.type[infected]  <- inf.type
+    dat$attr$inf.diag[infected]  <- inf.diag
+    dat$attr$inf.tx[infected]    <- inf.tx     #even though tx of infector, doesn't matter, define as tx of infector
+                                            #for that infected/acquiring person - dont take literal as their tx status
     dat$attr$inf.stage[infected] <- inf.stage
 
     dat$attr$cum.time.on.tx[infected] <- 0
@@ -230,37 +232,53 @@ trans_msm <- function(dat, at){
     dat$epi$trans.inst[at] <- sum(inf.type == 3, na.rm = TRUE) / length(infected)
 
     dat$epi$trans.recpt.sus[at] <- sum(inf.role == 0, na.rm = TRUE) / length(infected)
-    dat$epi$trans.inst.sus[at] <- sum(inf.role == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus[at]  <- sum(inf.role == 1, na.rm = TRUE) / length(infected)
 
-    dat$epi$trans.stage.act[at] <- sum(inf.stage %in% 1:2, na.rm = TRUE) / length(infected)
-    dat$epi$trans.stage.chr[at] <- sum(inf.stage == 3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.act[at]  <- sum(inf.stage %in% 1:2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr[at]  <- sum(inf.stage == 3, na.rm = TRUE) / length(infected)
     dat$epi$trans.stage.aids[at] <- sum(inf.stage == 4, na.rm = TRUE) / length(infected)
 
     #dat$epi$trans.condoms[at] <- sum(inf.condoms == 1, na.rm = TRUE) / length(infected)
 
-    dat$epi$trans.undx[at] <- sum(inf.diag == 0, na.rm = TRUE) / length(infected)
-    dat$epi$trans.notinitiated[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0, na.rm = TRUE) /
-      length(infected)
+    dat$epi$trans.undx[at]         <- sum(inf.diag == 0, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained[at]  <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                          inf.vl >= 4.5, na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                          inf.vl < 4.5 & inf.vl > 1.5, na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                          inf.vl <= 1.5, na.rm = TRUE) / length(infected)
 
-    dat$epi$trans.notretained[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
-                                           inf.vl >= 4.5, na.rm = TRUE) / length(infected)
+######################
+#AGE SPECIFIC OUTPUTS;
+######################
 
-    dat$epi$trans.partsup[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
-                                       inf.vl < 4.5 & inf.vl > 1.5, na.rm = TRUE) / length(infected)
-    dat$epi$trans.fullsup[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
-                                       inf.vl <= 1.5, na.rm = TRUE) / length(infected)
+  #incidence by age;
+    dat$epi$incid.inf.Y[at]   <- sum(inf.agecat2 == "Y", na.rm = TRUE)
+    dat$epi$incid.inf.O[at]   <- sum(inf.agecat2 == "O", na.rm = TRUE)
+    dat$epi$incid.infd.Y[at]   <- sum(infd.agecat2 == "Y", na.rm = TRUE)
+    dat$epi$incid.infd.O[at]   <- sum(infd.agecat2 == "O", na.rm = TRUE)
+
+    dat$epi$incid.YY[at]  <- sum(inf.agecat2 == "Y" & infd.agecat2 == "Y", na.rm = TRUE)
+    dat$epi$incid.OY[at]  <- sum(sum(inf.agecat2 == "O" & infd.agecat2 == "Y"),
+                                 sum(inf.agecat2 == "Y" & infd.agecat2 == "O"), na.rm = TRUE)
+    dat$epi$incid.OO[at]  <- sum(inf.agecat2 == "O" & infd.agecat2 == "O", na.rm = TRUE)
+      #directional
+      dat$epi$incid.OYd[at] <- sum(inf.agecat2 == "O" & infd.agecat2 == "Y", na.rm = TRUE)
+      dat$epi$incid.YOd[at] <- sum(inf.agecat2 == "Y" & infd.agecat2 == "O", na.rm = TRUE)
 
 
-
-    #age specific;
+  #age of infector
     dat$epi$trans.Y[at] <- sum(inf.agecat2 == "Y", na.rm = TRUE) / length(infected)
     dat$epi$trans.O[at] <- sum(inf.agecat2 == "O", na.rm = TRUE) / length(infected)
+
+  #age combo
     dat$epi$trans.YY[at] <- sum(inf.agecat2 == "Y" & infd.agecat2 == "Y", na.rm = TRUE) / length(infected)
     dat$epi$trans.OY[at] <- sum(sum(inf.agecat2 == "O" & infd.agecat2 == "Y"),
                                 sum(inf.agecat2 == "Y" & infd.agecat2 == "O"), na.rm = TRUE) / length(infected)
     dat$epi$trans.OO[at] <- sum(inf.agecat2 == "O" & infd.agecat2 == "O", na.rm = TRUE) / length(infected)
 
-    #age of infector + PT
+  #age of infector + PT
     dat$epi$trans.Ymain[at] <- sum(inf.agecat2 == "Y" & inf.type == 1, na.rm = TRUE) / length(infected)
     dat$epi$trans.Omain[at] <- sum(inf.agecat2 == "O" & inf.type == 1, na.rm = TRUE) / length(infected)
     dat$epi$trans.Ycasl[at] <- sum(inf.agecat2 == "Y" & inf.type == 2, na.rm = TRUE) / length(infected)
@@ -268,7 +286,7 @@ trans_msm <- function(dat, at){
     dat$epi$trans.Yinst[at] <- sum(inf.agecat2 == "Y" & inf.type == 3, na.rm = TRUE) / length(infected)
     dat$epi$trans.Oinst[at] <- sum(inf.agecat2 == "O" & inf.type == 3, na.rm = TRUE) / length(infected)
 
-    #agecombo + PT
+  #agecombo + PT
     dat$epi$trans.YYmain[at] <- sum(inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE) / length(infected)
     dat$epi$trans.OYmain[at] <- sum(sum(inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 1),
                                     sum(inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 1), na.rm = TRUE) / length(infected)
@@ -284,11 +302,455 @@ trans_msm <- function(dat, at){
                                     sum(inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 3), na.rm = TRUE) / length(infected)
     dat$epi$trans.OOinst[at] <- sum(inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE) / length(infected)
 
+        #may want directional?;
+        dat$epi$trans.OYd[at] <- sum(inf.agecat2 == "O" & infd.agecat2 == "Y", na.rm = TRUE) / length(infected)
+        dat$epi$trans.YOd[at] <- sum(inf.agecat2 == "Y" & infd.agecat2 == "O", na.rm = TRUE) / length(infected)
+
+        dat$epi$trans.OYdmain[at] <- sum(inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE) / length(infected)
+        dat$epi$trans.YOdmain[at] <- sum(inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE) / length(infected)
+        dat$epi$trans.OYdcasl[at] <- sum(inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE) / length(infected)
+        dat$epi$trans.YOdcasl[at] <- sum(inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE) / length(infected)
+        dat$epi$trans.OYdinst[at] <- sum(inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE) / length(infected)
+        dat$epi$trans.YOdinst[at] <- sum(inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE) / length(infected)
+
+
+
+###############################################
+#AGE & PT BY HIV STAGE OF INFECTION OF INFECTOR;
+###############################################
+
+  #age;
+    dat$epi$trans.stage.act.Y[at]  <- sum(inf.stage %in% 1:2 & inf.agecat2=="Y", na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.Y[at]  <- sum(inf.stage == 3 & inf.agecat2=="Y", na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.Y[at] <- sum(inf.stage == 4 & inf.agecat2=="Y", na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.act.O[at]  <- sum(inf.stage %in% 1:2 & inf.agecat2=="O", na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.O[at]  <- sum(inf.stage == 3 & inf.agecat2=="O", na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.O[at] <- sum(inf.stage == 4 & inf.agecat2=="O", na.rm = TRUE) / length(infected)
+
+  #PT;
+    dat$epi$trans.stage.act.main[at]  <- sum(inf.stage %in% 1:2 & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.main[at]  <- sum(inf.stage == 3 & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.main[at] <- sum(inf.stage == 4 & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.act.casl[at]  <- sum(inf.stage %in% 1:2 & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.casl[at]  <- sum(inf.stage == 3 & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.casl[at] <- sum(inf.stage == 4 & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.act.inst[at]  <- sum(inf.stage %in% 1:2 & inf.type == 3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.inst[at]  <- sum(inf.stage == 3 & inf.type == 3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.inst[at] <- sum(inf.stage == 4 & inf.type == 3, na.rm = TRUE) / length(infected)
+
+  #age combo;
+    dat$epi$trans.stage.act.YY[at]  <- sum(inf.stage %in% 1:2 & inf.agecat2 == "Y" & infd.agecat2 == "Y", na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.YY[at]  <- sum(inf.stage == 3 & inf.agecat2 == "Y" & infd.agecat2 == "Y", na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.YY[at] <- sum(inf.stage == 4 & inf.agecat2 == "Y" & infd.agecat2 == "Y", na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.stage.act.OY[at]  <- sum(sum(inf.stage %in% 1:2 & inf.agecat2 == "O" & infd.agecat2 == "Y"),
+                                           sum(inf.stage %in% 1:2 & inf.agecat2 == "Y" & infd.agecat2 == "O"), na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.OY[at]  <- sum(sum(inf.stage == 3 & inf.agecat2 == "O" & infd.agecat2 == "Y"),
+                                           sum(inf.stage == 3 & inf.agecat2 == "Y" & infd.agecat2 == "O"), na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.OY[at] <- sum(sum(inf.stage == 4 & inf.agecat2 == "O" & infd.agecat2 == "Y"),
+                                           sum(inf.stage == 4 & inf.agecat2 == "Y" & infd.agecat2 == "O"), na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.stage.act.OO[at]  <- sum(inf.stage %in% 1:2 & inf.agecat2 == "O" & infd.agecat2 == "O", na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.OO[at]  <- sum(inf.stage == 3 & inf.agecat2 == "O" & infd.agecat2 == "O", na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.OO[at] <- sum(inf.stage == 4 & inf.agecat2 == "O" & infd.agecat2 == "O", na.rm = TRUE) / length(infected)
+    #dont really care about directionality here? -- assume there are going to be more old chronics transmitting
+    # to young;
+
+  #age & PT;
+    dat$epi$trans.stage.act.Ymain[at]  <- sum(inf.stage %in% 1:2 & inf.agecat2=="Y" & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.Ymain[at]  <- sum(inf.stage == 3 & inf.agecat2=="Y" & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.Ymain[at] <- sum(inf.stage == 4 & inf.agecat2=="Y" & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.act.Omain[at]  <- sum(inf.stage %in% 1:2 & inf.agecat2=="O" & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.Omain[at]  <- sum(inf.stage == 3 & inf.agecat2=="O" & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.Omain[at] <- sum(inf.stage == 4 & inf.agecat2=="O" & inf.type == 1, na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.stage.act.Ycasl[at]  <- sum(inf.stage %in% 1:2 & inf.agecat2=="Y" & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.Ycasl[at]  <- sum(inf.stage == 3 & inf.agecat2=="Y" & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.Ycasl[at] <- sum(inf.stage == 4 & inf.agecat2=="Y" & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.act.Ocasl[at]  <- sum(inf.stage %in% 1:2 & inf.agecat2=="O" & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.Ocasl[at]  <- sum(inf.stage == 3 & inf.agecat2=="O" & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.Ocasl[at] <- sum(inf.stage == 4 & inf.agecat2=="O" & inf.type == 2, na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.stage.act.Yinst[at]  <- sum(inf.stage %in% 1:2 & inf.agecat2=="Y" & inf.type == 3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.Yinst[at]  <- sum(inf.stage == 3 & inf.agecat2=="Y" & inf.type == 3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.Yinst[at] <- sum(inf.stage == 4 & inf.agecat2=="Y" & inf.type == 3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.act.Oinst[at]  <- sum(inf.stage %in% 1:2 & inf.agecat2=="O" & inf.type == 3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.Oinst[at]  <- sum(inf.stage == 3 & inf.agecat2=="O" & inf.type == 3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.Oinst[at] <- sum(inf.stage == 4 & inf.agecat2=="O" & inf.type == 3, na.rm = TRUE) / length(infected)
+
+
+  #age combo & PT;
+    dat$epi$trans.stage.act.YYmain[at]  <- sum(inf.stage %in% 1:2 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.YYmain[at]  <- sum(inf.stage == 3 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.YYmain[at] <- sum(inf.stage == 4 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.act.OYmain[at]  <- sum(sum(inf.stage %in% 1:2 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 1),
+                                               sum(inf.stage %in% 1:2 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 1), na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.OYmain[at]  <- sum(sum(inf.stage == 3 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 1),
+                                               sum(inf.stage == 3 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 1), na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.OYmain[at] <- sum(sum(inf.stage == 4 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 1),
+                                               sum(inf.stage == 4 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 1), na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.act.OOmain[at]  <- sum(inf.stage %in% 1:2 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.OOmain[at]  <- sum(inf.stage == 3 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.OOmain[at] <- sum(inf.stage == 4 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.stage.act.YYcasl[at]  <- sum(inf.stage %in% 1:2 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.YYcasl[at]  <- sum(inf.stage == 3 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.YYcasl[at] <- sum(inf.stage == 4 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.act.OYcasl[at]  <- sum(sum(inf.stage %in% 1:2 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 2),
+                                               sum(inf.stage %in% 1:2 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 2), na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.OYcasl[at]  <- sum(sum(inf.stage == 3 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 2),
+                                               sum(inf.stage == 3 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 2), na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.OYcasl[at] <- sum(sum(inf.stage == 4 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 2),
+                                               sum(inf.stage == 4 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 2), na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.act.OOcasl[at]  <- sum(inf.stage %in% 1:2 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.OOcasl[at]  <- sum(inf.stage == 3 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.OOcasl[at] <- sum(inf.stage == 4 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.stage.act.YYinst[at]  <- sum(inf.stage %in% 1:2 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.YYinst[at]  <- sum(inf.stage == 3 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.YYinst[at] <- sum(inf.stage == 4 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.act.OYinst[at]  <- sum(sum(inf.stage %in% 1:2 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 3),
+                                               sum(inf.stage %in% 1:2 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 3), na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.OYinst[at]  <- sum(sum(inf.stage == 3 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 3),
+                                               sum(inf.stage == 3 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 3), na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.OYinst[at] <- sum(sum(inf.stage == 4 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 3),
+                                               sum(inf.stage == 4 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 3), na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.act.OOinst[at]  <- sum(inf.stage %in% 1:2 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.chr.OOinst[at]  <- sum(inf.stage == 3 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.stage.aids.OOinst[at] <- sum(inf.stage == 4 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE) / length(infected)
+    #dont really care about directionality here? -- assume there are going to be more old chronics transmitting
+    # to young;
+
+
+
+############################
+#AGE & PT BY HIV CARE STAGE;
+############################
+
+  #age
+    dat$epi$trans.undx.Y[at]         <- sum(inf.diag == 0 & inf.agecat2=="Y", na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.Y[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2=="Y", na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.Y[at]  <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                            inf.vl >= 4.5 & inf.agecat2=="Y", na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.Y[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                            inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2=="Y", na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.Y[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                             inf.vl <= 1.5 & inf.agecat2=="Y", na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.undx.O[at]         <- sum(inf.diag == 0 & inf.agecat2=="O", na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.O[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2=="O", na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.O[at]  <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                            inf.vl >= 4.5 & inf.agecat2=="O", na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.O[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                            inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2=="O", na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.O[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                            inf.vl <= 1.5 & inf.agecat2=="O", na.rm = TRUE) / length(infected)
+
+    #PT
+    dat$epi$trans.undx.main[at]         <- sum(inf.diag == 0 & inf.type==1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.main[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.type==1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.main[at]  <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                               inf.vl >= 4.5 & inf.type==1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.main[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                               inf.vl < 4.5 & inf.vl > 1.5 & inf.type==1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.main[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                               inf.vl <= 1.5 & inf.type==1, na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.undx.casl[at]         <- sum(inf.diag == 0 & inf.type==2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.casl[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.type==2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.casl[at]  <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                               inf.vl >= 4.5 & inf.type==2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.casl[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                               inf.vl < 4.5 & inf.vl > 1.5 & inf.type==2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.casl[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                               inf.vl <= 1.5 & inf.type==2, na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.undx.inst[at]         <- sum(inf.diag == 0 & inf.type==3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.inst[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.type==3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.inst[at]  <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                               inf.vl >= 4.5 & inf.type==3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.inst[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                               inf.vl < 4.5 & inf.vl > 1.5 & inf.type==3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.inst[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                               inf.vl <= 1.5 & inf.type==3, na.rm = TRUE) / length(infected)
+
+  #agecombo
+    dat$epi$trans.undx.YY[at]         <- sum(inf.diag == 0 & inf.agecat2 == "Y" & infd.agecat2 == "Y", na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.YY[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2 == "Y" & infd.agecat2 == "Y", na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.YY[at]  <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                             inf.vl >= 4.5 & inf.agecat2 == "Y" & infd.agecat2 == "Y", na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.YY[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                             inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2 == "Y" & infd.agecat2 == "Y", na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.YY[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                             inf.vl <= 1.5 & inf.agecat2 == "Y" & infd.agecat2 == "Y", na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.undx.OY[at]         <- sum(sum(inf.diag == 0 & inf.agecat2 == "O" & infd.agecat2 == "Y"),
+                                             sum(inf.diag == 0 & inf.agecat2 == "Y" & infd.agecat2 == "O"), na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.OY[at] <- sum(sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2 == "O" & infd.agecat2 == "Y"),
+                                             sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2 == "Y" & infd.agecat2 == "O"), na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.OY[at]  <- sum(sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl >= 4.5 & inf.agecat2 == "O" & infd.agecat2 == "Y"),
+                                             sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl >= 4.5 & inf.agecat2 == "Y" & infd.agecat2 == "O"), na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.OY[at]      <- sum(sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2 == "O" & infd.agecat2 == "Y"),
+                                             sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2 == "Y" & infd.agecat2 == "O"), na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.OY[at]      <- sum(sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl <= 1.5 & inf.agecat2 == "O" & infd.agecat2 == "Y"),
+                                             sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl <= 1.5 & inf.agecat2 == "Y" & infd.agecat2 == "O"), na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.undx.OO[at]         <- sum(inf.diag == 0 & inf.agecat2 == "O" & infd.agecat2 == "O", na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.OO[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2 == "O" & infd.agecat2 == "O", na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.OO[at]  <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                             inf.vl >= 4.5 & inf.agecat2 == "O" & infd.agecat2 == "O", na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.OO[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                             inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2 == "O" & infd.agecat2 == "O", na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.OO[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                             inf.vl <= 1.5 & inf.agecat2 == "O" & infd.agecat2 == "O", na.rm = TRUE) / length(infected)
+
+    #dont really care about directionality here -- assume there are going to be more old chronics transmitting
+    # to young;
+
+  #age & PT
+    dat$epi$trans.undx.Ymain[at]         <- sum(inf.diag == 0 & inf.agecat2=="Y" & inf.type==1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.Ymain[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2=="Y" & inf.type==1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.Ymain[at]  <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                inf.vl >= 4.5 & inf.agecat2=="Y" & inf.type==1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.Ymain[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2=="Y" & inf.type==1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.Ymain[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                               inf.vl <= 1.5 & inf.agecat2=="Y" & inf.type==1, na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.undx.Omain[at]         <- sum(inf.diag == 0 & inf.agecat2=="O" & inf.type==1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.Omain[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2=="O" & inf.type==1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.Omain[at]  <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                inf.vl >= 4.5 & inf.agecat2=="O" & inf.type==1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.Omain[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2=="O" & inf.type==1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.Omain[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                inf.vl <= 1.5 & inf.agecat2=="O" & inf.type==1, na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.undx.Ycasl[at]         <- sum(inf.diag == 0 & inf.agecat2=="Y" & inf.type==2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.Ycasl[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2=="Y" & inf.type==2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.Ycasl[at]  <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                inf.vl >= 4.5 & inf.agecat2=="Y" & inf.type==2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.Ycasl[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2=="Y" & inf.type==2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.Ycasl[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                inf.vl <= 1.5 & inf.agecat2=="Y" & inf.type==2, na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.undx.Ocasl[at]         <- sum(inf.diag == 0 & inf.agecat2=="O" & inf.type==2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.Ocasl[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2=="O" & inf.type==2, na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.notretained.Ocasl[at]  <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                inf.vl >= 4.5 & inf.agecat2=="O" & inf.type==2, na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.partsup.Ocasl[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2=="O" & inf.type==2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.Ocasl[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                inf.vl <= 1.5 & inf.agecat2=="O" & inf.type==2, na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.undx.Yinst[at]         <- sum(inf.diag == 0 & inf.agecat2=="Y" & inf.type==3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.Yinst[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2=="Y" & inf.type==3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.Yinst[at]  <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                inf.vl >= 4.5 & inf.agecat2=="Y" & inf.type==3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.Yinst[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2=="Y" & inf.type==3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.Yinst[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                inf.vl <= 1.5 & inf.agecat2=="Y" & inf.type==3, na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.undx.Oinst[at]         <- sum(inf.diag == 0 & inf.agecat2=="O" & inf.type==3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.Oinst[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2=="O" & inf.type==3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.Oinst[at]  <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                inf.vl >= 4.5 & inf.agecat2=="O" & inf.type==3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.Oinst[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2=="O" & inf.type==3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.Oinst[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                inf.vl <= 1.5 & inf.agecat2=="O" & inf.type==3, na.rm = TRUE) / length(infected)
+
+  #age combo & PT
+    dat$epi$trans.undx.YYmain[at]         <- sum(inf.diag == 0 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type==1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.YYmain[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type==1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.YYmain[at]  <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                 inf.vl >= 4.5 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type==1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.YYmain[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                 inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type==1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.YYmain[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                 inf.vl <= 1.5 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type==1, na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.undx.OYmain[at]         <- sum(sum(inf.diag == 0 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type==1),
+                                                 sum(inf.diag == 0 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type==1), na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.OYmain[at] <- sum(sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type==1),
+                                                 sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type==1), na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.OYmain[at]  <- sum(sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl >= 4.5 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type==1),
+                                                 sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl >= 4.5 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type==1), na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.OYmain[at]      <- sum(sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type==1),
+                                                 sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type==1), na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.OYmain[at]      <- sum(sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl <= 1.5 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type==1),
+                                                 sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl <= 1.5 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type==1), na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.undx.OOmain[at]         <- sum(inf.diag == 0 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type==1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.OOmain[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type==1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.OOmain[at]  <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                 inf.vl >= 4.5 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type==1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.OOmain[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                 inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type==1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.OOmain[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                 inf.vl <= 1.5 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type==1, na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.undx.YYcasl[at]         <- sum(inf.diag == 0 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type==2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.YYcasl[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type==2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.YYcasl[at]  <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                 inf.vl >= 4.5 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type==2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.YYcasl[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                 inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type==2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.YYcasl[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                 inf.vl <= 1.5 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type==2, na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.undx.OYcasl[at]         <- sum(sum(inf.diag == 0 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type==2),
+                                                 sum(inf.diag == 0 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type==2), na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.OYcasl[at] <- sum(sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type==2),
+                                                 sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type==2), na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.OYcasl[at]  <- sum(sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl >= 4.5 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type==2),
+                                                 sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl >= 4.5 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type==2), na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.OYcasl[at]      <- sum(sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type==2),
+                                                 sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type==2), na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.OYcasl[at]      <- sum(sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl <= 1.5 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type==2),
+                                                 sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl <= 1.5 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type==2), na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.undx.OOcasl[at]         <- sum(inf.diag == 0 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type==2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.OOcasl[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type==2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.OOcasl[at]  <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                 inf.vl >= 4.5 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type==2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.OOcasl[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                 inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type==2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.OOcasl[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                 inf.vl <= 1.5 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type==2, na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.undx.YYinst[at]         <- sum(inf.diag == 0 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type==3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.YYinst[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type==3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.YYinst[at]  <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                 inf.vl >= 4.5 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type==3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.YYinst[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                 inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type==3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.YYinst[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                 inf.vl <= 1.5 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type==3, na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.undx.OYinst[at]         <- sum(sum(inf.diag == 0 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type==3),
+                                                 sum(inf.diag == 0 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type==3), na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.OYinst[at] <- sum(sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type==3),
+                                                 sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type==3), na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.OYinst[at]  <- sum(sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl >= 4.5 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type==3),
+                                                 sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl >= 4.5 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type==3), na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.OYinst[at]      <- sum(sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type==3),
+                                                 sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type==3), na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.OYinst[at]      <- sum(sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl <= 1.5 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type==3),
+                                                 sum(inf.diag == 1 & inf.cum.time.on.tx > 0 & inf.vl <= 1.5 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type==3), na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.undx.OOinst[at]         <- sum(inf.diag == 0 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type==3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notinitiated.OOinst[at] <- sum(inf.diag == 1 & inf.cum.time.on.tx == 0 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type==3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.notretained.OOinst[at]  <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                 inf.vl >= 4.5 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type==3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.partsup.OOinst[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                 inf.vl < 4.5 & inf.vl > 1.5 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type==3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.fullsup.OOinst[at]      <- sum(inf.diag == 1 & inf.cum.time.on.tx > 0 &
+                                                 inf.vl <= 1.5 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type==3, na.rm = TRUE) / length(infected)
+
+    #dont really care about directionality here -- assume there are going to be more old chronics transmitting
+    # to young;
+
+
+#########################
+#Age & PT BY POSITIONING;
+#########################
+
+  #receptive by age;
+    dat$epi$trans.recpt.sus.Y[at] <- sum(inf.role == 0 & infd.agecat2 == "Y", na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.Y[at]  <- sum(inf.role == 1 & infd.agecat2 == "Y", na.rm = TRUE) / length(infected)
+    dat$epi$trans.recpt.sus.O[at] <- sum(inf.role == 0 & infd.agecat2 == "O", na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.O[at]  <- sum(inf.role == 1 & infd.agecat2 == "O", na.rm = TRUE) / length(infected)
+
+  #receptive by PT;
+    dat$epi$trans.recpt.sus.main[at] <- sum(inf.role == 0 & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.main[at]  <- sum(inf.role == 1 & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.recpt.sus.casl[at] <- sum(inf.role == 0 & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.casl[at]  <- sum(inf.role == 1 & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.recpt.sus.inst[at] <- sum(inf.role == 0 & inf.type == 3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.inst[at]  <- sum(inf.role == 1 & inf.type == 3, na.rm = TRUE) / length(infected)
+
+  #receptive by age combo;
+    dat$epi$trans.recpt.sus.YY[at] <- sum(inf.role == 0 & inf.agecat2 == "Y" & infd.agecat2 == "Y", na.rm = TRUE) / length(infected)
+    dat$epi$trans.recpt.sus.OY[at] <- sum(sum(inf.role == 0 & inf.agecat2 == "O" & infd.agecat2 == "Y"),
+                                          sum(inf.role == 0 & inf.agecat2 == "Y" & infd.agecat2 == "O"), na.rm = TRUE) / length(infected)
+    dat$epi$trans.recpt.sus.OO[at] <- sum(inf.role == 0 & inf.agecat2 == "O" & infd.agecat2 == "O", na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.YY[at]  <- sum(inf.role == 1 & inf.agecat2 == "Y" & infd.agecat2 == "Y", na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.OY[at]  <- sum(sum(inf.role == 1 & inf.agecat2 == "O" & infd.agecat2 == "Y"),
+                                          sum(inf.role == 1 & inf.agecat2 == "Y" & infd.agecat2 == "O"), na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.OO[at]  <- sum(inf.role == 1 & inf.agecat2 == "O" & infd.agecat2 == "O", na.rm = TRUE) / length(infected)
+
+  #receptive by age & PT;
+    dat$epi$trans.recpt.sus.Ymain[at] <- sum(inf.role == 0 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.Ymain[at]  <- sum(inf.role == 1 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.recpt.sus.Omain[at] <- sum(inf.role == 0 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.Omain[at]  <- sum(inf.role == 1 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.recpt.sus.Ycasl[at] <- sum(inf.role == 0 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.Ycasl[at]  <- sum(inf.role == 1 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.recpt.sus.Ocasl[at] <- sum(inf.role == 0 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.Ocasl[at]  <- sum(inf.role == 1 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.recpt.sus.Yinst[at] <- sum(inf.role == 0 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.Yinst[at]  <- sum(inf.role == 1 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.recpt.sus.Oinst[at] <- sum(inf.role == 0 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.Oinst[at]  <- sum(inf.role == 1 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE) / length(infected)
+
+  #receptive by age combo & PT;
+    dat$epi$trans.recpt.sus.YYmain[at] <- sum(inf.role == 0 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.recpt.sus.OYmain[at] <- sum(sum(inf.role == 0 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 1),
+                                              sum(inf.role == 0 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 1), na.rm = TRUE) / length(infected)
+    dat$epi$trans.recpt.sus.OOmain[at] <- sum(inf.role == 0 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.YYmain[at]  <- sum(inf.role == 1 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.OYmain[at]  <- sum(sum(inf.role == 1 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 1),
+                                              sum(inf.role == 1 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 1), na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.OOmain[at]  <- sum(inf.role == 1 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.recpt.sus.YYcasl[at] <- sum(inf.role == 0 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.recpt.sus.OYcasl[at] <- sum(sum(inf.role == 0 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 2),
+                                              sum(inf.role == 0 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 2), na.rm = TRUE) / length(infected)
+    dat$epi$trans.recpt.sus.OOcasl[at] <- sum(inf.role == 0 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.YYcasl[at]  <- sum(inf.role == 1 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.OYcasl[at]  <- sum(sum(inf.role == 1 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 2),
+                                             sum(inf.role == 1 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 2), na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.OOcasl[at]  <- sum(inf.role == 1 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE) / length(infected)
+
+    dat$epi$trans.recpt.sus.YYinst[at] <- sum(inf.role == 0 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.recpt.sus.OYinst[at] <- sum(sum(inf.role == 0 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 3),
+                                              sum(inf.role == 0 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 3), na.rm = TRUE) / length(infected)
+    dat$epi$trans.recpt.sus.OOinst[at] <- sum(inf.role == 0 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.YYinst[at]  <- sum(inf.role == 1 & inf.agecat2 == "Y" & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.OYinst[at]  <- sum(sum(inf.role == 1 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 3),
+                                              sum(inf.role == 1 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 3), na.rm = TRUE) / length(infected)
+    dat$epi$trans.inst.sus.OOinst[at]  <- sum(inf.role == 1 & inf.agecat2 == "O" & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE) / length(infected)
+
+        #may want directional?;
+        dat$epi$trans.recpt.sus.OYd[at] <- sum(inf.role == 0 & inf.agecat2 == "O" & infd.agecat2 == "Y", na.rm = TRUE) / length(infected)
+        dat$epi$trans.recpt.sus.YOd[at] <- sum(inf.role == 0 & inf.agecat2 == "Y" & infd.agecat2 == "O", na.rm = TRUE) / length(infected)
+        dat$epi$trans.inst.sus.OYd[at]  <- sum(inf.role == 1 & inf.agecat2 == "O" & infd.agecat2 == "Y", na.rm = TRUE) / length(infected)
+        dat$epi$trans.inst.sus.YOd[at]  <- sum(inf.role == 1 & inf.agecat2 == "Y" & infd.agecat2 == "O", na.rm = TRUE) / length(infected)
+
+        dat$epi$trans.recpt.sus.OYdmain[at] <- sum(inf.role == 0 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE) / length(infected)
+        dat$epi$trans.recpt.sus.YOdmain[at] <- sum(inf.role == 0 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE) / length(infected)
+        dat$epi$trans.inst.sus.OYdmain[at]  <- sum(inf.role == 1 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE) / length(infected)
+        dat$epi$trans.inst.sus.YOdmain[at]  <- sum(inf.role == 1 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE) / length(infected)
+        dat$epi$trans.recpt.sus.OYdcasl[at] <- sum(inf.role == 0 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE) / length(infected)
+        dat$epi$trans.recpt.sus.YOdcasl[at] <- sum(inf.role == 0 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE) / length(infected)
+        dat$epi$trans.inst.sus.OYdcasl[at]  <- sum(inf.role == 1 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE) / length(infected)
+        dat$epi$trans.inst.sus.YOdcasl[at]  <- sum(inf.role == 1 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE) / length(infected)
+        dat$epi$trans.recpt.sus.OYdinst[at] <- sum(inf.role == 0 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE) / length(infected)
+        dat$epi$trans.recpt.sus.YOdinst[at] <- sum(inf.role == 0 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE) / length(infected)
+        dat$epi$trans.inst.sus.OYdinst[at]  <- sum(inf.role == 1 & inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE) / length(infected)
+        dat$epi$trans.inst.sus.YOdinst[at]  <- sum(inf.role == 1 & inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE) / length(infected)
+
+
   }
 
 
 
-    # Summary Output
+    # Summary Output -- (if no transmissions)
     dat$epi$incid[at] <- length(infected)
 
 

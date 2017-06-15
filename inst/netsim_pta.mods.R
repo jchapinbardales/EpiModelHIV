@@ -14,13 +14,13 @@ load("C:/Users/jchapi2/Documents/GitHub/EpiModelHIV/est/st.rda")
 #data(st)
 
 param <- param_msm(nwstats = st,
-                   ai.scale = 1,
+                   ai.scale = 1.0,
                    prep.coverage = 0)
 init <- init_msm(nwstats = st,
                  prev.Y = 0.2192,
                  prev.O = 0.3452)
 control <- control_msm(simno = 0.253,
-                       nsteps = 1500, #1500
+                       nsteps = 800, #1500
                        nsims = 1, #1, 5 is alot - hyac;
                        ncores = 1,
                        save.nwstats = TRUE,
@@ -40,6 +40,7 @@ init
 control
 
 #set.seed(86)
+#set.seed(Sys.time())
 
 at <- 1
 dat <- initialize_msm(est, param, init, control, s = 1)
