@@ -14,7 +14,7 @@ load("C:/Users/jchapi2/Documents/GitHub/EpiModelHIV/est/st.rda")
 #data(st)
 
 param <- param_msm(nwstats = st,
-                   ai.scale = 1.0,
+                   ai.scale = 1.0, #1.4 keeps age prev at 10%
                    prep.coverage = 0)
 init <- init_msm(nwstats = st,
                  prev.Y = 0.2192,

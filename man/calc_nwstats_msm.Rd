@@ -111,7 +111,7 @@ insertive, receptive, and versatile, for older MSM.}
 averaging over the statistics and dropping the race-specific terms.}
 
 \item{prop.mix.OO}{Vector of length 2 with the proportion of partnerships
-that are between one Old and one Old partners in main and 
+that are between one Old and one Old partners in main and
 casual black-white ongoing partnerships.}
 
 \item{prop.mix.OY}{Vector of length 2 with the proportion of partnerships
@@ -119,7 +119,7 @@ that are between one Old and one Young partners (no direction) in
 main and casual black-white ongoing partnerships.}
 
 \item{prop.mix.YY}{Vector of length 2 with the proportion of partnerships
-that are between one Young and one Young partners in main and 
+that are between one Young and one Young partners in main and
 casual black-white ongoing partnerships.}
 }
 \description{

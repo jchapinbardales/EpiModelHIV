@@ -24,28 +24,33 @@ aging_msm <- function(dat, at) {
 
   age[active == 1] <- age[active == 1] + time.unit / 365 #5292;
 
+
+  ##########################################################################
+
+  #pull new olds before changing them to “O”
+  ids.get.old <- which(floor(age)==25 & agecat2=='Y' & active==1)
+
+  nolds <- length(ids.get.old) #number of those getting old
+
   #for all new 25 year olds, going to assign them agecat2="O" -- will happen again and again for
   #25 yr olds through their first year, but oh well; could reassign every time step but that's annoying, agecat2[age >= 25] <- "O"
-  agecat2[floor(age)==25] <- "O"
+  #agecat2[floor(age)==25] <- "O"
 
+  #or#agecat2[age>25 & age<=25.0192307692307692] <- "O"  #catches people in that first week
 
-  #agecat2[age>25 & age<=25.0192307692307692] <- "O"  #catches people in that first week
+  agecat2[ids.get.old] <- "O"
 
-
-  #update roles when turn 25 -- dont want this to continue redrawing every timestep during 25th year;
-  #nolds<-sum(dat$attr$age>=25 & dat$attr$age<25.0192307692307692)
-  #
 
   role.class <-dat$attr$role.class
   old.class <-dat$attr$role.class
 
   activenum<-sum(dat$attr$active==1)
   newolds <- rep(0, activenum)
-  newolds[age>=25 & age<25.0192307692307692 & active==1] <- 1
-  nolds<-sum(newolds)
+  newolds[ids.get.old] <- 1
+  #nolds<-sum(newolds)
 
-
-  role.class[newolds==1] <- sample(c("I", "R", "V"),
+  #before: role.class[ids.get.old]
+  role.class[ids.get.old] <- sample(c("I", "R", "V"),
                                         nolds, replace = TRUE,
                                         prob = dat$param$role.O.prob)  #assigning role to new Olds in line w/ old role distribution;
 #old.class[newolds==1]
@@ -57,7 +62,7 @@ aging_msm <- function(dat, at) {
 
   ins.quot[newolds==1 & role.class == "I"]  <- 1
   ins.quot[newolds==1 & role.class == "R"]  <- 0
-  ins.quot[newolds==1 & role.class == "V"]  <- runif(sum(role.class[newolds==1] == "V"))
+  ins.quot[newolds==1 & role.class == "V"]  <- runif(sum(role.class[ids.get.old] == "V"))
 
 
   dat$attr$role.class <- role.class

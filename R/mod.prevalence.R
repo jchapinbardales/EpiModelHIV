@@ -54,6 +54,12 @@ prevalence_msm <- function(dat, at) {
     dat$epi$dth.dis <- rNA
     dat$epi$incid <- rNA
 
+    dat$epi$s.num.Y <- rNA
+    dat$epi$s.num.O <- rNA
+    dat$epi$incidrate <- rNA
+    dat$epi$incidrate.infd.Y <- rNA
+    dat$epi$incidrate.infd.O <- rNA
+
     dat$epi$prepCurr <- rNA
     dat$epi$prepCov <- rNA
     dat$epi$prepElig <- rNA
@@ -93,10 +99,16 @@ prevalence_msm <- function(dat, at) {
     #AGE SPECIFIC OUTPUTS;
     ######################
 
+    #means
+    dat$epi$meanage.inf <- rNA
+    dat$epi$meanage.infd <- rNA
+    dat$epi$medianage.inf <- rNA
+    dat$epi$medianage.infd <- rNA
+
     #incidence by age;
-      dat$epi$incid.inf.Y   <- rNA
+      dat$epi$incid.inf.Y   <- rNA    # number of new infections where infector was Young
       dat$epi$incid.inf.O   <- rNA
-      dat$epi$incid.infd.Y  <- rNA
+      dat$epi$incid.infd.Y  <- rNA    # number of new infections where infected was Young
       dat$epi$incid.infd.O  <- rNA
 
       dat$epi$incid.YY  <- rNA
@@ -106,7 +118,7 @@ prevalence_msm <- function(dat, at) {
         dat$epi$incid.OYd <- rNA
         dat$epi$incid.YOd <- rNA
 
-
+  #TRANSMISSINON PROBABILITIES
     #age of infector
       dat$epi$trans.Y <- rNA
       dat$epi$trans.O <- rNA
@@ -145,6 +157,262 @@ prevalence_msm <- function(dat, at) {
         dat$epi$trans.YOdcasl <- rNA
         dat$epi$trans.OYdinst <- rNA
         dat$epi$trans.YOdinst <- rNA
+
+
+    #CONTINUOUS AGE & PT for GRAPHS - sum of infections, not PAFs;
+
+      #cont age of infector ;
+      dat$epi$trans.18 <- rNA
+      dat$epi$trans.19 <- rNA
+      dat$epi$trans.20 <- rNA
+      dat$epi$trans.21 <- rNA
+      dat$epi$trans.22 <- rNA
+      dat$epi$trans.23 <- rNA
+      dat$epi$trans.24 <- rNA
+      dat$epi$trans.25 <- rNA
+      dat$epi$trans.26 <- rNA
+      dat$epi$trans.27 <- rNA
+      dat$epi$trans.28 <- rNA
+      dat$epi$trans.29 <- rNA
+      dat$epi$trans.30 <- rNA
+      dat$epi$trans.31 <- rNA
+      dat$epi$trans.32 <- rNA
+      dat$epi$trans.33 <- rNA
+      dat$epi$trans.34 <- rNA
+      dat$epi$trans.35 <- rNA
+      dat$epi$trans.36 <- rNA
+      dat$epi$trans.37 <- rNA
+      dat$epi$trans.38 <- rNA
+      dat$epi$trans.39 <- rNA
+      dat$epi$trans.40 <- rNA
+
+      #cont age of infector & PT ;
+      #main;
+      dat$epi$trans.18.main <- rNA
+      dat$epi$trans.19.main <- rNA
+      dat$epi$trans.20.main <- rNA
+      dat$epi$trans.21.main <- rNA
+      dat$epi$trans.22.main <- rNA
+      dat$epi$trans.23.main <- rNA
+      dat$epi$trans.24.main <- rNA
+      dat$epi$trans.25.main <- rNA
+      dat$epi$trans.26.main <- rNA
+      dat$epi$trans.27.main <- rNA
+      dat$epi$trans.28.main <- rNA
+      dat$epi$trans.29.main <- rNA
+      dat$epi$trans.30.main <- rNA
+      dat$epi$trans.31.main <- rNA
+      dat$epi$trans.32.main <- rNA
+      dat$epi$trans.33.main <- rNA
+      dat$epi$trans.34.main <- rNA
+      dat$epi$trans.35.main <- rNA
+      dat$epi$trans.36.main <- rNA
+      dat$epi$trans.37.main <- rNA
+      dat$epi$trans.38.main <- rNA
+      dat$epi$trans.39.main <- rNA
+      dat$epi$trans.40.main <- rNA
+
+      #casl;
+      dat$epi$trans.18.casl <- rNA
+      dat$epi$trans.19.casl <- rNA
+      dat$epi$trans.20.casl <- rNA
+      dat$epi$trans.21.casl <- rNA
+      dat$epi$trans.22.casl <- rNA
+      dat$epi$trans.23.casl <- rNA
+      dat$epi$trans.24.casl <- rNA
+      dat$epi$trans.25.casl <- rNA
+      dat$epi$trans.26.casl <- rNA
+      dat$epi$trans.27.casl <- rNA
+      dat$epi$trans.28.casl <- rNA
+      dat$epi$trans.29.casl <- rNA
+      dat$epi$trans.30.casl <- rNA
+      dat$epi$trans.31.casl <- rNA
+      dat$epi$trans.32.casl <- rNA
+      dat$epi$trans.33.casl <- rNA
+      dat$epi$trans.34.casl <- rNA
+      dat$epi$trans.35.casl <- rNA
+      dat$epi$trans.36.casl <- rNA
+      dat$epi$trans.37.casl <- rNA
+      dat$epi$trans.38.casl <- rNA
+      dat$epi$trans.39.casl <- rNA
+      dat$epi$trans.40.casl <- rNA
+
+      #one off;
+      dat$epi$trans.18.inst <- rNA
+      dat$epi$trans.19.inst <- rNA
+      dat$epi$trans.20.inst <- rNA
+      dat$epi$trans.21.inst <- rNA
+      dat$epi$trans.22.inst <- rNA
+      dat$epi$trans.23.inst <- rNA
+      dat$epi$trans.24.inst <- rNA
+      dat$epi$trans.25.inst <- rNA
+      dat$epi$trans.26.inst <- rNA
+      dat$epi$trans.27.inst <- rNA
+      dat$epi$trans.28.inst <- rNA
+      dat$epi$trans.29.inst <- rNA
+      dat$epi$trans.30.inst <- rNA
+      dat$epi$trans.31.inst <- rNA
+      dat$epi$trans.32.inst <- rNA
+      dat$epi$trans.33.inst <- rNA
+      dat$epi$trans.34.inst <- rNA
+      dat$epi$trans.35.inst <- rNA
+      dat$epi$trans.36.inst <- rNA
+      dat$epi$trans.37.inst <- rNA
+      dat$epi$trans.38.inst <- rNA
+      dat$epi$trans.39.inst <- rNA
+      dat$epi$trans.40.inst <- rNA
+
+      # to a young partner in X type;
+      #main;
+      dat$epi$trans.18.Ymain <- rNA
+      dat$epi$trans.19.Ymain <- rNA
+      dat$epi$trans.20.Ymain <- rNA
+      dat$epi$trans.21.Ymain <- rNA
+      dat$epi$trans.22.Ymain <- rNA
+      dat$epi$trans.23.Ymain <- rNA
+      dat$epi$trans.24.Ymain <- rNA
+      dat$epi$trans.25.Ymain <- rNA
+      dat$epi$trans.26.Ymain <- rNA
+      dat$epi$trans.27.Ymain <- rNA
+      dat$epi$trans.28.Ymain <- rNA
+      dat$epi$trans.29.Ymain <- rNA
+      dat$epi$trans.30.Ymain <- rNA
+      dat$epi$trans.31.Ymain <- rNA
+      dat$epi$trans.32.Ymain <- rNA
+      dat$epi$trans.33.Ymain <- rNA
+      dat$epi$trans.34.Ymain <- rNA
+      dat$epi$trans.35.Ymain <- rNA
+      dat$epi$trans.36.Ymain <- rNA
+      dat$epi$trans.37.Ymain <- rNA
+      dat$epi$trans.38.Ymain <- rNA
+      dat$epi$trans.39.Ymain <- rNA
+      dat$epi$trans.40.Ymain <- rNA
+
+      #casl;
+      dat$epi$trans.18.Ycasl <- rNA
+      dat$epi$trans.19.Ycasl <- rNA
+      dat$epi$trans.20.Ycasl <- rNA
+      dat$epi$trans.21.Ycasl <- rNA
+      dat$epi$trans.22.Ycasl <- rNA
+      dat$epi$trans.23.Ycasl <- rNA
+      dat$epi$trans.24.Ycasl <- rNA
+      dat$epi$trans.25.Ycasl <- rNA
+      dat$epi$trans.26.Ycasl <- rNA
+      dat$epi$trans.27.Ycasl <- rNA
+      dat$epi$trans.28.Ycasl <- rNA
+      dat$epi$trans.29.Ycasl <- rNA
+      dat$epi$trans.30.Ycasl <- rNA
+      dat$epi$trans.31.Ycasl <- rNA
+      dat$epi$trans.32.Ycasl <- rNA
+      dat$epi$trans.33.Ycasl <- rNA
+      dat$epi$trans.34.Ycasl <- rNA
+      dat$epi$trans.35.Ycasl <- rNA
+      dat$epi$trans.36.Ycasl <- rNA
+      dat$epi$trans.37.Ycasl <- rNA
+      dat$epi$trans.38.Ycasl <- rNA
+      dat$epi$trans.39.Ycasl <- rNA
+      dat$epi$trans.40.Ycasl <- rNA
+
+      #one off;
+      dat$epi$trans.18.Yinst <- rNA
+      dat$epi$trans.19.Yinst <- rNA
+      dat$epi$trans.20.Yinst <- rNA
+      dat$epi$trans.21.Yinst <- rNA
+      dat$epi$trans.22.Yinst <- rNA
+      dat$epi$trans.23.Yinst <- rNA
+      dat$epi$trans.24.Yinst <- rNA
+      dat$epi$trans.25.Yinst <- rNA
+      dat$epi$trans.26.Yinst <- rNA
+      dat$epi$trans.27.Yinst <- rNA
+      dat$epi$trans.28.Yinst <- rNA
+      dat$epi$trans.29.Yinst <- rNA
+      dat$epi$trans.30.Yinst <- rNA
+      dat$epi$trans.31.Yinst <- rNA
+      dat$epi$trans.32.Yinst <- rNA
+      dat$epi$trans.33.Yinst <- rNA
+      dat$epi$trans.34.Yinst <- rNA
+      dat$epi$trans.35.Yinst <- rNA
+      dat$epi$trans.36.Yinst <- rNA
+      dat$epi$trans.37.Yinst <- rNA
+      dat$epi$trans.38.Yinst <- rNA
+      dat$epi$trans.39.Yinst <- rNA
+      dat$epi$trans.40.Yinst <- rNA
+
+      # to a older partner in X type;
+      #main;
+      dat$epi$trans.18.Omain <- rNA
+      dat$epi$trans.19.Omain <- rNA
+      dat$epi$trans.20.Omain <- rNA
+      dat$epi$trans.21.Omain <- rNA
+      dat$epi$trans.22.Omain <- rNA
+      dat$epi$trans.23.Omain <- rNA
+      dat$epi$trans.24.Omain <- rNA
+      dat$epi$trans.25.Omain <- rNA
+      dat$epi$trans.26.Omain <- rNA
+      dat$epi$trans.27.Omain <- rNA
+      dat$epi$trans.28.Omain <- rNA
+      dat$epi$trans.29.Omain <- rNA
+      dat$epi$trans.30.Omain <- rNA
+      dat$epi$trans.31.Omain <- rNA
+      dat$epi$trans.32.Omain <- rNA
+      dat$epi$trans.33.Omain <- rNA
+      dat$epi$trans.34.Omain <- rNA
+      dat$epi$trans.35.Omain <- rNA
+      dat$epi$trans.36.Omain <- rNA
+      dat$epi$trans.37.Omain <- rNA
+      dat$epi$trans.38.Omain <- rNA
+      dat$epi$trans.39.Omain <- rNA
+      dat$epi$trans.40.Omain <- rNA
+
+      #casl;
+      dat$epi$trans.18.Ocasl <- rNA
+      dat$epi$trans.19.Ocasl <- rNA
+      dat$epi$trans.20.Ocasl <- rNA
+      dat$epi$trans.21.Ocasl <- rNA
+      dat$epi$trans.22.Ocasl <- rNA
+      dat$epi$trans.23.Ocasl <- rNA
+      dat$epi$trans.24.Ocasl <- rNA
+      dat$epi$trans.25.Ocasl <- rNA
+      dat$epi$trans.26.Ocasl <- rNA
+      dat$epi$trans.27.Ocasl <- rNA
+      dat$epi$trans.28.Ocasl <- rNA
+      dat$epi$trans.29.Ocasl <- rNA
+      dat$epi$trans.30.Ocasl <- rNA
+      dat$epi$trans.31.Ocasl <- rNA
+      dat$epi$trans.32.Ocasl <- rNA
+      dat$epi$trans.33.Ocasl <- rNA
+      dat$epi$trans.34.Ocasl <- rNA
+      dat$epi$trans.35.Ocasl <- rNA
+      dat$epi$trans.36.Ocasl <- rNA
+      dat$epi$trans.37.Ocasl <- rNA
+      dat$epi$trans.38.Ocasl <- rNA
+      dat$epi$trans.39.Ocasl <- rNA
+      dat$epi$trans.40.Ocasl <- rNA
+
+      #one off;
+      dat$epi$trans.18.Oinst <- rNA
+      dat$epi$trans.19.Oinst <- rNA
+      dat$epi$trans.20.Oinst <- rNA
+      dat$epi$trans.21.Oinst <- rNA
+      dat$epi$trans.22.Oinst <- rNA
+      dat$epi$trans.23.Oinst <- rNA
+      dat$epi$trans.24.Oinst <- rNA
+      dat$epi$trans.25.Oinst <- rNA
+      dat$epi$trans.26.Oinst <- rNA
+      dat$epi$trans.27.Oinst <- rNA
+      dat$epi$trans.28.Oinst <- rNA
+      dat$epi$trans.29.Oinst <- rNA
+      dat$epi$trans.30.Oinst <- rNA
+      dat$epi$trans.31.Oinst <- rNA
+      dat$epi$trans.32.Oinst <- rNA
+      dat$epi$trans.33.Oinst <- rNA
+      dat$epi$trans.34.Oinst <- rNA
+      dat$epi$trans.35.Oinst <- rNA
+      dat$epi$trans.36.Oinst <- rNA
+      dat$epi$trans.37.Oinst <- rNA
+      dat$epi$trans.38.Oinst <- rNA
+      dat$epi$trans.39.Oinst <- rNA
+      dat$epi$trans.40.Oinst <- rNA
 
 
 
@@ -496,6 +764,15 @@ prevalence_msm <- function(dat, at) {
   # dat$epi$i.prev.W[at] <- dat$epi$i.num.W[at] / dat$epi$num.W[at]
   dat$epi$i.prev.Y[at] <- dat$epi$i.num.Y[at] / dat$epi$num.Y[at]
   dat$epi$i.prev.O[at] <- dat$epi$i.num.O[at] / dat$epi$num.O[at]
+
+  #incidence rates;
+  dat$epi$s.num.Y[at] <- sum(status == 0 & agecat2 == "Y", na.rm = TRUE)  #number of susceptible people per week (person-weeks)
+  dat$epi$s.num.O[at] <- sum(status == 0 & agecat2 == "O", na.rm = TRUE)
+
+  dat$epi$incidrate[at] <- dat$epi$incid[at] / (sum(dat$epi$s.num[at],dat$epi$incid[at]))
+  dat$epi$incidrate.Y[at] <-  dat$epi$incid.infd.Y[at] / (sum(dat$epi$s.num.Y[at],dat$epi$incid.infd.Y[at]))
+  dat$epi$incidrate.O[at] <-  dat$epi$incid.infd.O[at] / (sum(dat$epi$s.num.O[at],dat$epi$incid.infd.O[at]))
+
 
   #should I be taking prep stuff out?
   dat$epi$prepCurr[at] <- sum(prepStat == 1, na.rm = TRUE)

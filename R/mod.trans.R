@@ -47,9 +47,7 @@ trans_msm <- function(dat, at){
   prepClass <- dat$attr$prepClass
 
   agecat2 <- dat$attr$agecat2 ###added,
-
-  # inf.agecat2 <- dat$attr$inf.agecat2 ###added, dont need to carry over into next sim
-  # infd.agecat2 <- dat$attr$infd.agecat2 ###added
+  age <- dat$attr$age
 
 
   # Parameters
@@ -197,6 +195,9 @@ trans_msm <- function(dat, at){
     #age
     inf.agecat2 <- agecat2[infector]  #infectors age
     infd.agecat2 <- agecat2[infected]  #infected persons age
+    inf.age <- age[infector]
+    infd.age <- age[infected]
+
 
 
     dat$attr$status[infected]      <- 1
@@ -219,9 +220,12 @@ trans_msm <- function(dat, at){
     dat$attr$cum.time.off.tx[infected] <- 0
 
     #age
-    #dat$attr$inf.agecat2[infected] <- inf.agecat2  #give infected person value for age of infector
-    #dat$attr$infd.agecat2[infected] <- infd.agecat2  #give infected person value for age of infected
-    #dont need to carry over in dat file to next simulation
+    dat$attr$inf.age[infected] <- inf.age  #give infected person value for age of infector
+    dat$attr$infd.age[infected] <- infd.age  #give infected person value for age of infected
+    dat$attr$inf.agecat2[infected] <- inf.agecat2  #give infected person value for agecat of infector
+    dat$attr$infd.agecat2[infected] <- infd.agecat2  #give infected person value for agecat of infected
+    #dont need to carry over in dat file to next simulation? but want to set this in epi data
+    #to look at mean age of infection, mean age of transmitting overall at end, but don't need mean tracked [at] each timestep;
 
 
     # Summary Output
@@ -253,6 +257,12 @@ trans_msm <- function(dat, at){
 #AGE SPECIFIC OUTPUTS;
 ######################
 
+  #means/medians
+    dat$epi$meanage.inf[at]  <- mean(inf.age, na.rm = TRUE)
+    dat$epi$meanage.infd[at] <- mean(infd.age, na.rm = TRUE)
+    dat$epi$medianage.inf[at]  <- median(inf.age, na.rm = TRUE)
+    dat$epi$medianage.infd[at] <- median(infd.age, na.rm = TRUE)
+
   #incidence by age;
     dat$epi$incid.inf.Y[at]   <- sum(inf.agecat2 == "Y", na.rm = TRUE)
     dat$epi$incid.inf.O[at]   <- sum(inf.agecat2 == "O", na.rm = TRUE)
@@ -266,7 +276,6 @@ trans_msm <- function(dat, at){
       #directional
       dat$epi$incid.OYd[at] <- sum(inf.agecat2 == "O" & infd.agecat2 == "Y", na.rm = TRUE)
       dat$epi$incid.YOd[at] <- sum(inf.agecat2 == "Y" & infd.agecat2 == "O", na.rm = TRUE)
-
 
   #age of infector
     dat$epi$trans.Y[at] <- sum(inf.agecat2 == "Y", na.rm = TRUE) / length(infected)
@@ -312,6 +321,264 @@ trans_msm <- function(dat, at){
         dat$epi$trans.YOdcasl[at] <- sum(inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE) / length(infected)
         dat$epi$trans.OYdinst[at] <- sum(inf.agecat2 == "O" & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE) / length(infected)
         dat$epi$trans.YOdinst[at] <- sum(inf.agecat2 == "Y" & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE) / length(infected)
+
+
+#####################################################################
+#CONTINUOUS AGE & PT for GRAPHS - sum of infections, not PAFs;
+#####################################################################
+
+#cont age of infector ;
+   dat$epi$trans.18[at] <- sum(floor(inf.age)==18, na.rm = TRUE)
+   dat$epi$trans.19[at] <- sum(floor(inf.age)==19, na.rm = TRUE)
+   dat$epi$trans.20[at] <- sum(floor(inf.age)==20, na.rm = TRUE)
+   dat$epi$trans.21[at] <- sum(floor(inf.age)==21, na.rm = TRUE)
+   dat$epi$trans.22[at] <- sum(floor(inf.age)==22, na.rm = TRUE)
+   dat$epi$trans.23[at] <- sum(floor(inf.age)==23, na.rm = TRUE)
+   dat$epi$trans.24[at] <- sum(floor(inf.age)==24, na.rm = TRUE)
+   dat$epi$trans.25[at] <- sum(floor(inf.age)==25, na.rm = TRUE)
+   dat$epi$trans.26[at] <- sum(floor(inf.age)==26, na.rm = TRUE)
+   dat$epi$trans.27[at] <- sum(floor(inf.age)==27, na.rm = TRUE)
+   dat$epi$trans.28[at] <- sum(floor(inf.age)==28, na.rm = TRUE)
+   dat$epi$trans.29[at] <- sum(floor(inf.age)==29, na.rm = TRUE)
+   dat$epi$trans.30[at] <- sum(floor(inf.age)==30, na.rm = TRUE)
+   dat$epi$trans.31[at] <- sum(floor(inf.age)==31, na.rm = TRUE)
+   dat$epi$trans.32[at] <- sum(floor(inf.age)==32, na.rm = TRUE)
+   dat$epi$trans.33[at] <- sum(floor(inf.age)==33, na.rm = TRUE)
+   dat$epi$trans.34[at] <- sum(floor(inf.age)==34, na.rm = TRUE)
+   dat$epi$trans.35[at] <- sum(floor(inf.age)==35, na.rm = TRUE)
+   dat$epi$trans.36[at] <- sum(floor(inf.age)==36, na.rm = TRUE)
+   dat$epi$trans.37[at] <- sum(floor(inf.age)==37, na.rm = TRUE)
+   dat$epi$trans.38[at] <- sum(floor(inf.age)==38, na.rm = TRUE)
+   dat$epi$trans.39[at] <- sum(floor(inf.age)==39, na.rm = TRUE)
+   dat$epi$trans.40[at] <- sum(floor(inf.age)==40, na.rm = TRUE)
+
+#cont age of infector & PT ;
+   #main;
+   dat$epi$trans.18.main[at] <- sum(floor(inf.age)==18 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.19.main[at] <- sum(floor(inf.age)==19 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.20.main[at] <- sum(floor(inf.age)==20 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.21.main[at] <- sum(floor(inf.age)==21 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.22.main[at] <- sum(floor(inf.age)==22 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.23.main[at] <- sum(floor(inf.age)==23 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.24.main[at] <- sum(floor(inf.age)==24 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.25.main[at] <- sum(floor(inf.age)==25 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.26.main[at] <- sum(floor(inf.age)==26 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.27.main[at] <- sum(floor(inf.age)==27 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.28.main[at] <- sum(floor(inf.age)==28 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.29.main[at] <- sum(floor(inf.age)==29 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.30.main[at] <- sum(floor(inf.age)==30 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.31.main[at] <- sum(floor(inf.age)==31 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.32.main[at] <- sum(floor(inf.age)==32 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.33.main[at] <- sum(floor(inf.age)==33 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.34.main[at] <- sum(floor(inf.age)==34 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.35.main[at] <- sum(floor(inf.age)==35 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.36.main[at] <- sum(floor(inf.age)==36 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.37.main[at] <- sum(floor(inf.age)==37 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.38.main[at] <- sum(floor(inf.age)==38 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.39.main[at] <- sum(floor(inf.age)==39 & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.40.main[at] <- sum(floor(inf.age)==40 & inf.type == 1, na.rm = TRUE)
+
+   #casl;
+   dat$epi$trans.18.casl[at] <- sum(floor(inf.age)==18 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.19.casl[at] <- sum(floor(inf.age)==19 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.20.casl[at] <- sum(floor(inf.age)==20 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.21.casl[at] <- sum(floor(inf.age)==21 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.22.casl[at] <- sum(floor(inf.age)==22 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.23.casl[at] <- sum(floor(inf.age)==23 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.24.casl[at] <- sum(floor(inf.age)==24 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.25.casl[at] <- sum(floor(inf.age)==25 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.26.casl[at] <- sum(floor(inf.age)==26 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.27.casl[at] <- sum(floor(inf.age)==27 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.28.casl[at] <- sum(floor(inf.age)==28 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.29.casl[at] <- sum(floor(inf.age)==29 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.30.casl[at] <- sum(floor(inf.age)==30 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.31.casl[at] <- sum(floor(inf.age)==31 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.32.casl[at] <- sum(floor(inf.age)==32 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.33.casl[at] <- sum(floor(inf.age)==33 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.34.casl[at] <- sum(floor(inf.age)==34 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.35.casl[at] <- sum(floor(inf.age)==35 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.36.casl[at] <- sum(floor(inf.age)==36 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.37.casl[at] <- sum(floor(inf.age)==37 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.38.casl[at] <- sum(floor(inf.age)==38 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.39.casl[at] <- sum(floor(inf.age)==39 & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.40.casl[at] <- sum(floor(inf.age)==40 & inf.type == 2, na.rm = TRUE)
+
+   #one off;
+   dat$epi$trans.18.inst[at] <- sum(floor(inf.age)==18 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.19.inst[at] <- sum(floor(inf.age)==19 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.20.inst[at] <- sum(floor(inf.age)==20 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.21.inst[at] <- sum(floor(inf.age)==21 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.22.inst[at] <- sum(floor(inf.age)==22 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.23.inst[at] <- sum(floor(inf.age)==23 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.24.inst[at] <- sum(floor(inf.age)==24 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.25.inst[at] <- sum(floor(inf.age)==25 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.26.inst[at] <- sum(floor(inf.age)==26 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.27.inst[at] <- sum(floor(inf.age)==27 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.28.inst[at] <- sum(floor(inf.age)==28 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.29.inst[at] <- sum(floor(inf.age)==29 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.30.inst[at] <- sum(floor(inf.age)==30 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.31.inst[at] <- sum(floor(inf.age)==31 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.32.inst[at] <- sum(floor(inf.age)==32 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.33.inst[at] <- sum(floor(inf.age)==33 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.34.inst[at] <- sum(floor(inf.age)==34 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.35.inst[at] <- sum(floor(inf.age)==35 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.36.inst[at] <- sum(floor(inf.age)==36 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.37.inst[at] <- sum(floor(inf.age)==37 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.38.inst[at] <- sum(floor(inf.age)==38 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.39.inst[at] <- sum(floor(inf.age)==39 & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.40.inst[at] <- sum(floor(inf.age)==40 & inf.type == 3, na.rm = TRUE)
+
+# to a young partner in X type;
+   #main;
+   dat$epi$trans.18.Ymain[at] <- sum(floor(inf.age)==18 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.19.Ymain[at] <- sum(floor(inf.age)==19 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.20.Ymain[at] <- sum(floor(inf.age)==20 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.21.Ymain[at] <- sum(floor(inf.age)==21 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.22.Ymain[at] <- sum(floor(inf.age)==22 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.23.Ymain[at] <- sum(floor(inf.age)==23 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.24.Ymain[at] <- sum(floor(inf.age)==24 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.25.Ymain[at] <- sum(floor(inf.age)==25 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.26.Ymain[at] <- sum(floor(inf.age)==26 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.27.Ymain[at] <- sum(floor(inf.age)==27 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.28.Ymain[at] <- sum(floor(inf.age)==28 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.29.Ymain[at] <- sum(floor(inf.age)==29 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.30.Ymain[at] <- sum(floor(inf.age)==30 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.31.Ymain[at] <- sum(floor(inf.age)==31 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.32.Ymain[at] <- sum(floor(inf.age)==32 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.33.Ymain[at] <- sum(floor(inf.age)==33 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.34.Ymain[at] <- sum(floor(inf.age)==34 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.35.Ymain[at] <- sum(floor(inf.age)==35 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.36.Ymain[at] <- sum(floor(inf.age)==36 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.37.Ymain[at] <- sum(floor(inf.age)==37 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.38.Ymain[at] <- sum(floor(inf.age)==38 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.39.Ymain[at] <- sum(floor(inf.age)==39 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.40.Ymain[at] <- sum(floor(inf.age)==40 & infd.agecat2 == "Y" & inf.type == 1, na.rm = TRUE)
+
+   #casl;
+   dat$epi$trans.18.Ycasl[at] <- sum(floor(inf.age)==18 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.19.Ycasl[at] <- sum(floor(inf.age)==19 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.20.Ycasl[at] <- sum(floor(inf.age)==20 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.21.Ycasl[at] <- sum(floor(inf.age)==21 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.22.Ycasl[at] <- sum(floor(inf.age)==22 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.23.Ycasl[at] <- sum(floor(inf.age)==23 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.24.Ycasl[at] <- sum(floor(inf.age)==24 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.25.Ycasl[at] <- sum(floor(inf.age)==25 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.26.Ycasl[at] <- sum(floor(inf.age)==26 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.27.Ycasl[at] <- sum(floor(inf.age)==27 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.28.Ycasl[at] <- sum(floor(inf.age)==28 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.29.Ycasl[at] <- sum(floor(inf.age)==29 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.30.Ycasl[at] <- sum(floor(inf.age)==30 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.31.Ycasl[at] <- sum(floor(inf.age)==31 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.32.Ycasl[at] <- sum(floor(inf.age)==32 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.33.Ycasl[at] <- sum(floor(inf.age)==33 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.34.Ycasl[at] <- sum(floor(inf.age)==34 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.35.Ycasl[at] <- sum(floor(inf.age)==35 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.36.Ycasl[at] <- sum(floor(inf.age)==36 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.37.Ycasl[at] <- sum(floor(inf.age)==37 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.38.Ycasl[at] <- sum(floor(inf.age)==38 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.39.Ycasl[at] <- sum(floor(inf.age)==39 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.40.Ycasl[at] <- sum(floor(inf.age)==40 & infd.agecat2 == "Y" & inf.type == 2, na.rm = TRUE)
+
+   #one off;
+   dat$epi$trans.18.Yinst[at] <- sum(floor(inf.age)==18 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.19.Yinst[at] <- sum(floor(inf.age)==19 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.20.Yinst[at] <- sum(floor(inf.age)==20 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.21.Yinst[at] <- sum(floor(inf.age)==21 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.22.Yinst[at] <- sum(floor(inf.age)==22 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.23.Yinst[at] <- sum(floor(inf.age)==23 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.24.Yinst[at] <- sum(floor(inf.age)==24 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.25.Yinst[at] <- sum(floor(inf.age)==25 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.26.Yinst[at] <- sum(floor(inf.age)==26 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.27.Yinst[at] <- sum(floor(inf.age)==27 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.28.Yinst[at] <- sum(floor(inf.age)==28 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.29.Yinst[at] <- sum(floor(inf.age)==29 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.30.Yinst[at] <- sum(floor(inf.age)==30 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.31.Yinst[at] <- sum(floor(inf.age)==31 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.32.Yinst[at] <- sum(floor(inf.age)==32 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.33.Yinst[at] <- sum(floor(inf.age)==33 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.34.Yinst[at] <- sum(floor(inf.age)==34 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.35.Yinst[at] <- sum(floor(inf.age)==35 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.36.Yinst[at] <- sum(floor(inf.age)==36 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.37.Yinst[at] <- sum(floor(inf.age)==37 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.38.Yinst[at] <- sum(floor(inf.age)==38 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.39.Yinst[at] <- sum(floor(inf.age)==39 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.40.Yinst[at] <- sum(floor(inf.age)==40 & infd.agecat2 == "Y" & inf.type == 3, na.rm = TRUE)
+
+# to a older partner in X type;
+   #main;
+   dat$epi$trans.18.Omain[at] <- sum(floor(inf.age)==18 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.19.Omain[at] <- sum(floor(inf.age)==19 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.20.Omain[at] <- sum(floor(inf.age)==20 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.21.Omain[at] <- sum(floor(inf.age)==21 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.22.Omain[at] <- sum(floor(inf.age)==22 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.23.Omain[at] <- sum(floor(inf.age)==23 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.24.Omain[at] <- sum(floor(inf.age)==24 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.25.Omain[at] <- sum(floor(inf.age)==25 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.26.Omain[at] <- sum(floor(inf.age)==26 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.27.Omain[at] <- sum(floor(inf.age)==27 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.28.Omain[at] <- sum(floor(inf.age)==28 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.29.Omain[at] <- sum(floor(inf.age)==29 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.30.Omain[at] <- sum(floor(inf.age)==30 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.31.Omain[at] <- sum(floor(inf.age)==31 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.32.Omain[at] <- sum(floor(inf.age)==32 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.33.Omain[at] <- sum(floor(inf.age)==33 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.34.Omain[at] <- sum(floor(inf.age)==34 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.35.Omain[at] <- sum(floor(inf.age)==35 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.36.Omain[at] <- sum(floor(inf.age)==36 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.37.Omain[at] <- sum(floor(inf.age)==37 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.38.Omain[at] <- sum(floor(inf.age)==38 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.39.Omain[at] <- sum(floor(inf.age)==39 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+   dat$epi$trans.40.Omain[at] <- sum(floor(inf.age)==40 & infd.agecat2 == "O" & inf.type == 1, na.rm = TRUE)
+
+   #casl;
+   dat$epi$trans.18.Ocasl[at] <- sum(floor(inf.age)==18 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.19.Ocasl[at] <- sum(floor(inf.age)==19 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.20.Ocasl[at] <- sum(floor(inf.age)==20 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.21.Ocasl[at] <- sum(floor(inf.age)==21 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.22.Ocasl[at] <- sum(floor(inf.age)==22 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.23.Ocasl[at] <- sum(floor(inf.age)==23 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.24.Ocasl[at] <- sum(floor(inf.age)==24 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.25.Ocasl[at] <- sum(floor(inf.age)==25 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.26.Ocasl[at] <- sum(floor(inf.age)==26 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.27.Ocasl[at] <- sum(floor(inf.age)==27 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.28.Ocasl[at] <- sum(floor(inf.age)==28 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.29.Ocasl[at] <- sum(floor(inf.age)==29 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.30.Ocasl[at] <- sum(floor(inf.age)==30 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.31.Ocasl[at] <- sum(floor(inf.age)==31 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.32.Ocasl[at] <- sum(floor(inf.age)==32 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.33.Ocasl[at] <- sum(floor(inf.age)==33 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.34.Ocasl[at] <- sum(floor(inf.age)==34 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.35.Ocasl[at] <- sum(floor(inf.age)==35 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.36.Ocasl[at] <- sum(floor(inf.age)==36 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.37.Ocasl[at] <- sum(floor(inf.age)==37 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.38.Ocasl[at] <- sum(floor(inf.age)==38 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.39.Ocasl[at] <- sum(floor(inf.age)==39 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+   dat$epi$trans.40.Ocasl[at] <- sum(floor(inf.age)==40 & infd.agecat2 == "O" & inf.type == 2, na.rm = TRUE)
+
+   #one off;
+   dat$epi$trans.18.Oinst[at] <- sum(floor(inf.age)==18 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.19.Oinst[at] <- sum(floor(inf.age)==19 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.20.Oinst[at] <- sum(floor(inf.age)==20 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.21.Oinst[at] <- sum(floor(inf.age)==21 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.22.Oinst[at] <- sum(floor(inf.age)==22 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.23.Oinst[at] <- sum(floor(inf.age)==23 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.24.Oinst[at] <- sum(floor(inf.age)==24 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.25.Oinst[at] <- sum(floor(inf.age)==25 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.26.Oinst[at] <- sum(floor(inf.age)==26 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.27.Oinst[at] <- sum(floor(inf.age)==27 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.28.Oinst[at] <- sum(floor(inf.age)==28 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.29.Oinst[at] <- sum(floor(inf.age)==29 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.30.Oinst[at] <- sum(floor(inf.age)==30 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.31.Oinst[at] <- sum(floor(inf.age)==31 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.32.Oinst[at] <- sum(floor(inf.age)==32 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.33.Oinst[at] <- sum(floor(inf.age)==33 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.34.Oinst[at] <- sum(floor(inf.age)==34 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.35.Oinst[at] <- sum(floor(inf.age)==35 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.36.Oinst[at] <- sum(floor(inf.age)==36 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.37.Oinst[at] <- sum(floor(inf.age)==37 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.38.Oinst[at] <- sum(floor(inf.age)==38 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.39.Oinst[at] <- sum(floor(inf.age)==39 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
+   dat$epi$trans.40.Oinst[at] <- sum(floor(inf.age)==40 & infd.agecat2 == "O" & inf.type == 3, na.rm = TRUE)
 
 
 

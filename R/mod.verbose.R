@@ -43,11 +43,13 @@ verbose_msm <- function(x, type, s, at) {
                 "\n====================",
                 "\nStep: ", at, " (", round(at/x$control$nsteps, 2), ")",
                 "\nPop Size: ", x$epi$num[at],
+                "\nPop Size-Young: ", x$epi$num.Y[at],
+                "\nPop Size-Older: ", x$epi$num.O[at],
                 "\nTot Prev: ", round(x$epi$i.num[at] / x$epi$num[at], 3),
                 "\nWht Prev: ", round(x$epi$i.num.W[at] / x$epi$num.W[at], 3),
                 "\nBlk Prev: ", round(x$epi$i.num.B[at] / x$epi$num.B[at], 3),
-                "\nYng Prev: ", round(x$epi$i.num.O[at] / x$epi$num.O[at], 3),
-                "\nOld Prev: ", round(x$epi$i.num.Y[at] / x$epi$num.Y[at], 3),
+                "\nYoung Prev: ", round(x$epi$i.num.Y[at] / x$epi$num.Y[at], 3),
+                "\nOlder Prev: ", round(x$epi$i.num.O[at] / x$epi$num.O[at], 3),
                 "\n\n", sep = "", file = fn)
           }
         }
@@ -74,6 +76,8 @@ verbose_msm <- function(x, type, s, at) {
           cat("\nTotal Pop Size:", x$epi$num[at])
           cat("\nBlack Pop Size:", x$epi$num.B[at])
           cat("\nWhite Pop Size:", x$epi$num.W[at])
+          cat("\nYoung Pop Size:", x$epi$num.Y[at])
+          cat("\nOlder Pop Size:", x$epi$num.O[at])
           cat("\n------------------------------")
           cat("\nCurr Incidence:", x$epi$incid[at])
           cat("\nCuml Incidence:", sum(x$epi$incid, na.rm = TRUE))
