@@ -769,9 +769,10 @@ prevalence_msm <- function(dat, at) {
   dat$epi$s.num.Y[at] <- sum(status == 0 & agecat2 == "Y", na.rm = TRUE)  #number of susceptible people per week (person-weeks)
   dat$epi$s.num.O[at] <- sum(status == 0 & agecat2 == "O", na.rm = TRUE)
 
-  dat$epi$incidrate[at] <- dat$epi$incid[at] / (sum(dat$epi$s.num[at],dat$epi$incid[at]))
-  dat$epi$incidrate.Y[at] <-  dat$epi$incid.infd.Y[at] / (sum(dat$epi$s.num.Y[at],dat$epi$incid.infd.Y[at]))
-  dat$epi$incidrate.O[at] <-  dat$epi$incid.infd.O[at] / (sum(dat$epi$s.num.O[at],dat$epi$incid.infd.O[at]))
+  dat$epi$incidrate[at] <- (dat$epi$incid[at] / dat$epi$s.num[at])*5200 #(sum(dat$epi$s.num[at],dat$epi$incid[at]))
+                                                                        #had originally and ok, but not used by sam so changed to be consistent
+  dat$epi$incidrate.Y[at] <-  (dat$epi$incid.infd.Y[at] / dat$epi$s.num.Y[at])*5200
+  dat$epi$incidrate.O[at] <-  (dat$epi$incid.infd.O[at] / dat$epi$s.num.O[at])*5200 # gives #new cases/# at risk per 100 person years
 
 
   #should I be taking prep stuff out?
