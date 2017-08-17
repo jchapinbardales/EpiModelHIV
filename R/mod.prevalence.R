@@ -57,8 +57,8 @@ prevalence_msm <- function(dat, at) {
     dat$epi$s.num.Y <- rNA
     dat$epi$s.num.O <- rNA
     dat$epi$incidrate <- rNA
-    dat$epi$incidrate.infd.Y <- rNA
-    dat$epi$incidrate.infd.O <- rNA
+    dat$epi$incidrate.Y <- rNA
+    dat$epi$incidrate.O <- rNA
 
     dat$epi$prepCurr <- rNA
     dat$epi$prepCov <- rNA
@@ -747,7 +747,6 @@ prevalence_msm <- function(dat, at) {
 
   }
 
-
   dat$epi$num[at] <- length(status)
   dat$epi$num.B[at] <- sum(race == "B", na.rm = TRUE)
   dat$epi$num.W[at] <- sum(race == "W", na.rm = TRUE)
@@ -774,7 +773,6 @@ prevalence_msm <- function(dat, at) {
   dat$epi$incidrate.Y[at] <-  (dat$epi$incid.infd.Y[at] / dat$epi$s.num.Y[at])*5200
   dat$epi$incidrate.O[at] <-  (dat$epi$incid.infd.O[at] / dat$epi$s.num.O[at])*5200 # gives #new cases/# at risk per 100 person years
 
-
   #should I be taking prep stuff out?
   dat$epi$prepCurr[at] <- sum(prepStat == 1, na.rm = TRUE)
   dat$epi$prepElig[at] <- sum(dat$attr$prepElig == 1, na.rm = TRUE)
@@ -791,6 +789,15 @@ prevalence_msm <- function(dat, at) {
       sum(prepStat == 1, na.rm = TRUE)
   }
 
+ # if (dat$epi$incidrate[at]==NA) {
+ #   dat$epi$incidrate[at] <- 0
+ # }
+  ifelse(is.na(dat$epi$incid[at]) == TRUE, 0, dat$epi$incid[at])
+  ifelse(is.na(dat$epi$incid.infd.Y[at]) == TRUE, 0, dat$epi$incid.infd.Y[at])
+  ifelse(is.na(dat$epi$incid.infd.O[at]) == TRUE, 0, dat$epi$incid.infd.O[at])
+  ifelse(is.na(dat$epi$incidrate[at]) == TRUE, 0, dat$epi$incidrate[at])
+  ifelse(is.na(dat$epi$incidrate.Y[at]) == TRUE, 0, dat$epi$incidrate.Y[at])
+  ifelse(is.na(dat$epi$incidrate.O[at]) == TRUE, 0, dat$epi$incidrate.O[at])
 
   return(dat)
 }

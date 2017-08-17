@@ -35,7 +35,7 @@ condoms_msm <- function(dat, at) {
     # Parameters
     cond.rr.YY <- dat$param$cond.rr.YY
     cond.rr.OY <- dat$param$cond.rr.OY
-    cond.rr.OO <- dat$param$cond.rr.OO #want this as referent, rr=relative risk of ?;
+    cond.rr.OO <- dat$param$cond.rr.OO
     # cond.rr.BB <- dat$param$cond.rr.BB
     # cond.rr.BW <- dat$param$cond.rr.BW
     # cond.rr.WW <- dat$param$cond.rr.WW
@@ -95,8 +95,8 @@ condoms_msm <- function(dat, at) {
     agecat2.p2 <- agecat2[elt[, 2]]  #taking partner 2
     num.Y <- (agecat2.p1 == "Y") + (agecat2.p2 == "Y")  #concordant age edges
     cond.prob <- (num.Y == 2) * (cond.YY.prob * cond.rr.YY) + #if num.Y=2 then both YY -- all of these some value in params #0.5194 0.2923
-      (num.Y == 1) * (cond.OY.prob * cond.rr.OY) + #0.3318 0.3286
-      (num.Y == 0) * (cond.OO.prob * cond.rr.OO) #0.3037 0.2363
+                 (num.Y == 1) * (cond.OY.prob * cond.rr.OY) + #0.3318 0.3286
+                 (num.Y == 0) * (cond.OO.prob * cond.rr.OO) #0.3037 0.2363
 
 
     # Transform to UAI logit

@@ -35,6 +35,10 @@ acts_msm <- function(dat, at) {
 
     # Parameters
     ai.scale <- dat$param$ai.scale
+    ai.scale.YY <- dat$param$ai.scale.YY
+    ai.scale.OY <- dat$param$ai.scale.OY
+    ai.scale.OO <- dat$param$ai.scale.OO
+
     if (type == "main") {
       base.ai.YY.rate <- dat$param$base.ai.main.YY.rate
       base.ai.OY.rate <- dat$param$base.ai.main.OY.rate
@@ -64,7 +68,9 @@ acts_msm <- function(dat, at) {
       # base.ai.BB.rate <- 1
       # base.ai.BW.rate <- 1
       # base.ai.WW.rate <- 1
-      fixed <- ifelse(ai.scale != 1, FALSE, TRUE)
+      #fixed <- ifelse(ai.scale != 1, FALSE, TRUE)
+      fixed <- ifelse(ai.scale.YY != 1 & ai.scale.OY != 1 & ai.scale.OO != 1,
+                      FALSE, TRUE)
       ptype <- 3
       el <- dat$el[[3]]
     }
@@ -97,10 +103,13 @@ acts_msm <- function(dat, at) {
       agecat2.p1 <- agecat2[el[, 1]]
       agecat2.p2 <- agecat2[el[, 2]]
       num.Y <- (agecat2.p1 == "Y") + (agecat2.p2 == "Y")  #does this create prob w/ num.Y= num of y nodes? no bc we dont set it to dat
-      ai.rate <- (num.Y == 2) * base.ai.YY.rate +    #YY 1.0955 0.7273
-        (num.Y == 1) * base.ai.OY.rate +    #OY 1.1466 0.7609
-        (num.Y == 0) * base.ai.OO.rate      #OO 1.4280 0.9478
-      ai.rate <- ai.rate * ai.scale
+      #ai.rate <- (num.Y == 2) * base.ai.YY.rate +     #YY 1.0955 0.7273
+      #  (num.Y == 1) * base.ai.OY.rate +              #OY 1.1466 0.7609
+      #  (num.Y == 0) * base.ai.OO.rate                #OO 1.4280 0.9478
+      #ai.rate <- ai.rate * ai.scale
+      ai.rate <- (num.Y == 2) * base.ai.YY.rate * ai.scale.YY +
+                 (num.Y == 1) * base.ai.OY.rate * ai.scale.OY +
+                 (num.Y == 0) * base.ai.OO.rate * ai.scale.OO
 
       # Final act number
       if (fixed == FALSE) {
