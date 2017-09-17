@@ -2,6 +2,7 @@
 % Please edit documentation in R/RcppExports.R, R/mod.aging.R
 \name{aging_msm}
 \alias{aging_msm}
+\alias{aging_msm}
 \title{Aging Module}
 \usage{
 aging_msm(dat, at)
@@ -35,4 +36,3 @@ Module for aging over time for active nodes in the population.
 }
 \keyword{module}
 \keyword{msm}
-

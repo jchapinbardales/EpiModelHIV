@@ -2,14 +2,14 @@
 % Please edit documentation in R/EpiModelHIV-package.R
 \docType{package}
 \name{EpiModelHIV-package}
-\alias{EpiModelHIV}
 \alias{EpiModelHIV-package}
+\alias{EpiModelHIV}
 \title{HIV Transmission Dynamics among MSM and Heterosexuals}
 \description{
 \tabular{ll}{
    Package: \tab EpiModelHIV\cr
    Type: \tab Package\cr
-   Version: \tab 1.0.0\cr
+   Version: \tab 12.0.0\cr
    Date: \tab 2016-06-25\cr
    License: \tab GPL-3\cr
    LazyLoad: \tab yes\cr
@@ -24,4 +24,3 @@ sub-Saharan Africa.
 \keyword{het}
 \keyword{msm}
 \keyword{package}
-

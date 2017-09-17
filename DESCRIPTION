@@ -1,5 +1,5 @@
 Package: EpiModelHIV
-Version: 1.0.0
+Version: 12.0.0
 Date: 2016-06-25
 Type: Package
 Title: Epidemic Modeling of HIV Transmission among MSM and Heterosexual Populations
@@ -30,5 +30,5 @@ Suggests:
 VignetteBuilder: knitr
 LinkingTo: ergm,
     Rcpp
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 LazyData: true

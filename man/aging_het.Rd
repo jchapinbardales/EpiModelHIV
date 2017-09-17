@@ -2,6 +2,7 @@
 % Please edit documentation in R/RcppExports.R, R/mod.aging.R
 \name{aging_het}
 \alias{aging_het}
+\alias{aging_het}
 \title{Aging Module}
 \usage{
 aging_het(dat, at)
@@ -28,4 +29,3 @@ This module ages all active nodes in the population by one time
 }
 \keyword{het}
 \keyword{module}
-

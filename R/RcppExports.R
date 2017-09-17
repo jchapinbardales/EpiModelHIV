@@ -17,7 +17,7 @@
 #' @keywords module msm
 #' @export
 aging_msm <- function(dat, at) {
-    .Call('EpiModelHIV_aging_msm', PACKAGE = 'EpiModelHIV', dat, at)
+    .Call('_EpiModelHIV_aging_msm', PACKAGE = 'EpiModelHIV', dat, at)
 }
 
 #' @title Aging Module
@@ -32,6 +32,6 @@ aging_msm <- function(dat, at) {
 #' @keywords module het
 #' @export
 aging_het <- function(dat, at) {
-    .Call('EpiModelHIV_aging_het', PACKAGE = 'EpiModelHIV', dat, at)
+    .Call('_EpiModelHIV_aging_het', PACKAGE = 'EpiModelHIV', dat, at)
 }
 

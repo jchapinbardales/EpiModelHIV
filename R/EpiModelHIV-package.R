@@ -3,7 +3,7 @@
 #' \tabular{ll}{
 #'    Package: \tab EpiModelHIV\cr
 #'    Type: \tab Package\cr
-#'    Version: \tab 1.0.0\cr
+#'    Version: \tab 12.0.0\cr
 #'    Date: \tab 2016-06-25\cr
 #'    License: \tab GPL-3\cr
 #'    LazyLoad: \tab yes\cr
