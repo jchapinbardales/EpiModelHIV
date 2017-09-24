@@ -79,6 +79,7 @@ trans_msm <- function(dat, at){
   # PATP: Insertive Man Infector (Col 1) --------------------------------
 
   # Attributes of infected
+
   ip.vl <- vl[disc.ip[, 1]]
   ip.stage <- stage[disc.ip[, 1]]
 
@@ -112,8 +113,10 @@ trans_msm <- function(dat, at){
   ip.tlo[isAcute] <- ip.tlo[isAcute] + log(acute.rr)
 
   # Retransformation to probability
-  ip.tprob <- plogis(ip.tlo)
-  stopifnot(ip.tprob >= 0, ip.tprob <= 1)
+  ip.tprob <- plogis(ip.tlo)            # 8.938000e-03 0.000000e+00
+  if (any(is.na(ip.tprob))) browser()
+  if (any(ip.tprob < 0 | ip.tprob > 1)) browser()
+  # stopifnot(ip.tprob >= 0, ip.tprob <= 1)
 
 
   # PATP: Receptive Man Infector (Col 2) --------------------------------
@@ -157,7 +160,9 @@ trans_msm <- function(dat, at){
 
   # Retransformation to probability
   rp.tprob <- plogis(rp.tlo)
-  stopifnot(rp.tprob >= 0, rp.tprob <= 1)
+  if (any(is.na(rp.tprob))) browser()
+  if (any(rp.tprob < 0 | rp.tprob > 1)) browser()
+  # stopifnot(rp.tprob >= 0, rp.tprob <= 1)
 
   # Transmission --------------------------------------------------------
 

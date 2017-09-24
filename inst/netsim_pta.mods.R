@@ -21,13 +21,13 @@ est <- list(fit.m, fit.p, fit.i)
 #data(st)
 
 param <- param_msm(nwstats = st,
-                   ai.scale.YY=2.5,
-                   ai.scale.OY=2.5,
-                   ai.scale.OO=0.5,
+                   ai.scale.YY=1.437,
+                   ai.scale.OY=1.279,
+                   ai.scale.OO=0.829,
 
                    cond.rr.YY = 0.658,
                    cond.rr.OY = 0.723,
-                   cond.rr.OO = 3,
+                   cond.rr.OO = 1.322,
 
 
                    #ai.scale = 1.8, #1.4 keeps age prev at 10%
@@ -45,17 +45,17 @@ control <- control_msm(simno = 0.253,
                        ncores = 1,
                        save.nwstats = TRUE,
                        verbose.int = 1)
-sim28<- netsim(est, param, init, control)
+sim40<- netsim(est, param, init, control)
 # to see code for netsim, just type netsim into console
 # debug(stergm_prep)
 
 
 #12
 par(mfrow = c(1, 1))
-plot(sim28)
+plot(sim40)
 par(mfrow = c(2, 1))
-plot(sim28, y = "i.prev.Y", main = "HIV Prev - Young")
-plot(sim28, y = "i.prev.O", main = "HIV Prev - Older")
+plot(sim40, y = "i.prev.Y", main = "HIV Prev - Young")
+plot(sim40, y = "i.prev.O", main = "HIV Prev - Older")
 
 
 
@@ -256,25 +256,25 @@ dat <- initialize_msm(est, param, init, control, s = 1)
 # mf <- dat$p[[1]]$model.form
 # mf$terms[[4]]
 
+for (at in 2:100) {
+  dat <- aging_msm(dat, at)
+  dat <- deaths_msm(dat, at)
+  dat <- births_msm(dat, at)
+  dat <- test_msm(dat, at)
+  dat <- tx_msm(dat, at)
+  dat <- prep_msm(dat, at)
+  dat <- progress_msm(dat, at)
+  dat <- vl_msm(dat, at)
+  # dat <- update_aiclass_msm(dat, at)
+  # dat <- update_roleclass_msm(dat, at)
+  dat <- simnet_msm(dat, at)
+  dat <- disclose_msm(dat, at)
+  dat <- acts_msm(dat, at)
+  dat <- condoms_msm(dat, at)
+  dat <- riskhist_msm(dat, at)
+  dat <- position_msm(dat, at)
+  dat <- trans_msm(dat, at)
+  dat <- prevalence_msm(dat, at)
+}
 
-at <- at + 1
-
-dat <- aging_msm(dat, at)
-dat <- deaths_msm(dat, at)
-dat <- births_msm(dat, at)
-dat <- test_msm(dat, at)
-dat <- tx_msm(dat, at)s
-dat <- prep_msm(dat, at)
-dat <- progress_msm(dat, at)
-dat <- vl_msm(dat, at)
-# dat <- update_aiclass_msm(dat, at)
-# dat <- update_roleclass_msm(dat, at)
-dat <- simnet_msm(dat, at)
-dat <- disclose_msm(dat, at)
-dat <- acts_msm(dat, at)
-dat <- condoms_msm(dat, at)
-dat <- riskhist_msm(dat, at)
-dat <- position_msm(dat, at)
-dat <- trans_msm(dat, at)
-dat <- prevalence_msm(dat, at)
 

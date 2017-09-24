@@ -96,8 +96,11 @@ setBirthAttr_msm <- function(dat, at, nBirths.B, nBirths.W) {
   dat$attr$age[newIds] <- rep(dat$param$birth.age, nBirths)
   dat$attr$sqrt.age[newIds] <- sqrt(dat$attr$age[newIds])
 
-  # Disease status and related
-  dat$attr$status[newIds] <- rep(0, nBirths)
+
+  # Disease status
+  #dat$attr$status[newIds] <- rep(0, nBirths)
+
+  dat$attr$status[newIds]<-rbinom(nBirths, 1, 0.07)
 
   dat$attr$inst.ai.class[newIds] <- sample(1:dat$param$num.inst.ai.classes,
                                            nBirths, replace = TRUE)
@@ -109,9 +112,79 @@ setBirthAttr_msm <- function(dat, at, nBirths.B, nBirths.W) {
                                            nBirths.W, replace = TRUE,
                                            prob = dat$param$tt.traj.W.prob)
 
+  ###############################################################################
+  ## Infection-related attributes
+
+  # #initialize all vectors present in "initialize module;
+  # dat$attr$stage[newIds] <- rep(NA, nBirths)
+  # dat$attr$stage.time[newIds] <- rep(NA, nBirths)
+  # dat$attr$inf.time[newIds] <- rep(NA, nBirths)
+  # dat$attr$vl[newIds] <- rep(NA, nBirths)
+  # dat$attr$diag.status[newIds] <- rep(NA, nBirths)
+  # dat$attr$diag.time[newIds] <- rep(NA, nBirths)
+  # dat$attr$tx.status[newIds] <- rep(NA, nBirths)
+  # dat$attr$cum.time.on.tx[newIds] <- rep(NA, nBirths)
+  # dat$attr$cum.time.off.tx[newIds] <- rep(NA, nBirths)
+  # dat$attr$time.since.inf[newIds] <- rep(NA, nBirths)
+  #
+  # dat$attr$last.neg.test[newIds] <- rep(NA, nBirths)
+  # dat$attr$tx.init.time[newIds] <- rep(NA, nBirths)
+  # dat$attr$infector[newIds] <- rep(NA, nBirths)
+  # dat$attr$inf.role[newIds] <- rep(NA, nBirths)
+  # dat$attr$inf.type[newIds] <- rep(NA, nBirths)
+  # dat$attr$inf.diag[newIds] <- rep(NA, nBirths)
+  # dat$attr$inf.tx[newIds] <- rep(NA, nBirths)
+  # dat$attr$inf.stage[newIds] <- rep(NA, nBirths)
+  # dat$attr$inf.agecat2[newIds] <- rep(NA, nBirths) ###added
+  # dat$attr$infd.agecat2[newIds] <- rep(NA, nBirths) ###added -- should i add "Y"?
+
+
+  # selected <- newIds[which(dat$attr$status[newIds] == 1)] #6, 6th position of newIds is TRUE
+  selected <- intersect(which(dat$attr$status == 1), newIds)
+
+
+  # attempt 1 -- newly infected but chronic stage (don't want all coming in as acute)
+  # dat$attr$stage[newIdS[selected]] <- 3
+  # dat$attr$stage.time[selected] <- 1
+  # dat$attr$inf.time[selected] <- 1
+  # dat$attr$vl[selected] <- dat$param$vl.set.point
+  # dat$attr$diag.status[selected] <- 0 #rbinom(length(selected), 1, 0.60)
+  # #dat$attr$diag.time[selected] <- rep(NA, nBirths)
+  # dat$attr$tx.status[selected] <- 0
+  # dat$attr$cum.time.on.tx[selected] <- rep(NA, nBirths)
+  # dat$attr$cum.time.off.tx[selected] <- 1
+
+  # attempt #2 -- coming in as chronic
+  # dat$attr$stage[selected] <- 3 #chronic
+  # dat$attr$stage.time[selected] <- 10 #person-time in  current HIV stage -- in days
+  # dat$attr$inf.time[selected] <- at-100 ## if 1, is this going to give trouble with incoming at stage 3 but only given timestep infected?
+  # dat$attr$vl[selected] <- dat$param$vl.set.point
+  # dat$attr$diag.status[selected] <- rbinom(length(selected), 1, 0.60)
+  # diagnosed <- which(dat$attr$status[selected] == 1 & dat$attr$diag.status[selected]==1)
+  # dat$attr$diag.time[diagnosed] <- at
+  #
+  # dat$attr$tx.status[selected] <- 0
+  # dat$attr$cum.time.on.tx[selected] <- 0  #treatment time to current time (0/NA bc not on tx) -- in trans newly infected are set to 0
+  # dat$attr$cum.time.off.tx[selected] <- 100 #infect time to current time (-at)
+  # dat$attr$time.since.inf[selected] <- 100
+
+  #attempt 3 -- newly infected person;
+  dat$attr$stage[selected]       <- 1
+  dat$attr$stage.time[selected]  <- 0
+  dat$attr$inf.time[selected]    <- at
+  dat$attr$vl[selected]          <- 0
+  dat$attr$diag.status[selected] <- 0
+  dat$attr$tx.status[selected]   <- 0
+  dat$attr$cum.time.on.tx[selected] <- 0
+  dat$attr$cum.time.off.tx[selected] <- 0
+  #no time since infection;
+
+  ################################################################################
   # Circumcision
   dat$attr$circ[newIds[newB]] <- rbinom(nBirths.B, 1, dat$param$circ.B.prob)
   dat$attr$circ[newIds[newW]] <- rbinom(nBirths.W, 1, dat$param$circ.W.prob)
+
+
 
   # Role
   # dat$attr$role.class[newIds[newB]] <- sample(c("I", "R", "V"),
@@ -133,7 +206,7 @@ setBirthAttr_msm <- function(dat, at, nBirths.B, nBirths.W) {
                                   runif(sum(dat$attr$role.class[newIds] == "V"))
   dat$attr$ins.quot[newIds] <- ins.quot
 
-  # CCR5
+  # CCR5 -- need to change to status=0 new IDS
   ccr5.B.prob <- dat$param$ccr5.B.prob
   ccr5.W.prob <- dat$param$ccr5.W.prob
   dat$attr$ccr5[newIds[newB]] <- sample(c("WW", "DW", "DD"),
@@ -144,7 +217,6 @@ setBirthAttr_msm <- function(dat, at, nBirths.B, nBirths.W) {
                                         nBirths.W, replace = TRUE,
                                         prob = c(1 - sum(ccr5.W.prob),
                                                  ccr5.W.prob[2], ccr5.W.prob[1]))
-
 
   # Degree
   dat$attr$deg.main[newIds] <- 0
@@ -167,6 +239,7 @@ setBirthAttr_msm <- function(dat, at, nBirths.B, nBirths.W) {
   # Agecat2
   dat$attr$agecat2[newIds] <- "Y"
 
+  if (length(which(dat$attr$status == 1 & is.na(dat$attr$vl))) > 0) browser()
 
   return(dat)
 }
