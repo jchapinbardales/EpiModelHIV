@@ -41,6 +41,7 @@ verbose_msm <- function(x, type, s, at) {
             fn <- paste0("verb/sim", simno, ".s", currsim, ".txt")
             cat("SIMNO ", paste(simno, currsim, sep = "."),
                 "\n====================",
+                "\nSim: ", s,
                 "\nStep: ", at, " (", round(at/x$control$nsteps, 2), ")",
                 "\nPop Size: ", x$epi$num[at],
                 "\nPop Size-Young: ", x$epi$num.Y[at],
@@ -57,6 +58,7 @@ verbose_msm <- function(x, type, s, at) {
         verbose.int <- x$control$verbose.int
         if (verbose.int > 0 && (at %% verbose.int == 0)) {
 
+          nsims <- s
           nsteps <- x$control$nsteps
           time.unit <- x$param$time.unit
           prev <- round(x$epi$i.prev[at], 3)
@@ -68,6 +70,7 @@ verbose_msm <- function(x, type, s, at) {
           cat("\014")
           cat("\nEpidemic Simulation")
           cat("\n==============================")
+          cat("\nSim: ", s)
           cat("\nTimestep: ", at, "/", nsteps, sep = "")
           cat("\nDay: ", at * time.unit, "/", nsteps * time.unit, sep = "")
           cat("\nYear: ", round((at * time.unit) / 365, 1), "/",

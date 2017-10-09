@@ -128,6 +128,11 @@ prevalence_msm <- function(dat, at) {
       dat$epi$trans.OY <- rNA
       dat$epi$trans.OO <- rNA
 
+      #directional
+      dat$epi$trans.OYd <- rNA
+      dat$epi$trans.YOd <- rNA
+
+
     #age of infector + PT
       dat$epi$trans.Ymain <- rNA
       dat$epi$trans.Omain <- rNA
@@ -149,14 +154,13 @@ prevalence_msm <- function(dat, at) {
       dat$epi$trans.OOinst <- rNA
 
         #may want directional?;
-        dat$epi$trans.OYd <- rNA
-        dat$epi$trans.YOd <- rNA
         dat$epi$trans.OYdmain <- rNA
         dat$epi$trans.YOdmain <- rNA
         dat$epi$trans.OYdcasl <- rNA
         dat$epi$trans.YOdcasl <- rNA
         dat$epi$trans.OYdinst <- rNA
         dat$epi$trans.YOdinst <- rNA
+
 
 
     #CONTINUOUS AGE & PT for GRAPHS - sum of infections, not PAFs;
@@ -738,6 +742,158 @@ prevalence_msm <- function(dat, at) {
           dat$epi$trans.inst.sus.YOdinst  <- rNA
 
 
+      ####################################
+      # among infections to young people #;
+
+        #overall, column
+          dat$epi$trans.OYd.Y <- rNA
+          dat$epi$trans.YY.Y  <- rNA
+
+          dat$epi$trans.main.Y <- rNA
+          dat$epi$trans.casl.Y <- rNA
+          dat$epi$trans.inst.Y <- rNA
+
+          dat$epi$trans.OYdmain.Y <- rNA
+          dat$epi$trans.YYmain.Y  <- rNA
+          dat$epi$trans.OYdcasl.Y <- rNA
+          dat$epi$trans.YYcasl.Y  <- rNA
+          dat$epi$trans.OYdinst.Y <- rNA
+          dat$epi$trans.YYinst.Y  <- rNA
+
+          #total row
+          dat$epi$trans.recpt.sus.amongY    <- rNA
+          dat$epi$trans.inst.sus.amongY     <- rNA
+          dat$epi$trans.stage.act.amongY    <- rNA
+          dat$epi$trans.stage.chr.amongY    <- rNA
+          dat$epi$trans.stage.aids.amongY   <- rNA
+          dat$epi$trans.undx.amongY         <- rNA
+          dat$epi$trans.notinitiated.amongY <- rNA
+          dat$epi$trans.notretained.amongY  <- rNA
+          dat$epi$trans.partsup.amongY      <- rNA
+          dat$epi$trans.fullsup.amongY      <- rNA
+
+
+        #hiv infection stage
+          dat$epi$trans.stage.act.Y.Y  <- rNA
+          dat$epi$trans.stage.chr.Y.Y  <- rNA
+          dat$epi$trans.stage.aids.Y.Y <- rNA
+          dat$epi$trans.stage.act.O.Y  <- rNA
+          dat$epi$trans.stage.chr.O.Y  <- rNA
+          dat$epi$trans.stage.aids.O.Y <- rNA
+
+          dat$epi$trans.stage.act.main.Y  <- rNA
+          dat$epi$trans.stage.chr.main.Y  <- rNA
+          dat$epi$trans.stage.aids.main.Y <- rNA
+          dat$epi$trans.stage.act.casl.Y  <- rNA
+          dat$epi$trans.stage.chr.casl.Y  <- rNA
+          dat$epi$trans.stage.aids.casl.Y <- rNA
+          dat$epi$trans.stage.act.inst.Y  <- rNA
+          dat$epi$trans.stage.chr.inst.Y  <- rNA
+          dat$epi$trans.stage.aids.inst.Y <- rNA
+
+          dat$epi$trans.stage.act.Ymain.Y  <- rNA
+          dat$epi$trans.stage.chr.Ymain.Y  <- rNA
+          dat$epi$trans.stage.aids.Ymain.Y <- rNA
+          dat$epi$trans.stage.act.Omain.Y  <- rNA
+          dat$epi$trans.stage.chr.Omain.Y  <- rNA
+          dat$epi$trans.stage.aids.Omain.Y <- rNA
+          dat$epi$trans.stage.act.Ycasl.Y  <- rNA
+          dat$epi$trans.stage.chr.Ycasl.Y  <- rNA
+          dat$epi$trans.stage.aids.Ycasl.Y <- rNA
+          dat$epi$trans.stage.act.Ocasl.Y  <- rNA
+          dat$epi$trans.stage.chr.Ocasl.Y  <- rNA
+          dat$epi$trans.stage.aids.Ocasl.Y <- rNA
+          dat$epi$trans.stage.act.Yinst.Y  <- rNA
+          dat$epi$trans.stage.chr.Yinst.Y  <- rNA
+          dat$epi$trans.stage.aids.Yinst.Y <- rNA
+          dat$epi$trans.stage.act.Oinst.Y  <- rNA
+          dat$epi$trans.stage.chr.Oinst.Y  <- rNA
+          dat$epi$trans.stage.aids.Oinst.Y <- rNA
+
+          #hiv care stage
+          dat$epi$trans.undx.Y.Y         <- rNA
+          dat$epi$trans.notinitiated.Y.Y <- rNA
+          dat$epi$trans.notretained.Y.Y  <- rNA
+          dat$epi$trans.partsup.Y.Y      <- rNA
+          dat$epi$trans.fullsup.Y.Y      <- rNA
+          dat$epi$trans.undx.O.Y         <- rNA
+          dat$epi$trans.notinitiated.O.Y <- rNA
+          dat$epi$trans.notretained.O.Y  <- rNA
+          dat$epi$trans.partsup.O.Y      <- rNA
+          dat$epi$trans.fullsup.O.Y      <- rNA
+
+          dat$epi$trans.undx.main.Y         <- rNA
+          dat$epi$trans.notinitiated.main.Y <- rNA
+          dat$epi$trans.notretained.main.Y  <- rNA
+          dat$epi$trans.partsup.main.Y      <- rNA
+          dat$epi$trans.fullsup.main.Y      <- rNA
+          dat$epi$trans.undx.casl.Y         <- rNA
+          dat$epi$trans.notinitiated.casl.Y <- rNA
+          dat$epi$trans.notretained.casl.Y  <- rNA
+          dat$epi$trans.partsup.casl.Y      <- rNA
+          dat$epi$trans.fullsup.casl.Y      <- rNA
+          dat$epi$trans.undx.inst.Y         <- rNA
+          dat$epi$trans.notinitiated.inst.Y <- rNA
+          dat$epi$trans.notretained.inst.Y  <- rNA
+          dat$epi$trans.partsup.inst.Y      <- rNA
+          dat$epi$trans.fullsup.inst.Y      <- rNA
+
+          dat$epi$trans.undx.Ymain.Y         <- rNA
+          dat$epi$trans.notinitiated.Ymain.Y <- rNA
+          dat$epi$trans.notretained.Ymain.Y  <- rNA
+          dat$epi$trans.partsup.Ymain.Y      <- rNA
+          dat$epi$trans.fullsup.Ymain.Y      <- rNA
+          dat$epi$trans.undx.Omain.Y         <- rNA
+          dat$epi$trans.notinitiated.Omain.Y <- rNA
+          dat$epi$trans.notretained.Omain.Y  <- rNA
+          dat$epi$trans.partsup.Omain.Y      <- rNA
+          dat$epi$trans.fullsup.Omain.Y      <- rNA
+          dat$epi$trans.undx.Ycasl.Y         <- rNA
+          dat$epi$trans.notinitiated.Ycasl.Y <- rNA
+          dat$epi$trans.notretained.Ycasl.Y  <- rNA
+          dat$epi$trans.partsup.Ycasl.Y      <- rNA
+          dat$epi$trans.fullsup.Ycasl.Y      <- rNA
+          dat$epi$trans.undx.Ocasl.Y         <- rNA
+          dat$epi$trans.notinitiated.Ocasl.Y <- rNA
+          dat$epi$trans.notretained.Ocasl.Y  <- rNA
+          dat$epi$trans.partsup.Ocasl.Y      <- rNA
+          dat$epi$trans.fullsup.Ocasl.Y      <- rNA
+          dat$epi$trans.undx.Yinst.Y         <- rNA
+          dat$epi$trans.notinitiated.Yinst.Y <- rNA
+          dat$epi$trans.notretained.Yinst.Y  <- rNA
+          dat$epi$trans.partsup.Yinst.Y      <- rNA
+          dat$epi$trans.fullsup.Yinst.Y      <- rNA
+          dat$epi$trans.undx.Oinst.Y         <- rNA
+          dat$epi$trans.notinitiated.Oinst.Y <- rNA
+          dat$epi$trans.notretained.Oinst.Y  <- rNA
+          dat$epi$trans.partsup.Oinst.Y      <- rNA
+          dat$epi$trans.fullsup.Oinst.Y      <- rNA
+
+          #positioning
+          dat$epi$trans.recpt.sus.Y.Y     <- rNA
+          dat$epi$trans.inst.sus.Y.Y      <- rNA
+          dat$epi$trans.recpt.sus.O.Y     <- rNA
+          dat$epi$trans.inst.sus.O.Y      <- rNA
+          dat$epi$trans.recpt.sus.main.Y  <- rNA
+          dat$epi$trans.inst.sus.main.Y   <- rNA
+          dat$epi$trans.recpt.sus.casl.Y  <- rNA
+          dat$epi$trans.inst.sus.casl.Y   <- rNA
+          dat$epi$trans.recpt.sus.inst.Y  <- rNA
+          dat$epi$trans.inst.sus.inst.Y   <- rNA
+          dat$epi$trans.recpt.sus.Ymain.Y <- rNA
+          dat$epi$trans.inst.sus.Ymain.Y  <- rNA
+          dat$epi$trans.recpt.sus.Omain.Y <- rNA
+          dat$epi$trans.inst.sus.Omain.Y  <- rNA
+          dat$epi$trans.recpt.sus.Ycasl.Y <- rNA
+          dat$epi$trans.inst.sus.Ycasl.Y  <- rNA
+          dat$epi$trans.recpt.sus.Ocasl.Y <- rNA
+          dat$epi$trans.inst.sus.Ocasl.Y  <- rNA
+          dat$epi$trans.recpt.sus.Yinst.Y <- rNA
+          dat$epi$trans.inst.sus.Yinst.Y  <- rNA
+          dat$epi$trans.recpt.sus.Oinst.Y <- rNA
+          dat$epi$trans.inst.sus.Oinst.Y  <- rNA
+
+
     ############################################################
 
 
@@ -792,12 +948,26 @@ prevalence_msm <- function(dat, at) {
  # if (dat$epi$incidrate[at]==NA) {
  #   dat$epi$incidrate[at] <- 0
  # }
-  ifelse(is.na(dat$epi$incid[at]) == TRUE, 0, dat$epi$incid[at])
-  ifelse(is.na(dat$epi$incid.infd.Y[at]) == TRUE, 0, dat$epi$incid.infd.Y[at])
-  ifelse(is.na(dat$epi$incid.infd.O[at]) == TRUE, 0, dat$epi$incid.infd.O[at])
-  ifelse(is.na(dat$epi$incidrate[at]) == TRUE, 0, dat$epi$incidrate[at])
-  ifelse(is.na(dat$epi$incidrate.Y[at]) == TRUE, 0, dat$epi$incidrate.Y[at])
-  ifelse(is.na(dat$epi$incidrate.O[at]) == TRUE, 0, dat$epi$incidrate.O[at])
+  # ifelse(is.na(dat$epi$incid[at]) == TRUE, 0, dat$epi$incid[at])
+  # ifelse(is.na(dat$epi$incid.infd.Y[at]) == TRUE, 0, dat$epi$incid.infd.Y[at])
+  # ifelse(is.na(dat$epi$incid.infd.O[at]) == TRUE, 0, dat$epi$incid.infd.O[at])
+  # ifelse(is.na(dat$epi$incidrate[at]) == TRUE, 0, dat$epi$incidrate[at])
+  # ifelse(is.na(dat$epi$incidrate.Y[at]) == TRUE, 0, dat$epi$incidrate.Y[at])
+  # ifelse(is.na(dat$epi$incidrate.O[at]) == TRUE, 0, dat$epi$incidrate.O[at])
+
+  dat$epi$incid[at][which(is.na(dat$epi$incid[at]))] <- 0
+  dat$epi$incid.infd.Y[at][which(is.na(dat$epi$incid.infd.Y[at]))] <- 0
+  dat$epi$incid.infd.O[at][which(is.na(dat$epi$incid.infd.O[at]))] <- 0
+  dat$epi$incidrate[at][which(is.na(dat$epi$incidrate[at]))] <- 0
+  dat$epi$incidrate.Y[at][which(is.na(dat$epi$incidrate.Y[at]))] <- 0
+  dat$epi$incidrate.O[at][which(is.na(dat$epi$incidrate.O[at]))] <- 0
+
+  # a <- 1:5
+  # a[c(2, 4)] <- NA
+  # a
+  # a[which(is.na(a))] <- 0
+  # a
+
 
   return(dat)
 }
