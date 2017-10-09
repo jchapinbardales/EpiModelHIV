@@ -197,7 +197,6 @@ trans_msm <- function(dat, at){
     inf.cum.time.on.tx <- dat$attr$cum.time.on.tx[infector]
     inf.vl <- vl[infector]
 
-    browser()
 
     #age
     inf.agecat2 <- agecat2[infector]  #infectors age
